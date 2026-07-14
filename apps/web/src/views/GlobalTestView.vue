@@ -18,7 +18,7 @@
         <p class="config-label">選擇測試題數：</p>
         <div class="options-flex mt-8">
           <button 
-            v-for="num in [20, 40, 60]" 
+            v-for="num in [10, 20, 40, 60, 100]" 
             :key="num"
             class="btn btn-choice" 
             :class="{ active: selectedCount === num }"
@@ -72,28 +72,6 @@
         </button>
       </div>
 
-      <!-- Answer Feedback details -->
-      <div class="feedback-card card mt-16" v-if="selectedOption !== null">
-        <div class="feedback-header" :class="isCorrect ? 'text-success' : 'text-danger'">
-          <span class="fb-icon">{{ isCorrect ? '✅' : '❌' }}</span>
-          <span class="fb-title">{{ isCorrect ? '答對了！' : '答錯了！' }}</span>
-        </div>
-        
-        <div class="feedback-body mt-8">
-          <p class="ans-explain">
-            正確答案是: <span class="font-bold text-primary">{{ currentQuestion.answer.display }}</span>
-          </p>
-          
-          <div class="hint-block mt-8" v-if="currentQuestion.association">
-            <span class="hint-label">💡 記憶聯想點：</span>
-            <p class="hint-text">{{ currentQuestion.association }}</p>
-          </div>
-        </div>
-
-        <button class="btn btn-primary w-full mt-12 py-12" @click="nextQuestion">
-          {{ currentQuestionIndex < questions.length - 1 ? '下一題 ➡️' : '查看測驗結果 🏁' }}
-        </button>
-      </div>
     </div>
 
     <!-- QUIZ RESULTS SCREEN -->
@@ -184,7 +162,7 @@ const router = useRouter();
 const appStore = useAppStore();
 
 const gameState = ref<'config' | 'playing' | 'results'>('config');
-const selectedCount = ref(20);
+const selectedCount = ref(10);
 const selectedMode = ref<'mixed' | 'num-to-kw' | 'kw-to-num'>('mixed');
 
 const questions = ref<Question[]>([]);
@@ -368,6 +346,11 @@ const selectOption = async (opt: QuizOption) => {
     await progressRepo.submitReviewResult(cardId, 'forgot');
   }
   await appStore.refreshReviewCounts();
+
+  // Auto-advance to next question after 800ms
+  setTimeout(() => {
+    nextQuestion();
+  }, 800);
 };
 
 const nextQuestion = () => {
