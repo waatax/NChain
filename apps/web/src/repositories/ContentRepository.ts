@@ -1,13 +1,20 @@
-import { z } from 'zod';
 import {
-  MnemonicItem, MnemonicItemSchema,
-  PairScene, PairSceneSchema,
-  NarrativeScene, NarrativeSceneSchema,
-  NarrativeStory, NarrativeStorySchema,
-  Lesson, LessonSchema,
-  Module, ModuleSchema,
-  ContentManifest, ContentManifestSchema
+  MnemonicItem,
+  PairScene,
+  NarrativeScene,
+  NarrativeStory,
+  Lesson,
+  Module,
+  ContentManifest
 } from '../domain/types';
+import {
+  staticItems,
+  staticLessons,
+  staticModules,
+  staticPairScenes,
+  staticStories,
+  staticNarrativeScenes
+} from '../data/staticContent';
 
 export class ContentRepository {
   private static instance: ContentRepository;
@@ -33,56 +40,30 @@ export class ContentRepository {
   public async initialize(): Promise<void> {
     if (this.isLoaded) return;
     
-    try {
-      const baseUrl = import.meta.env.BASE_URL || '/';
-      
-      // 1. Fetch manifest
-      const manifestRes = await fetch(`${baseUrl}data/manifest.json`);
-      const manifestData = await manifestRes.json();
-      this.manifest = ContentManifestSchema.parse(manifestData);
-      
-      // 2. Fetch items
-      const itemsRes = await fetch(`${baseUrl}data/items.json`);
-      const itemsData = await itemsRes.json();
-      const parsedItems = z.array(MnemonicItemSchema).parse(itemsData);
-      parsedItems.forEach(item => this.items.set(item.id, item));
-      
-      // 3. Fetch lessons
-      const lessonsRes = await fetch(`${baseUrl}data/lessons.json`);
-      const lessonsData = await lessonsRes.json();
-      const parsedLessons = z.array(LessonSchema).parse(lessonsData);
-      parsedLessons.forEach(l => this.lessons.set(l.id, l));
-      
-      // 4. Fetch modules
-      const modulesRes = await fetch(`${baseUrl}data/modules.json`);
-      const modulesData = await modulesRes.json();
-      const parsedModules = z.array(ModuleSchema).parse(modulesData);
-      parsedModules.forEach(m => this.modules.set(m.id, m));
-      
-      // 5. Fetch pair-scenes
-      const pairRes = await fetch(`${baseUrl}data/pair-scenes.json`);
-      const pairData = await pairRes.json();
-      const parsedPairs = z.array(PairSceneSchema).parse(pairData);
-      parsedPairs.forEach(s => this.pairScenes.set(s.id, s));
-      
-      // 6. Fetch stories
-      const storiesRes = await fetch(`${baseUrl}data/stories.json`);
-      const storiesData = await storiesRes.json();
-      const parsedStories = z.array(NarrativeStorySchema).parse(storiesData);
-      parsedStories.forEach(s => this.stories.set(s.id, s));
-      
-      // 7. Fetch narrative-scenes
-      const narrativeRes = await fetch(`${baseUrl}data/narrative-scenes.json`);
-      const narrativeData = await narrativeRes.json();
-      const parsedNarratives = z.array(NarrativeSceneSchema).parse(narrativeData);
-      parsedNarratives.forEach(s => this.narrativeScenes.set(s.id, s));
-      
-      this.isLoaded = true;
-      console.log('ContentRepository initialized successfully with', this.items.size, 'items');
-    } catch (e) {
-      console.error('Failed to initialize ContentRepository:', e);
-      throw new Error('CONTENT_LOAD_FAILURE');
-    }
+    staticItems.forEach(item => this.items.set(item.id, item));
+    staticLessons.forEach(l => this.lessons.set(l.id, l));
+    staticModules.forEach(m => this.modules.set(m.id, m));
+    staticPairScenes.forEach(s => this.pairScenes.set(s.id, s));
+    staticStories.forEach(s => this.stories.set(s.id, s));
+    staticNarrativeScenes.forEach(s => this.narrativeScenes.set(s.id, s));
+    
+    // Set a mock manifest for content version tagging
+    this.manifest = {
+      schemaVersion: 1,
+      contentVersion: "1.0.0",
+      generatedAt: new Date().toISOString(),
+      sourceFileSha256: "static-bundle",
+      counts: {
+        items: this.items.size,
+        lessons: this.lessons.size,
+        pairScenes: this.pairScenes.size,
+        stories: this.stories.size,
+        narrativeScenes: this.narrativeScenes.size
+      }
+    };
+    
+    this.isLoaded = true;
+    console.log('ContentRepository initialized successfully from static files with', this.items.size, 'items');
   }
 
   public getManifest(): ContentManifest | null {
