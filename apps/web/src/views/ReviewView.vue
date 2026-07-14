@@ -1,8 +1,8 @@
 <template>
   <div class="container">
     <div class="review-header mb-16">
-      <h2>⏳ Spaced Repetition 間隔複習</h2>
-      <p class="text-muted">基於 Leitner 系統，每天自動篩選到期的複習字卡</p>
+      <h2>⏳ Spaced Repetition 間隔複習 (選擇題模式)</h2>
+      <p class="text-muted">自動筛选到期的複習卡片，以選擇題方式快速複習</p>
     </div>
 
     <!-- Empty State -->
@@ -56,58 +56,49 @@
             <p class="cloze-text" style="font-size: 1.1rem; line-height: 1.6; font-weight: 600;">{{ maskedStoryText }}</p>
           </div>
         </div>
-
-        <!-- Answer Reveal Detail -->
-        <div class="card-answer-revealed mt-16" v-if="isRevealed">
-          <p class="answer-header">✅ 正確答案：</p>
-          <div class="answer-box">
-            <span class="ans-num font-bold">{{ item?.number }}</span>
-            <span class="ans-kw font-bold">{{ item?.canonicalKeyword }}</span>
-          </div>
-
-          <div class="association-block mt-12" v-if="pairScene">
-            <p class="label">💡 聯想畫面提示：</p>
-            <p class="text">{{ pairScene.sceneText }}</p>
-          </div>
-
-          <div class="association-block mt-12" v-if="currentCard.promptType === 'story-cloze' && storyScene">
-            <p class="label">💡 完整故事上下文：</p>
-            <p class="text">{{ storyScene.originalText }}</p>
-          </div>
-        </div>
       </div>
 
-      <!-- Action Buttons -->
-      <div class="player-actions mt-16">
+      <!-- Multiple Choice Options -->
+      <div class="options-grid mt-16" v-if="currentOptions.length > 0">
         <button 
-          v-if="!isRevealed" 
-          class="btn btn-primary w-full py-14" 
-          @click="isRevealed = true"
+          v-for="(opt, idx) in currentOptions" 
+          :key="idx" 
+          class="option-btn btn"
+          :class="getOptionClass(opt)"
+          :disabled="selectedOption !== null"
+          @click="selectOption(opt)"
         >
-          👁️ 顯示答案
+          <span class="opt-label">{{ String.fromCharCode(65 + idx) }}.</span>
+          <span class="opt-text">{{ opt.display }}</span>
         </button>
+      </div>
 
-        <div v-else class="rating-buttons">
-          <p class="rating-prompt text-center mb-8">您剛才的回想正確嗎？</p>
-          <div class="buttons-grid">
-            <button class="btn btn-danger rate-btn" @click="submitRating('forgot')">
-              <span>忘記</span>
-              <span class="rate-sub">重來</span>
-            </button>
-            <button class="btn btn-warning rate-btn" @click="submitRating('hard')">
-              <span>模糊</span>
-              <span class="rate-sub">減半</span>
-            </button>
-            <button class="btn btn-primary rate-btn" @click="submitRating('good')">
-              <span>記得</span>
-              <span class="rate-sub">升箱</span>
-            </button>
-            <button class="btn rate-btn btn-easy" @click="submitRating('easy')">
-              <span>輕鬆</span>
-              <span class="rate-sub">+2箱</span>
-            </button>
+      <!-- Answer Feedback details -->
+      <div class="feedback-card card mt-16" v-if="selectedOption !== null">
+        <div class="feedback-header" :class="isCorrect ? 'text-success' : 'text-danger'">
+          <span class="fb-icon">{{ isCorrect ? '✅' : '❌' }}</span>
+          <span class="fb-title">{{ isCorrect ? '答對了！' : '答錯了！' }}</span>
+        </div>
+        
+        <div class="feedback-body mt-8">
+          <p class="ans-explain">
+            正確答案是: <span class="font-bold text-primary">{{ currentAnswer?.display }}</span>
+          </p>
+          
+          <div class="hint-block mt-8" v-if="pairScene">
+            <span class="hint-label">💡 聯想畫面提示：</span>
+            <p class="hint-text">{{ pairScene.sceneText }}</p>
+          </div>
+
+          <div class="hint-block mt-8" v-if="currentCard.promptType === 'story-cloze' && storyScene">
+            <span class="hint-label">💡 完整故事上下文：</span>
+            <p class="hint-text">{{ storyScene.originalText }}</p>
           </div>
         </div>
+
+        <button class="btn btn-primary w-full mt-12 py-12" @click="nextCard">
+          下一題 ➡️
+        </button>
       </div>
     </div>
   </div>
@@ -120,11 +111,21 @@ import { contentRepo, progressRepo } from '../repositories';
 import { ReviewCardState } from '../repositories/ProgressRepository';
 import { MnemonicItem, PairScene, NarrativeScene } from '../domain/types';
 
+interface ReviewOption {
+  value: string;
+  display: string;
+}
+
 const appStore = useAppStore();
 
 const dueCards = ref<ReviewCardState[]>([]);
 const currentCardIndex = ref(0);
 const isRevealed = ref(false);
+
+const selectedOption = ref<ReviewOption | null>(null);
+const isCorrect = ref(false);
+const currentOptions = ref<ReviewOption[]>([]);
+const currentAnswer = ref<ReviewOption | null>(null);
 
 const currentCard = computed((): ReviewCardState | null => {
   if (dueCards.value.length === 0) return null;
@@ -173,6 +174,82 @@ const loadDueCards = async () => {
   dueCards.value = cards.sort(() => Math.random() - 0.5);
   currentCardIndex.value = 0;
   isRevealed.value = false;
+  selectedOption.value = null;
+  isCorrect.value = false;
+  
+  loadCurrentOptions();
+};
+
+const loadCurrentOptions = () => {
+  const card = currentCard.value;
+  const targetItem = item.value;
+  if (!card || !targetItem) {
+    currentOptions.value = [];
+    currentAnswer.value = null;
+    return;
+  }
+
+  const allItems = contentRepo.getItems();
+  const distractors = generateDistractors(targetItem.number, allItems);
+  let ansOpt: ReviewOption;
+  let distOpts: ReviewOption[] = [];
+
+  if (card.promptType === 'number-to-keyword') {
+    ansOpt = { value: targetItem.number, display: targetItem.canonicalKeyword };
+    distOpts = distractors.map(d => ({ value: d.number, display: d.canonicalKeyword }));
+  } else if (card.promptType === 'keyword-to-number') {
+    ansOpt = { value: targetItem.number, display: targetItem.number };
+    distOpts = distractors.map(d => ({ value: d.number, display: d.number }));
+  } else if (card.promptType === 'pair-next-item' && pairScene.value) {
+    const toItemId = pairScene.value.toItemId;
+    const toNum = toItemId.split('-')[1];
+    const toItem = allItems.find(i => i.id === toItemId);
+    const toKeyword = toItem ? toItem.canonicalKeyword : '';
+    
+    ansOpt = { value: toNum, display: `${toNum} ${toKeyword}` };
+    distOpts = distractors.map(d => ({ value: d.number, display: `${d.number} ${d.canonicalKeyword}` }));
+  } else if (card.promptType === 'story-cloze') {
+    ansOpt = { value: targetItem.number, display: targetItem.canonicalKeyword };
+    distOpts = distractors.map(d => ({ value: d.number, display: d.canonicalKeyword }));
+  } else {
+    ansOpt = { value: targetItem.number, display: targetItem.canonicalKeyword };
+    distOpts = distractors.map(d => ({ value: d.number, display: d.canonicalKeyword }));
+  }
+
+  currentAnswer.value = ansOpt;
+  currentOptions.value = [ansOpt, ...distOpts].sort(() => Math.random() - 0.5);
+};
+
+// Leitner distractor rules
+const generateDistractors = (targetNumStr: string, allItems: MnemonicItem[]): MnemonicItem[] => {
+  const targetVal = parseInt(targetNumStr);
+  const targetTens = Math.floor(targetVal / 10);
+  const targetUnits = targetVal % 10;
+  
+  const pool = allItems.filter(item => item.number !== targetNumStr);
+  const results: MnemonicItem[] = [];
+
+  // 1. Same tens digit
+  const sameTens = pool.filter(i => Math.floor(i.numericValue / 10) === targetTens);
+  if (sameTens.length > 0) {
+    results.push(...sameTens.sort(() => Math.random() - 0.5).slice(0, 2));
+  }
+
+  // 2. Same units digit
+  const sameUnits = pool.filter(i => i.numericValue % 10 === targetUnits && !results.includes(i));
+  if (sameUnits.length > 0) {
+    results.push(...sameUnits.sort(() => Math.random() - 0.5).slice(0, 2));
+  }
+
+  // 3. Fallback
+  while (results.length < 3) {
+    const randomItem = pool[Math.floor(Math.random() * pool.length)];
+    if (!results.includes(randomItem)) {
+      results.push(randomItem);
+    }
+  }
+
+  return results.slice(0, 3);
 };
 
 const getPromptTypeLabel = (type: string): string => {
@@ -185,22 +262,46 @@ const getPromptTypeLabel = (type: string): string => {
   }
 };
 
-const submitRating = async (rating: 'forgot' | 'hard' | 'good' | 'easy') => {
+const getOptionClass = (opt: ReviewOption) => {
+  if (selectedOption.value === null) return 'btn-secondary';
+  
+  const isCurrentOpt = selectedOption.value.value === opt.value;
+  const isCorrectOpt = currentAnswer.value?.value === opt.value;
+  
+  if (isCorrectOpt) {
+    return 'btn-success-opt';
+  }
+  if (isCurrentOpt && !isCorrect.value) {
+    return 'btn-danger-opt';
+  }
+  return 'btn-muted-opt';
+};
+
+const selectOption = async (opt: ReviewOption) => {
   if (!currentCard.value) return;
   
-  // Submit review result
+  selectedOption.value = opt;
+  const correct = currentAnswer.value?.value === opt.value;
+  isCorrect.value = correct;
+
+  // Spaced repetition schedule update: correct -> Good box up, incorrect -> Forgot box down
+  const rating = correct ? 'good' : 'forgot';
   await progressRepo.submitReviewResult(currentCard.value.cardId, rating);
   await appStore.refreshReviewCounts();
+};
 
-  // Load next card
+const nextCard = () => {
   isRevealed.value = false;
+  selectedOption.value = null;
+  isCorrect.value = false;
   
-  // Remove this card from dueCards list immediately for UX smoothness
+  // Remove this card from dueCards list immediately
   dueCards.value.splice(currentCardIndex.value, 1);
   
-  // If queue is empty, refresh database to see if new cards got scheduled
   if (dueCards.value.length === 0) {
-    await loadDueCards();
+    loadDueCards();
+  } else {
+    loadCurrentOptions();
   }
 };
 </script>
@@ -232,21 +333,21 @@ const submitRating = async (rating: 'forgot' | 'hard' | 'good' | 'easy') => {
 }
 
 .flashcard {
-  min-height: 240px;
+  min-height: 180px;
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
   border-radius: var(--border-radius-lg);
   border: 2px solid var(--border-color);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
   padding: 24px;
 }
 
 .prompt-type-badge {
   position: absolute;
-  top: 16px;
-  left: 16px;
+  top: 14px;
+  left: 14px;
   background-color: var(--primary-glow);
   color: var(--primary);
   font-size: 0.7rem;
@@ -261,7 +362,7 @@ const submitRating = async (rating: 'forgot' | 'hard' | 'good' | 'easy') => {
   justify-content: center;
   align-items: center;
   flex: 1;
-  min-height: 120px;
+  min-height: 100px;
 }
 
 .center-num {
@@ -319,87 +420,102 @@ const submitRating = async (rating: 'forgot' | 'hard' | 'good' | 'easy') => {
   color: var(--text-muted);
 }
 
-.card-answer-revealed {
-  border-top: 1px solid var(--border-color);
-  padding-top: 16px;
+.options-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.answer-header {
-  font-size: 0.8rem;
+.option-btn {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 12px 16px;
+  text-align: left;
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-sm);
+  font-size: 0.9rem;
+}
+
+.opt-label {
+  font-weight: 800;
+  font-size: 0.95rem;
+  margin-right: 12px;
   color: var(--text-secondary);
-  font-weight: 700;
 }
 
-.answer-box {
+.opt-text {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.option-btn.btn-secondary:hover {
+  border-color: var(--primary);
+  background-color: var(--bg-secondary);
+}
+
+.btn-success-opt {
+  background-color: var(--success) !important;
+  color: white !important;
+  border-color: var(--success) !important;
+}
+
+.btn-danger-opt {
+  background-color: var(--danger) !important;
+  color: white !important;
+  border-color: var(--danger) !important;
+}
+
+.btn-muted-opt {
+  opacity: 0.55;
+  background-color: var(--bg-secondary) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-muted) !important;
+}
+
+.feedback-card {
+  border-radius: var(--border-radius-lg);
+  border: 2px solid var(--border-color);
+  box-shadow: var(--shadow-md);
+}
+
+.feedback-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-top: 4px;
+  gap: 8px;
 }
 
-.ans-num {
-  font-size: 1.65rem;
-  color: var(--primary);
+.fb-icon {
+  font-size: 1.25rem;
 }
 
-.ans-kw {
-  font-size: 1.45rem;
+.fb-title {
+  font-size: 1.05rem;
+  font-weight: 800;
 }
 
-.association-block {
+.ans-explain {
+  font-size: 0.9rem;
+}
+
+.hint-block {
   background-color: var(--bg-secondary);
   padding: 10px 12px;
   border-radius: var(--border-radius-sm);
   border: 1px solid var(--border-color);
 }
 
-.association-block .label {
+.hint-label {
   font-size: 0.75rem;
   font-weight: 700;
   color: var(--text-secondary);
 }
 
-.association-block .text {
+.hint-text {
   font-size: 0.85rem;
   color: var(--text-primary);
   margin-top: 2px;
   line-height: 1.5;
-}
-
-.rating-prompt {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--text-secondary);
-}
-
-.buttons-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-}
-
-.rate-btn {
-  display: flex;
-  flex-direction: column;
-  padding: 8px 4px;
-  border-radius: var(--border-radius-sm);
-  font-size: 0.9rem;
-  height: 54px;
-}
-
-.rate-sub {
-  font-size: 0.65rem;
-  font-weight: 500;
-  opacity: 0.8;
-  margin-top: 2px;
-}
-
-.btn-easy {
-  background-color: var(--success);
-  color: white;
-}
-.btn-easy:hover {
-  background-color: hsl(145, 75%, 35%);
 }
 
 .font-bold {
@@ -410,8 +526,8 @@ const submitRating = async (rating: 'forgot' | 'hard' | 'good' | 'easy') => {
   width: 100%;
 }
 
-.py-14 {
-  padding-top: 14px;
-  padding-bottom: 14px;
+.py-12 {
+  padding-top: 12px;
+  padding-bottom: 12px;
 }
 </style>
