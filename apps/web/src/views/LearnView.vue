@@ -278,11 +278,6 @@ const recordProgress = async (sceneId: string) => {
 const submitRating = async (rating: 'forgot' | 'hard' | 'good' | 'easy') => {
   const scene = currentPairScene.value;
   if (!scene) return;
-  
-  // Submit rating for cards (fromItem_pair-next-item, etc.)
-  const cardId = `${scene.fromItemId}_pair-next-item`;
-  await progressRepo.submitReviewResult(cardId, rating);
-  await appStore.refreshReviewCounts();
 
   // Save progress
   await recordProgress(scene.id);

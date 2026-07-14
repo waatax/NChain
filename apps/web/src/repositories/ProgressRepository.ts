@@ -118,8 +118,9 @@ export class ProgressRepository {
 
   public async initializeCardsForLesson(lessonId: string, itemIds: string[], modes: zQuizType[]): Promise<void> {
     const now = new Date().toISOString();
+    const allowedModes = modes.filter(m => m === 'number-to-keyword' || m === 'keyword-to-number');
     for (const itemId of itemIds) {
-      for (const mode of modes) {
+      for (const mode of allowedModes) {
         const cardId = `${itemId}_${mode}`;
         const exists = await this.db.reviewCards.get(cardId);
         if (!exists) {

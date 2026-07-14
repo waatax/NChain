@@ -153,44 +153,20 @@ const generateQuiz = (loadedLesson: Lesson) => {
   
   // Lesson items
   const lessonItems = allItems.filter(item => loadedLesson.itemIds.includes(item.id as any));
-  const pairScenes = contentRepo.getPairScenes().filter(s => s.lessonId === loadedLesson.id);
-  const narrativeScenes = contentRepo.getNarrativeScenes().filter(s => s.lessonId === loadedLesson.id);
+  const shuffledItems = [...lessonItems].sort(() => Math.random() - 0.5);
+  
+  // Split half for num-to-kw, half for kw-to-num
+  const mid = Math.ceil(shuffledItems.length / 2);
+  
+  shuffledItems.slice(0, mid).forEach(item => {
+    list.push(createNumToKwQuestion(item, allItems));
+  });
+  
+  shuffledItems.slice(mid).forEach(item => {
+    list.push(createKwToNumQuestion(item, allItems));
+  });
 
-  if (loadedLesson.mode === 'pair') {
-    // Generate questions for pair mode
-    // 1. Generate number-to-keyword
-    lessonItems.slice(0, 3).forEach(item => {
-      list.push(createNumToKwQuestion(item, allItems));
-    });
-    
-    // 2. Generate keyword-to-number
-    lessonItems.slice(3, 6).forEach(item => {
-      list.push(createKwToNumQuestion(item, allItems));
-    });
-
-    // 3. Generate pair-next-item
-    pairScenes.slice(0, 4).forEach(scene => {
-      list.push(createPairNextItemQuestion(scene, allItems));
-    });
-  } else {
-    // Generate questions for narrative mode
-    // 1. Generate number-to-keyword
-    lessonItems.slice(0, 3).forEach(item => {
-      list.push(createNumToKwQuestion(item, allItems));
-    });
-    
-    // 2. Generate keyword-to-number
-    lessonItems.slice(3, 6).forEach(item => {
-      list.push(createKwToNumQuestion(item, allItems));
-    });
-
-    // 3. Generate story cloze
-    narrativeScenes.slice(0, 4).forEach(scene => {
-      list.push(createStoryClozeQuestion(scene, allItems));
-    });
-  }
-
-  // Shuffle questions and cap at 10
+  // Shuffle questions and limit to 10
   questions.value = list.sort(() => Math.random() - 0.5).slice(0, 10);
 };
 

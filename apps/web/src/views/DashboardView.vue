@@ -31,39 +31,31 @@
       </div>
     </div>
 
-    <!-- Modules List -->
+    <!-- Lessons List -->
     <h3 class="section-title mb-16">課程目錄</h3>
-    <div class="modules-list">
-      <div v-for="mod in modules" :key="mod.id" class="module-card mb-16">
-        <div class="module-header">
-          <h4>{{ mod.title }}</h4>
+    <div class="lessons-list card">
+      <div v-for="l in lessons" :key="l.id" class="lesson-row">
+        <div class="lesson-info">
+          <div class="lesson-title-container">
+            <span class="lesson-mode-tag" :class="l.mode">
+              {{ l.mode === 'pair' ? '配對' : '故事' }}
+            </span>
+            <span class="lesson-name">{{ l.title }}</span>
+          </div>
+          <div class="lesson-meta text-muted">
+            數字範圍: {{ l.rangeStart }} – {{ l.rangeEnd }}
+            <span class="dot-separator">•</span>
+            已記: {{ getLessonProgress(l.id)?.completedSceneIds.length || 0 }} / {{ l.sceneIds.length }}
+          </div>
         </div>
         
-        <div class="lessons-list">
-          <div v-for="l_id in mod.lessonIds" :key="l_id" class="lesson-row">
-            <div class="lesson-info">
-              <div class="lesson-title-container">
-                <span class="lesson-mode-tag" :class="getLesson(l_id)?.mode">
-                  {{ getLesson(l_id)?.mode === 'pair' ? '配對' : '故事' }}
-                </span>
-                <span class="lesson-name">{{ getLesson(l_id)?.title }}</span>
-              </div>
-              <div class="lesson-meta text-muted">
-                數字範圍: {{ getLesson(l_id)?.rangeStart }} – {{ getLesson(l_id)?.rangeEnd }}
-                <span class="dot-separator">•</span>
-                已記: {{ getLessonProgress(l_id)?.completedSceneIds.length || 0 }} / {{ getLesson(l_id)?.sceneIds.length }}
-              </div>
-            </div>
-            
-            <div class="lesson-actions">
-              <button class="btn btn-secondary btn-sm" @click="startLesson(l_id)">
-                📖 學習
-              </button>
-              <button class="btn btn-primary btn-sm" @click="startQuiz(l_id)">
-                ✍️ 測驗
-              </button>
-            </div>
-          </div>
+        <div class="lesson-actions">
+          <button class="btn btn-secondary btn-sm" @click="startLesson(l.id)">
+            📖 學習
+          </button>
+          <button class="btn btn-primary btn-sm" @click="startQuiz(l.id)">
+            ✍️ 測驗
+          </button>
         </div>
       </div>
     </div>
@@ -82,8 +74,7 @@ const router = useRouter();
 const appStore = useAppStore();
 
 const manifest = ref<ContentManifest | null>(null);
-const modules = ref<Module[]>([]);
-const lessonsMap = reactive<Map<string, Lesson>>(new Map());
+const lessons = ref<Lesson[]>([]);
 const progressMap = reactive<Map<string, ProgressState>>(new Map());
 
 const stats = reactive({
@@ -93,10 +84,7 @@ const stats = reactive({
 
 onMounted(async () => {
   manifest.value = contentRepo.getManifest();
-  modules.value = contentRepo.getModules();
-  
-  const allLessons = contentRepo.getLessons();
-  allLessons.forEach(l => lessonsMap.set(l.id, l));
+  lessons.value = contentRepo.getLessons();
   
   // Load progress
   const allProgress = await progressRepo.getAllProgress();
@@ -106,9 +94,6 @@ onMounted(async () => {
   calculateStats();
 });
 
-const getLesson = (id: string): Lesson | undefined => {
-  return lessonsMap.get(id);
-};
 
 const getLessonProgress = (id: string): ProgressState | undefined => {
   return progressMap.get(id);
