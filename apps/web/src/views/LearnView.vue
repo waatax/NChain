@@ -26,15 +26,27 @@
           <!-- FRONT SIDE (Prompt) -->
           <div class="side front">
             <div class="item-display from">
-              <span class="num">{{ currentPairScene.fromItemId.split('-')[1] }}</span>
-              <span class="kw">{{ currentPairScene.displayFromKeyword }}</span>
+              <img v-if="hasIcon(currentPairScene.fromItemId)" :src="getIconUrl(currentPairScene.fromItemId)" class="item-icon-img" alt="icon" />
+              <div v-else class="item-icon-placeholder">
+                <span class="placeholder-char">{{ currentPairScene.displayFromKeyword[0] }}</span>
+              </div>
+              <div class="item-display-meta">
+                <span class="num">{{ currentPairScene.fromItemId.split('-')[1] }}</span>
+                <span class="kw">{{ currentPairScene.displayFromKeyword }}</span>
+              </div>
             </div>
             
             <div class="transition-arrow">➔</div>
             
             <div class="item-display to">
-              <span class="num">{{ currentPairScene.toItemId.split('-')[1] }}</span>
-              <span class="kw">{{ currentPairScene.displayToKeyword }}</span>
+              <img v-if="hasIcon(currentPairScene.toItemId)" :src="getIconUrl(currentPairScene.toItemId)" class="item-icon-img" alt="icon" />
+              <div v-else class="item-icon-placeholder">
+                <span class="placeholder-char">{{ currentPairScene.displayToKeyword[0] }}</span>
+              </div>
+              <div class="item-display-meta">
+                <span class="num">{{ currentPairScene.toItemId.split('-')[1] }}</span>
+                <span class="kw">{{ currentPairScene.displayToKeyword }}</span>
+              </div>
             </div>
           </div>
 
@@ -50,6 +62,10 @@
             
             <div class="art-content">
               <div class="art-node from">
+                <img v-if="hasIcon(currentPairScene.fromItemId)" :src="getIconUrl(currentPairScene.fromItemId)" class="art-node-icon" alt="icon" />
+                <div v-else class="art-node-icon-placeholder">
+                  <span class="art-placeholder-char">{{ currentPairScene.displayFromKeyword[0] }}</span>
+                </div>
                 <span class="art-node-num">{{ currentPairScene.fromItemId.split('-')[1] }}</span>
                 <span class="art-node-kw">{{ currentPairScene.displayFromKeyword }}</span>
               </div>
@@ -60,6 +76,10 @@
               </div>
               
               <div class="art-node to">
+                <img v-if="hasIcon(currentPairScene.toItemId)" :src="getIconUrl(currentPairScene.toItemId)" class="art-node-icon" alt="icon" />
+                <div v-else class="art-node-icon-placeholder">
+                  <span class="art-placeholder-char">{{ currentPairScene.displayToKeyword[0] }}</span>
+                </div>
                 <span class="art-node-num">{{ currentPairScene.toItemId.split('-')[1] }}</span>
                 <span class="art-node-kw">{{ currentPairScene.displayToKeyword }}</span>
               </div>
@@ -223,6 +243,20 @@ const getIllustrationUrl = (scene: PairScene): string => {
   const fromNum = scene.fromItemId.split('-')[1];
   const toNum = scene.toItemId.split('-')[1];
   return `${import.meta.env.BASE_URL || '/'}assets/scenes/scene_${fromNum}_${toNum}.png`;
+};
+
+const getIconUrl = (itemId: string): string => {
+  const num = itemId.split('-')[1];
+  return `${import.meta.env.BASE_URL || '/'}assets/icons/icon_${num}.png`;
+};
+
+const presentIcons = [
+  '00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'
+];
+
+const hasIcon = (itemId: string): boolean => {
+  const num = itemId.split('-')[1];
+  return presentIcons.includes(num);
 };
 
 const currentSceneIndex = ref(0);
@@ -427,9 +461,24 @@ const startQuizDirect = () => {
   flex-direction: column;
   align-items: center;
   background-color: var(--bg-secondary);
-  padding: 12px 16px;
+  padding: 12px 8px;
   border-radius: var(--border-radius-md);
-  width: 90px;
+  width: 110px;
+  min-height: 125px;
+  justify-content: center;
+}
+
+.item-icon-img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  margin-bottom: 6px;
+}
+
+.item-display-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .item-display.from {
@@ -784,6 +833,13 @@ const startQuizDirect = () => {
   -webkit-text-fill-color: transparent;
 }
 
+.art-node-icon {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  margin-bottom: 4px;
+}
+
 .art-node-kw {
   font-size: 0.8rem;
   font-weight: 700;
@@ -828,5 +884,43 @@ const startQuizDirect = () => {
   font-weight: 700;
   color: rgba(255, 255, 255, 0.35);
   letter-spacing: 0.5px;
+}
+
+/* Icon Placeholders */
+.item-icon-placeholder {
+  width: 52px;
+  height: 52px;
+  background: linear-gradient(135deg, var(--bg-card) 0%, var(--border-color) 100%);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 6px;
+  border: 1.5px solid var(--border-color);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.placeholder-char {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+}
+
+.art-node-icon-placeholder {
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.art-placeholder-char {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.5);
 }
 </style>
