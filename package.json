@@ -1,0 +1,19 @@
+{
+  "name": "nchain-monorepo",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter web dev",
+    "build": "pnpm --filter web build",
+    "test:unit": "pnpm --filter web test:unit",
+    "test:e2e": "pnpm --filter web test:e2e",
+    "lint": "pnpm --filter web lint",
+    "typecheck": "pnpm --filter web typecheck",
+    "etl": "python -m scripts.etl.extract_workbook --input 數字鎖鏈.xlsx --output apps/web/public/data --report reports/etl-report.json --strict"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "vue-demi"
+    ]
+  }
+}
