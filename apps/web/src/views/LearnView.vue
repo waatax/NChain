@@ -32,11 +32,7 @@
             
             <div class="transition-arrow">➔</div>
             
-            <div class="item-display to masked" v-if="!isRevealed">
-              <span class="num">??</span>
-              <span class="kw">? ?</span>
-            </div>
-            <div class="item-display to" v-else>
+            <div class="item-display to">
               <span class="num">{{ currentPairScene.toItemId.split('-')[1] }}</span>
               <span class="kw">{{ currentPairScene.displayToKeyword }}</span>
             </div>
@@ -48,8 +44,8 @@
             <span class="image-label">連鎖想像畫面</span>
           </div>
 
-          <!-- BACK SIDE (Scene description - Revealed) -->
-          <div class="side-back mt-16" v-if="isRevealed">
+          <!-- Scene description - Shown Immediately -->
+          <div class="side-back mt-16">
             <p class="scene-desc-title">💡 聯想畫面：</p>
             <p class="scene-desc-text">{{ currentPairScene.sceneText }}</p>
           </div>
@@ -58,27 +54,19 @@
 
       <!-- Action Buttons -->
       <div class="player-actions mt-16">
-        <button 
-          v-if="!isRevealed" 
-          class="btn btn-primary w-full py-14" 
-          @click="revealAnswer"
-        >
-          👁️ 顯示聯想與答案
-        </button>
-        
-        <div v-else class="rating-buttons">
-          <p class="rating-prompt text-center mb-8">您還記得這個聯想畫面嗎？</p>
+        <div class="rating-buttons">
+          <p class="rating-prompt text-center mb-8">請在腦海中想像上述畫面，並點擊下方按鈕記錄熟練度：</p>
           <div class="buttons-grid">
             <button class="btn btn-danger rate-btn" @click="submitRating('forgot')">
-              <span>忘记</span>
-              <span class="rate-sub">重来</span>
+              <span>忘記</span>
+              <span class="rate-sub">重來</span>
             </button>
             <button class="btn btn-warning rate-btn" @click="submitRating('hard')">
               <span>模糊</span>
-              <span class="rate-sub">减半</span>
+              <span class="rate-sub">減半</span>
             </button>
             <button class="btn btn-primary rate-btn" @click="submitRating('good')">
-              <span>记得</span>
+              <span>記得</span>
               <span class="rate-sub">升箱</span>
             </button>
             <button class="btn rate-btn btn-easy" @click="submitRating('easy')">
