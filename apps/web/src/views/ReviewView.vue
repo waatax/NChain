@@ -118,7 +118,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useAppStore } from '../stores/app';
 import { contentRepo, progressRepo } from '../repositories';
 import { ReviewCardState } from '../repositories/ProgressRepository';
-import { MnemonicItem, PairScene } from '../domain/types';
+import { MnemonicItem, PairScene, NarrativeScene } from '../domain/types';
 
 const appStore = useAppStore();
 
