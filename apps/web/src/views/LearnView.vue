@@ -267,7 +267,7 @@ const recordProgress = async (sceneId: string) => {
   const state: ProgressState = {
     lessonId: props.lessonId,
     lastSceneId: sceneId,
-    completedSceneIds: completedScenes.value,
+    completedSceneIds: [...completedScenes.value],
     isCompleted,
     updatedAt: new Date().toISOString()
   };

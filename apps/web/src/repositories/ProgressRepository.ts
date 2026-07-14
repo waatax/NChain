@@ -83,7 +83,8 @@ export class ProgressRepository {
   }
 
   public async saveLessonProgress(progress: ProgressState): Promise<void> {
-    await this.db.progress.put(progress);
+    const cleanProgress = JSON.parse(JSON.stringify(progress));
+    await this.db.progress.put(cleanProgress);
   }
 
   // --- Spaced Repetition (Leitner Cards) ---
@@ -227,7 +228,8 @@ export class ProgressRepository {
   }
 
   public async setOfflineLessonState(state: OfflineLessonState): Promise<void> {
-    await this.db.offlineLessons.put(state);
+    const cleanState = JSON.parse(JSON.stringify(state));
+    await this.db.offlineLessons.put(cleanState);
   }
 
   public async deleteOfflineLesson(lessonId: string): Promise<void> {

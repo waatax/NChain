@@ -49,6 +49,12 @@
               <span class="kw">? ?</span>
             </div>
           </div>
+
+          <!-- Type 4: Story Cloze -->
+          <div v-else-if="currentCard.promptType === 'story-cloze' && storyScene" class="story-cloze-prompt text-center">
+            <p class="cloze-title text-muted mb-8" style="font-size: 0.85rem; font-weight: 700;">請回想空缺的記憶詞：</p>
+            <p class="cloze-text" style="font-size: 1.1rem; line-height: 1.6; font-weight: 600;">{{ maskedStoryText }}</p>
+          </div>
         </div>
 
         <!-- Answer Reveal Detail -->
@@ -62,6 +68,11 @@
           <div class="association-block mt-12" v-if="pairScene">
             <p class="label">💡 聯想畫面提示：</p>
             <p class="text">{{ pairScene.sceneText }}</p>
+          </div>
+
+          <div class="association-block mt-12" v-if="currentCard.promptType === 'story-cloze' && storyScene">
+            <p class="label">💡 完整故事上下文：</p>
+            <p class="text">{{ storyScene.originalText }}</p>
           </div>
         </div>
       </div>
@@ -134,6 +145,24 @@ const pairScene = computed((): PairScene | undefined => {
   return allPairScenes.find(s => s.fromItemId === currentCard.value?.itemId);
 });
 
+// Load the narrative scene if prompt involves story cloze
+const storyScene = computed((): NarrativeScene | undefined => {
+  if (!currentCard.value || currentCard.value.promptType !== 'story-cloze') return undefined;
+  const allScenes = contentRepo.getNarrativeScenes();
+  return allScenes.find(s => s.itemIds.includes(currentCard.value!.itemId));
+});
+
+const maskedStoryText = computed((): string => {
+  const scene = storyScene.value;
+  const targetItem = item.value;
+  if (!scene || !targetItem) return '';
+  
+  const targetNum = targetItem.number;
+  // Mask original text: e.g. "(61) 老人" -> "(61) [ ❓ ]"
+  const regex = new RegExp(`\\(${parseInt(targetNum)}\\)\\s*[^，。！、；：()]+`);
+  return scene.originalText.replace(regex, `(${targetNum}) [  ❓  ]`);
+});
+
 onMounted(async () => {
   await loadDueCards();
 });
@@ -151,6 +180,7 @@ const getPromptTypeLabel = (type: string): string => {
     case 'number-to-keyword': return '數字 ➔ 聯想詞';
     case 'keyword-to-number': return '聯想詞 ➔ 數字';
     case 'pair-next-item': return '配對聯想 ➔ 下個數字';
+    case 'story-cloze': return '故事填空 ➔ 聯想詞';
     default: return '字卡回想';
   }
 };
