@@ -38,10 +38,34 @@
             </div>
           </div>
 
-          <!-- Scene Image Placeholder -->
-          <div class="image-placeholder mt-16">
-            <span class="image-icon">🖼️</span>
-            <span class="image-label">連鎖想像畫面</span>
+          <!-- Generated illustration -->
+          <div class="image-container mt-16" v-if="hasIllustration(currentPairScene)">
+            <img :src="getIllustrationUrl(currentPairScene)" class="scene-image" alt="聯想畫面插圖" />
+          </div>
+
+          <!-- Premium CSS Gradient Fallback Card -->
+          <div class="card-art-fallback mt-16" v-else>
+            <div class="art-backdrop"></div>
+            <div class="art-glow-ring"></div>
+            
+            <div class="art-content">
+              <div class="art-node from">
+                <span class="art-node-num">{{ currentPairScene.fromItemId.split('-')[1] }}</span>
+                <span class="art-node-kw">{{ currentPairScene.displayFromKeyword }}</span>
+              </div>
+              
+              <div class="art-link">
+                <div class="art-link-line"></div>
+                <span class="art-link-spark">✨</span>
+              </div>
+              
+              <div class="art-node to">
+                <span class="art-node-num">{{ currentPairScene.toItemId.split('-')[1] }}</span>
+                <span class="art-node-kw">{{ currentPairScene.displayToKeyword }}</span>
+              </div>
+            </div>
+            
+            <span class="fallback-tag">🧠 智慧聯想引擎</span>
           </div>
 
           <!-- Scene description - Shown Immediately -->
@@ -186,6 +210,20 @@ const lessonItems = computed(() => {
   const all = contentRepo.getItems();
   return all.filter(i => lesson.value!.itemIds.includes(i.id as any));
 });
+
+const generatedScenes = ['00_01', '01_02', '04_05', '09_10'];
+
+const hasIllustration = (scene: PairScene): boolean => {
+  const fromNum = scene.fromItemId.split('-')[1];
+  const toNum = scene.toItemId.split('-')[1];
+  return generatedScenes.includes(`${fromNum}_${toNum}`);
+};
+
+const getIllustrationUrl = (scene: PairScene): string => {
+  const fromNum = scene.fromItemId.split('-')[1];
+  const toNum = scene.toItemId.split('-')[1];
+  return `${import.meta.env.BASE_URL || '/'}assets/scenes/scene_${fromNum}_${toNum}.png`;
+};
 
 const currentSceneIndex = ref(0);
 const isRevealed = ref(false);
@@ -655,5 +693,140 @@ const startQuizDirect = () => {
 
 .kw-text {
   color: var(--text-primary);
+}
+
+/* Premium AI Illustration & Fallback CSS Art Card */
+.image-container {
+  width: 100%;
+  height: 200px;
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  border: 2px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--bg-secondary);
+}
+
+.scene-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-art-fallback {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  background: radial-gradient(circle at 50% 50%, #2e1065 0%, #0f052d 100%);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  border: 1.5px solid rgba(139, 92, 246, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.art-backdrop {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(from 180deg at 50% 50%, #4f46e5 0deg, #db2777 120deg, #9333ea 240deg, #4f46e5 360deg);
+  animation: rotateBackdrop 25s linear infinite;
+  opacity: 0.12;
+  filter: blur(35px);
+}
+
+@keyframes rotateBackdrop {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.art-glow-ring {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle, rgba(167, 139, 250, 0.15) 0%, transparent 70%);
+  filter: blur(10px);
+}
+
+.art-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.art-node {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 10px 16px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 75px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: transform var(--transition-speed);
+}
+
+.art-node-num {
+  font-size: 1.25rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #a78bfa 0%, #f472b6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.art-node-kw {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #f3f4f6;
+  margin-top: 2px;
+}
+
+.art-link {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 50px;
+}
+
+.art-link-line {
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #4f46e5 0%, #db2777 50%, #9333ea 100%);
+  border-radius: 1px;
+  box-shadow: 0 0 8px rgba(139, 92, 246, 0.5);
+}
+
+.art-link-spark {
+  position: absolute;
+  left: 0;
+  font-size: 0.95rem;
+  animation: travelSpark 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes travelSpark {
+  0% { left: 0%; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { left: 80%; opacity: 0; }
+}
+
+.fallback-tag {
+  position: absolute;
+  bottom: 6px;
+  right: 10px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.5px;
 }
 </style>
