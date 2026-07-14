@@ -20,13 +20,19 @@
           <span class="stat-label">精熟數字</span>
         </div>
       </div>
-      <div class="quick-actions mt-16">
+      <div class="quick-actions mt-16 flex gap-12">
         <button 
-          class="btn btn-primary w-full" 
+          class="btn btn-primary flex-1" 
           :disabled="appStore.dueCardCount === 0"
           @click="startGlobalReview"
         >
           ⏳ 開始複習 ({{ appStore.dueCardCount }} 題)
+        </button>
+        <button 
+          class="btn btn-secondary flex-1" 
+          @click="startGlobalTest"
+        >
+          ✍️ 00-100 全域測驗
         </button>
       </div>
     </div>
@@ -138,6 +144,10 @@ const startQuiz = (lessonId: string) => {
 
 const startGlobalReview = () => {
   router.push({ name: 'review' });
+};
+
+const startGlobalTest = () => {
+  router.push({ name: 'global-test' });
 };
 </script>
 

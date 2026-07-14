@@ -30,6 +30,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../views/ReviewView.vue'),
   },
   {
+    path: '/global-test',
+    name: 'global-test',
+    component: () => import('../views/GlobalTestView.vue'),
+  },
+  {
     path: '/offline',
     name: 'offline',
     component: () => import('../views/OfflineView.vue'),
