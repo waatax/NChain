@@ -1,4 +1,5 @@
 import Dexie, { type Table } from 'dexie';
+import { ContentRepository } from './ContentRepository';
 
 export interface ProgressState {
   lessonId: string;
@@ -145,9 +146,28 @@ export class ProgressRepository {
     rating: 'forgot' | 'hard' | 'good' | 'easy',
     timeSpentMs: number = 0
   ): Promise<ReviewCardState> {
-    const card = await this.db.reviewCards.get(cardId);
+    let card = await this.db.reviewCards.get(cardId);
     if (!card) {
-      throw new Error(`Review card with ID ${cardId} not found`);
+      const parts = cardId.split('_');
+      const itemId = parts[0];
+      const mode = parts[1] as zQuizType;
+      
+      const contentRepo = ContentRepository.getInstance();
+      const lessons = contentRepo.getLessons();
+      const lesson = lessons.find(l => l.itemIds.includes(itemId));
+      const lessonId = lesson ? lesson.id : 'unknown';
+      
+      card = {
+        cardId,
+        itemId,
+        lessonId,
+        promptType: mode,
+        box: 0,
+        dueAt: new Date().toISOString(),
+        streak: 0,
+        lapses: 0,
+        suspended: false
+      };
     }
 
     const oldBox = card.box;
