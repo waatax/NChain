@@ -132,15 +132,21 @@
           <p class="text-muted mt-4">您已學習了 {{ lesson.title }} 的所有記憶點</p>
         </div>
 
-        <div class="recap-content mt-16" v-if="storyRecap">
-          <h4 v-if="storyRecap.title">{{ storyRecap.title }} 總結</h4>
-          
-          <div class="recap-section mt-12" v-if="storyRecap.recapText">
+        <div class="recap-content mt-16">
+          <h4 v-if="storyRecap && storyRecap.title" class="mb-12">{{ storyRecap.title }} 總結</h4>
+          <h4 v-else class="mb-12">課程重點總結</h4>
+
+          <div class="recap-section mt-12">
             <h5>🔍 記憶聯想關鍵點（複習專用）：</h5>
-            <p class="recap-text whitespace-pre">{{ storyRecap.recapText }}</p>
+            <div class="keyword-list mt-8">
+              <div v-for="item in lessonItems" :key="item.id" class="keyword-item-row">
+                <span class="kw-num font-bold">{{ item.number }}</span>
+                <span class="kw-text font-bold">{{ item.canonicalKeyword }}</span>
+              </div>
+            </div>
           </div>
 
-          <div class="recap-section mt-12" v-if="storyRecap.memoryTip">
+          <div class="recap-section mt-12" v-if="storyRecap && storyRecap.memoryTip">
             <h5>💡 記憶小秘訣：</h5>
             <p class="recap-text whitespace-pre">{{ storyRecap.memoryTip }}</p>
           </div>
@@ -174,6 +180,12 @@ const lesson = ref<Lesson | null>(null);
 const pairScenes = ref<PairScene[]>([]);
 const narrativeScenes = ref<NarrativeScene[]>([]);
 const storyRecap = ref<NarrativeStory | null>(null);
+
+const lessonItems = computed(() => {
+  if (!lesson.value) return [];
+  const all = contentRepo.getItems();
+  return all.filter(i => lesson.value!.itemIds.includes(i.id as any));
+});
 
 const currentSceneIndex = ref(0);
 const isRevealed = ref(false);
@@ -611,5 +623,37 @@ const startQuizDirect = () => {
 .py-14 {
   padding-top: 14px;
   padding-bottom: 14px;
+}
+
+/* Dynamic Keyword Grid List */
+.keyword-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 16px;
+  background-color: var(--bg-secondary);
+  padding: 12px 16px;
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--border-color);
+}
+
+.keyword-item-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: 0.95rem;
+}
+
+.kw-num {
+  width: 32px;
+  text-align: center;
+  background-color: var(--primary-glow);
+  color: var(--primary);
+  border-radius: 4px;
+  padding: 1px 4px;
+  font-size: 0.8rem;
+}
+
+.kw-text {
+  color: var(--text-primary);
 }
 </style>
