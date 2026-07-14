@@ -46,7 +46,7 @@
     <!-- QUIZ PLAYER SCREEN -->
     <div v-else-if="gameState === 'playing' && currentQuestion" class="quiz-container">
       <div class="question-meta text-muted text-center mb-12">
-        進度: {{ currentQuestionIndex + 1 }} / {{ questions.length }} | 當前答對: {{ score }} 題
+        進度: {{ currentQuestionIndex + 1 }} / {{ questions.length }} | 當前答對: {{ score }} 題 | ⏱️ 費時: {{ elapsedTime }} 秒
       </div>
 
       <div class="question-card card">
@@ -106,6 +106,18 @@
           <span class="score-denom">/ {{ questions.length }}</span>
         </div>
         <p class="score-text mt-8">答對率: <span class="font-bold">{{ scorePercent }}%</span></p>
+
+        <!-- Timer Statistics -->
+        <div class="timer-stats mt-16 p-12" style="background-color: var(--bg-secondary); border-radius: var(--border-radius-md); display: flex; justify-content: space-around; font-size: 0.9rem;">
+          <div>
+            <span class="text-muted" style="display: block;">⏱️ 總測驗時間</span>
+            <span class="font-bold text-primary" style="font-size: 1.1rem; display: block; margin-top: 4px;">{{ elapsedTime }} 秒</span>
+          </div>
+          <div style="border-left: 1px solid var(--border-color); padding-left: 20px;">
+            <span class="text-muted" style="display: block;">⚡ 平均單題秒數</span>
+            <span class="font-bold text-success" style="font-size: 1.1rem; display: block; margin-top: 4px;">{{ averageTimePerQuestion }} 秒</span>
+          </div>
+        </div>
       </div>
 
       <!-- INCORRECT NUMBERS DETAILS -->
@@ -142,7 +154,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAppStore } from '../stores/app';
 import { contentRepo, progressRepo } from '../repositories';
@@ -183,9 +195,23 @@ const score = ref(0);
 
 const incorrectQuestions = ref<IncorrectRecord[]>([]);
 
+// Timer states
+const startTime = ref<number | null>(null);
+const elapsedTime = ref(0);
+const timerInterval = ref<any>(null);
+
 const scorePercent = computed(() => {
   if (questions.value.length === 0) return 0;
   return Math.round((score.value / questions.value.length) * 100);
+});
+
+const averageTimePerQuestion = computed(() => {
+  if (questions.value.length === 0) return '0.0';
+  return (elapsedTime.value / questions.value.length).toFixed(1);
+});
+
+onUnmounted(() => {
+  if (timerInterval.value) clearInterval(timerInterval.value);
 });
 
 const currentQuestion = computed((): Question | null => {
@@ -199,6 +225,16 @@ const startTest = () => {
   currentQuestionIndex.value = 0;
   selectedOption.value = null;
   isCorrect.value = false;
+
+  // Start Timer
+  startTime.value = Date.now();
+  elapsedTime.value = 0;
+  if (timerInterval.value) clearInterval(timerInterval.value);
+  timerInterval.value = setInterval(() => {
+    if (startTime.value) {
+      elapsedTime.value = Math.floor((Date.now() - startTime.value) / 1000);
+    }
+  }, 1000);
 
   const allItems = contentRepo.getItems();
   // Shuffle all 101 items
@@ -340,6 +376,11 @@ const nextQuestion = () => {
     selectedOption.value = null;
     isCorrect.value = false;
   } else {
+    // Stop Timer
+    if (timerInterval.value) {
+      clearInterval(timerInterval.value);
+      timerInterval.value = null;
+    }
     gameState.value = 'results';
   }
 };
