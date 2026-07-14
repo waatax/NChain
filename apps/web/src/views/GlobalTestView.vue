@@ -110,11 +110,11 @@
         <!-- Timer Statistics -->
         <div class="timer-stats mt-16 p-12" style="background-color: var(--bg-secondary); border-radius: var(--border-radius-md); display: flex; justify-content: space-around; font-size: 0.9rem;">
           <div>
-            <span class="text-muted" style="display: block;">⏱️ 總測驗時間</span>
+            <span class="text-muted" style="display: block;">⏱️ 總答題時間 (s)</span>
             <span class="font-bold text-primary" style="font-size: 1.1rem; display: block; margin-top: 4px;">{{ elapsedTime }} 秒</span>
           </div>
           <div style="border-left: 1px solid var(--border-color); padding-left: 20px;">
-            <span class="text-muted" style="display: block;">⚡ 平均單題秒數</span>
+            <span class="text-muted" style="display: block;">⚡ 平均單題答題時間 (s)</span>
             <span class="font-bold text-success" style="font-size: 1.1rem; display: block; margin-top: 4px;">{{ averageTimePerQuestion }} 秒</span>
           </div>
         </div>
