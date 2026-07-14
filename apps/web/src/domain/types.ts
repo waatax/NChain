@@ -2,12 +2,12 @@ import { z } from 'zod';
 
 export const ImageAssetRefSchema = z.object({
   status: z.enum(["missing", "draft", "approved", "rejected"]),
-  src: z.string().optional(),
-  width: z.number().optional(),
-  height: z.number().optional(),
-  bytes: z.number().optional(),
+  src: z.string().nullish(),
+  width: z.number().nullish(),
+  height: z.number().nullish(),
+  bytes: z.number().nullish(),
   alt: z.string(),
-  promptVersion: z.string().optional(),
+  promptVersion: z.string().nullish(),
 });
 export type ImageAssetRef = z.infer<typeof ImageAssetRefSchema>;
 
@@ -42,14 +42,14 @@ export const PairSceneSchema = z.object({
   displayFromKeyword: z.string(),
   displayToKeyword: z.string(),
   sceneText: z.string(),
-  image: ImageAssetRefSchema.optional(),
+  image: ImageAssetRefSchema.nullish(),
   source: SourceRefSchema,
 });
 export type PairScene = z.infer<typeof PairSceneSchema>;
 
 export const StoryTokenSchema = z.object({
   text: z.string(),
-  itemId: z.string().optional(),
+  itemId: z.string().nullish(),
 });
 export type StoryToken = z.infer<typeof StoryTokenSchema>;
 
@@ -62,7 +62,7 @@ export const NarrativeSceneSchema = z.object({
   originalText: z.string(),
   itemIds: z.array(z.string()),
   tokens: z.array(StoryTokenSchema),
-  image: ImageAssetRefSchema.optional(),
+  image: ImageAssetRefSchema.nullish(),
   source: SourceRefSchema,
 });
 export type NarrativeScene = z.infer<typeof NarrativeSceneSchema>;
@@ -72,8 +72,8 @@ export const NarrativeStorySchema = z.object({
   lessonId: z.string(),
   title: z.string(),
   sceneIds: z.array(z.string()),
-  recapText: z.string().optional(),
-  memoryTip: z.string().optional(),
+  recapText: z.string().nullish(),
+  memoryTip: z.string().nullish(),
 });
 export type NarrativeStory = z.infer<typeof NarrativeStorySchema>;
 
@@ -86,7 +86,7 @@ export const LessonSchema = z.object({
   mode: z.enum(["pair", "narrative"]),
   itemIds: z.array(z.string()),
   sceneIds: z.array(z.string()),
-  summary: z.string().optional(),
+  summary: z.string().nullish(),
   order: z.number(),
 });
 export type Lesson = z.infer<typeof LessonSchema>;
