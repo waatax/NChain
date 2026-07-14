@@ -44,7 +44,7 @@ jobs:
         run: |
           mkdir -p apps/web/public/data
           mkdir -p reports
-          python -m scripts.etl.extract_workbook --input data-source/數字鎖鏈.xlsx --output apps/web/public/data --report reports/etl-report.json --strict
+          python -m scripts.etl.extract_workbook --input 數字鎖鏈.xlsx --output apps/web/public/data --report reports/etl-report.json --strict
 
       - name: Build Web App 🏗️
         run: |
