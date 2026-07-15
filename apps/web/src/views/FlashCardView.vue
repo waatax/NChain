@@ -62,8 +62,8 @@
 
           <!-- BACK SIDE (Answer) -->
           <div class="card-face back" @click.stop="toggleFlip">
-            <!-- Icon Graphic or Placeholder -->
-            <div class="card-icon-container mb-16">
+            <!-- Icon Graphic or Placeholder (Now Main Visual Focus) -->
+            <div class="card-icon-container">
               <img 
                 v-if="hasIcon(currentItem.id)" 
                 :src="getIconUrl(currentItem.id)" 
@@ -75,12 +75,14 @@
               </div>
             </div>
 
-            <!-- Meta info -->
-            <span class="back-number">{{ currentItem.number }}</span>
-            <h2 class="back-keyword mt-4">{{ currentItem.canonicalKeyword }}</h2>
+            <!-- Meta info Row (Number + Keyword) -->
+            <div class="back-meta-row mt-12">
+              <span class="back-number">{{ currentItem.number }}</span>
+              <h2 class="back-keyword">{{ currentItem.canonicalKeyword }}</h2>
+            </div>
             
             <!-- Memory Hint Association -->
-            <div class="back-association mt-16" v-if="associationText">
+            <div class="back-association mt-12" v-if="associationText">
               <span class="assoc-label">💡 聯想故事：</span>
               <p class="assoc-text">{{ associationText }}</p>
             </div>
@@ -411,23 +413,24 @@ onUnmounted(() => {
 
 /* Card Back Elements */
 .card-icon-container {
-  width: 90px;
-  height: 90px;
+  width: 100%;
+  height: 180px;
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-bottom: 8px;
 }
 
 .card-icon-img {
-  width: 82px;
-  height: 82px;
+  width: 170px;
+  height: 170px;
   object-fit: contain;
-  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.15));
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
 }
 
 .card-icon-placeholder {
-  width: 72px;
-  height: 72px;
+  width: 120px;
+  height: 120px;
   background: linear-gradient(135deg, var(--bg-card) 0%, var(--border-color) 100%);
   border-radius: 50%;
   display: flex;
@@ -438,43 +441,51 @@ onUnmounted(() => {
 }
 
 .card-placeholder-char {
-  font-size: 2.2rem;
+  font-size: 3rem;
   font-weight: 800;
   color: var(--text-secondary);
 }
 
+.back-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
 .back-number {
-  font-size: 1.35rem;
+  font-size: 1.2rem;
   font-weight: 900;
   color: var(--primary);
   background: rgba(139, 92, 246, 0.1);
-  padding: 2px 10px;
-  border-radius: 8px;
+  padding: 2px 8px;
+  border-radius: 6px;
 }
 
 .back-keyword {
-  font-size: 2.2rem;
+  font-size: 1.8rem;
   font-weight: 800;
   color: var(--text-primary);
   letter-spacing: 0.5px;
+  margin: 0;
 }
 
 .back-association {
   background: rgba(255, 255, 255, 0.04);
-  border-radius: 16px;
-  padding: 12px 16px;
+  border-radius: 12px;
+  padding: 8px 12px;
   width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .assoc-label {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 700;
   color: var(--text-muted);
 }
 
 .assoc-text {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--text-secondary);
   line-height: 1.4;
   margin-top: 4px;
