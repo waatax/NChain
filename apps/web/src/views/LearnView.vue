@@ -231,7 +231,7 @@ const lessonItems = computed(() => {
   return all.filter(i => lesson.value!.itemIds.includes(i.id as any));
 });
 
-const generatedScenes = [];
+const generatedScenes: string[] = [];
 
 const hasIllustration = (scene: PairScene): boolean => {
   const fromNum = scene.fromItemId.split('-')[1];
