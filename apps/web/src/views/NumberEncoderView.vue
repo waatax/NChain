@@ -41,38 +41,30 @@
         <span class="segment-rule text-muted text-xs">自動切分規則：每兩位數為一組記憶點</span>
       </div>
 
-      <!-- Scrollable Horizontal Mnemonic Chain -->
-      <div class="mnemonic-chain-wrapper card p-24 mb-24">
-        <div class="mnemonic-chain-scroll">
-          <div v-for="(seg, idx) in encodedSegments" :key="idx" class="chain-node-wrapper">
-            <!-- Node Card -->
-            <div class="chain-node card">
-              <span class="node-index">#{{ idx + 1 }}</span>
-              
-              <!-- Graphic / Placeholder -->
-              <div class="node-graphic-container mb-12">
-                <img 
-                  v-if="hasIcon(seg.itemId)" 
-                  :src="getIconUrl(seg.itemId)" 
-                  @error="handleIconError(seg.itemId)"
-                  class="node-graphic-img" 
-                  alt="icon" 
-                />
-                <div v-else class="node-graphic-placeholder">
-                  <span class="node-placeholder-char">{{ seg.keyword ? seg.keyword[0] : '？' }}</span>
-                </div>
+      <!-- Multi-row Grid: 3 cards per row -->
+      <div class="mnemonic-grid mb-24">
+        <div v-for="(seg, idx) in encodedSegments" :key="idx" class="grid-node-wrapper">
+          <!-- Node Card -->
+          <div class="chain-node card">
+            <span class="node-index">#{{ idx + 1 }}</span>
+            
+            <!-- Graphic / Placeholder -->
+            <div class="node-graphic-container mb-8">
+              <img 
+                v-if="hasIcon(seg.itemId)" 
+                :src="getIconUrl(seg.itemId)" 
+                @error="handleIconError(seg.itemId)"
+                class="node-graphic-img" 
+                alt="icon" 
+              />
+              <div v-else class="node-graphic-placeholder">
+                <span class="node-placeholder-char">{{ seg.keyword ? seg.keyword[0] : '？' }}</span>
               </div>
-
-              <!-- Info -->
-              <span class="node-number">{{ seg.number }}</span>
-              <span class="node-keyword mt-4">{{ seg.keyword || '未定義' }}</span>
             </div>
 
-            <!-- Transition Connector (Arrow) -->
-            <div v-if="idx < encodedSegments.length - 1" class="chain-connector">
-              <span class="connector-arrow">➔</span>
-              <span class="connector-spark">✨</span>
-            </div>
+            <!-- Info -->
+            <span class="node-number">{{ seg.number }}</span>
+            <span class="node-keyword mt-4">{{ seg.keyword || '未定義' }}</span>
           </div>
         </div>
       </div>
@@ -225,28 +217,22 @@ const goBack = () => {
 }
 
 /* Horizontal Chaining Mnemonic Strip */
-.mnemonic-chain-wrapper {
-  overflow-x: auto;
-  border: 1px solid var(--border-color);
+.mnemonic-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
 }
 
-.mnemonic-chain-scroll {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding-bottom: 8px;
-  min-width: max-content;
-}
-
-.chain-node-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 16px;
+@media (max-width: 480px) {
+  .mnemonic-grid {
+    gap: 8px;
+  }
 }
 
 .chain-node {
-  width: 130px;
-  padding: 16px 12px;
+  width: 100%;
+  max-width: 140px;
+  padding: 12px 6px;
   background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
   border: 1.5px solid var(--border-color);
   border-radius: 16px;
@@ -255,6 +241,7 @@ const goBack = () => {
   align-items: center;
   position: relative;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin: 0 auto;
 }
 
 .node-index {
@@ -313,33 +300,7 @@ const goBack = () => {
   color: var(--text-primary);
 }
 
-/* Connector */
-.chain-connector {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  width: 32px;
-}
 
-.connector-arrow {
-  font-size: 1.3rem;
-  color: var(--text-muted);
-  font-weight: 900;
-}
-
-.connector-spark {
-  font-size: 0.7rem;
-  position: absolute;
-  top: -6px;
-  animation: floatSpark 2s ease-in-out infinite;
-}
-
-@keyframes floatSpark {
-  0%, 100% { transform: translateY(0); opacity: 0.5; }
-  50% { transform: translateY(-4px); opacity: 1; }
-}
 
 /* Chaining Suggestion */
 .story-helper-card {
