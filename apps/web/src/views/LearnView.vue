@@ -459,16 +459,16 @@ const startQuizDirect = () => {
   flex-direction: column;
   align-items: center;
   background-color: var(--bg-secondary);
-  padding: 12px 8px;
+  padding: 16px 8px;
   border-radius: var(--border-radius-md);
-  width: 110px;
-  min-height: 125px;
+  width: 135px;
+  min-height: 170px;
   justify-content: center;
 }
 
 .item-icon-img {
-  width: 52px;
-  height: 52px;
+  width: 82px;
+  height: 82px;
   object-fit: contain;
   margin-bottom: 6px;
 }
@@ -886,8 +886,8 @@ const startQuizDirect = () => {
 
 /* Icon Placeholders */
 .item-icon-placeholder {
-  width: 52px;
-  height: 52px;
+  width: 82px;
+  height: 82px;
   background: linear-gradient(135deg, var(--bg-card) 0%, var(--border-color) 100%);
   border-radius: 50%;
   display: flex;
@@ -899,7 +899,7 @@ const startQuizDirect = () => {
 }
 
 .placeholder-char {
-  font-size: 1.4rem;
+  font-size: 2.2rem;
   font-weight: 800;
   color: var(--text-secondary);
 }
