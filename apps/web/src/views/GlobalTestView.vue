@@ -347,10 +347,8 @@ const selectOption = async (opt: QuizOption) => {
   }
   await appStore.refreshReviewCounts();
 
-  // Auto-advance to next question after 800ms
-  setTimeout(() => {
-    nextQuestion();
-  }, 800);
+  // Auto-advance to next question instantly
+  nextQuestion();
 };
 
 const nextQuestion = () => {
