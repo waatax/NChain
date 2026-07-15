@@ -40,6 +40,12 @@
         >
           🃏 卡牌複習 (Flash Cards)
         </button>
+        <button 
+          class="btn btn-secondary" 
+          @click="startNumberEncoder"
+        >
+          🔗 數字編碼器 (Encoder)
+        </button>
       </div>
     </div>
 
@@ -158,6 +164,10 @@ const startGlobalTest = () => {
 
 const startFlashCards = () => {
   router.push({ name: 'flash-cards' });
+};
+
+const startNumberEncoder = () => {
+  router.push({ name: 'number-encoder' });
 };
 </script>
 

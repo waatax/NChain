@@ -1,0 +1,357 @@
+<template>
+  <div class="container py-24">
+    <!-- Header Nav -->
+    <div class="header-nav mb-24">
+      <button class="btn btn-secondary back-btn" @click="goBack">
+        ◀ 返回主頁
+      </button>
+      <h2 class="page-title mt-12">🔗 數字編碼記憶器 (Number Encoder)</h2>
+    </div>
+
+    <!-- Input Card -->
+    <div class="card p-24 mb-24 max-w-2xl mx-auto">
+      <h3 class="input-title">輸入欲記憶的任意數字串</h3>
+      <p class="text-muted mt-4">輸入如電話號碼、身分證字號、或密碼，系統會自動切成雙位數，並排出對應的聯想圖卡幫助您快速串聯記憶。</p>
+      
+      <div class="input-container mt-16 flex gap-12">
+        <input 
+          type="text" 
+          v-model="inputString" 
+          placeholder="例如：0912345678 或 12345" 
+          class="number-input"
+          @input="sanitizeInput"
+        />
+        <button class="btn btn-primary px-24" @click="clearInput" :disabled="!inputString">
+          清除
+        </button>
+      </div>
+
+      <div class="quick-examples mt-12 flex gap-8 items-center flex-wrap">
+        <span class="text-muted text-xs">熱門範例：</span>
+        <button class="example-tag" @click="setExample('1234567890')">1234567890</button>
+        <button class="example-tag" @click="setExample('0912345678')">電話號碼</button>
+        <button class="example-tag" @click="setExample('5201314')">5201314</button>
+      </div>
+    </div>
+
+    <!-- RESULTS DISPLAY -->
+    <div v-if="encodedSegments.length > 0" class="results-container max-w-4xl mx-auto">
+      <div class="results-header mb-16 flex justify-between items-center">
+        <h4 class="section-title">🧩 編碼圖卡鏈結 (共 {{ encodedSegments.length }} 組)</h4>
+        <span class="segment-rule text-muted text-xs">自動切分規則：每兩位數為一組記憶點</span>
+      </div>
+
+      <!-- Scrollable Horizontal Mnemonic Chain -->
+      <div class="mnemonic-chain-wrapper card p-24 mb-24">
+        <div class="mnemonic-chain-scroll">
+          <div v-for="(seg, idx) in encodedSegments" :key="idx" class="chain-node-wrapper">
+            <!-- Node Card -->
+            <div class="chain-node card">
+              <span class="node-index">#{{ idx + 1 }}</span>
+              
+              <!-- Graphic / Placeholder -->
+              <div class="node-graphic-container mb-12">
+                <img 
+                  v-if="hasIcon(seg.itemId)" 
+                  :src="getIconUrl(seg.itemId)" 
+                  class="node-graphic-img" 
+                  alt="icon" 
+                />
+                <div v-else class="node-graphic-placeholder">
+                  <span class="node-placeholder-char">{{ seg.keyword ? seg.keyword[0] : '？' }}</span>
+                </div>
+              </div>
+
+              <!-- Info -->
+              <span class="node-number">{{ seg.number }}</span>
+              <span class="node-keyword mt-4">{{ seg.keyword || '未定義' }}</span>
+            </div>
+
+            <!-- Transition Connector (Arrow) -->
+            <div v-if="idx < encodedSegments.length - 1" class="chain-connector">
+              <span class="connector-arrow">➔</span>
+              <span class="connector-spark">✨</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chaining Story Helper -->
+      <div class="story-helper-card card p-24">
+        <h3 class="story-title flex items-center gap-8">
+          <span>🧠 記憶串聯建議 (Memory Chaining)</span>
+        </h3>
+        <p class="text-secondary mt-8 leading-relaxed">
+          試著將上述圖卡順序，在腦海中想像成一個荒謬、有趣的連續劇畫面。
+          例如：
+          <span class="font-bold text-primary">
+            {{ encodedSegments.map(s => `【${s.keyword}】`).join(' ➔ ') }}
+          </span>。
+          想像一個動態情節將它們串在一起，動作越誇張、越不合邏輯，大腦就越容易留下永久記憶！
+        </p>
+      </div>
+    </div>
+    
+    <!-- EMPTY STATE -->
+    <div v-else class="empty-results text-center py-48 card max-w-2xl mx-auto">
+      <span class="empty-icon">🔗</span>
+      <p class="text-muted mt-12">請在上方輸入框輸入數字，系統將立刻為您生成記憶編碼鏈結。</p>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { contentRepo } from '../repositories';
+
+const router = useRouter();
+const inputString = ref('');
+
+// Helper to determine active transparent watercolor icons (00-16)
+const presentIcons = Array.from({ length: 17 }, (_, i) => String(i).padStart(2, '0'));
+
+const hasIcon = (itemId: string): boolean => {
+  if (!itemId) return false;
+  const num = itemId.split('-')[1];
+  return presentIcons.includes(num);
+};
+
+const getIconUrl = (itemId: string): string => {
+  const num = itemId.split('-')[1];
+  return `${import.meta.env.BASE_URL || '/'}assets/icons/icon_${num}.png`;
+};
+
+// Filter input to only allow numbers
+const sanitizeInput = () => {
+  inputString.value = inputString.value.replace(/\D/g, '');
+};
+
+const clearInput = () => {
+  inputString.value = '';
+};
+
+const setExample = (val: string) => {
+  inputString.value = val;
+};
+
+// Segments calculation
+interface EncodedSegment {
+  number: string;
+  keyword: string;
+  itemId: string;
+}
+
+const encodedSegments = computed<EncodedSegment[]>(() => {
+  const clean = inputString.value.trim();
+  if (!clean) return [];
+
+  const segments: string[] = [];
+  let i = 0;
+  while (i < clean.length) {
+    if (i === clean.length - 1) {
+      // Odd digit leftover, pad with a leading '0' as requested (e.g. 5 -> 05)
+      segments.push('0' + clean[i]);
+      i++;
+    } else {
+      segments.push(clean.substring(i, i + 2));
+      i += 2;
+    }
+  }
+
+  const allItems = contentRepo.getItems();
+
+  return segments.map(num => {
+    // Match segment to mnemonic item (number pad e.g. 05)
+    const matched = allItems.find(item => item.number === num);
+    return {
+      number: num,
+      keyword: matched ? matched.canonicalKeyword : '未知',
+      itemId: matched ? matched.id : ''
+    };
+  });
+});
+
+const goBack = () => {
+  router.push('/');
+};
+</script>
+
+<style scoped>
+.number-input {
+  flex: 1;
+  padding: 14px 18px;
+  font-size: 1.15rem;
+  border-radius: 12px;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-family: monospace;
+  letter-spacing: 2px;
+  transition: all var(--transition-speed);
+}
+
+.number-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+}
+
+.quick-examples {
+  font-size: 0.85rem;
+}
+
+.example-tag {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 2px 8px;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+}
+
+.example-tag:hover {
+  background: rgba(139, 92, 246, 0.1);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* Horizontal Chaining Mnemonic Strip */
+.mnemonic-chain-wrapper {
+  overflow-x: auto;
+  border: 1px solid var(--border-color);
+}
+
+.mnemonic-chain-scroll {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 8px;
+  min-width: max-content;
+}
+
+.chain-node-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.chain-node {
+  width: 130px;
+  padding: 16px 12px;
+  background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
+  border: 1.5px solid var(--border-color);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.node-index {
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.node-graphic-container {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.node-graphic-img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
+.node-graphic-placeholder {
+  width: 52px;
+  height: 52px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid var(--border-color);
+}
+
+.node-placeholder-char {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+}
+
+.node-number {
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: var(--primary);
+  background: rgba(139, 92, 246, 0.08);
+  padding: 1px 8px;
+  border-radius: 6px;
+}
+
+.node-keyword {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+/* Connector */
+.chain-connector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 32px;
+}
+
+.connector-arrow {
+  font-size: 1.3rem;
+  color: var(--text-muted);
+  font-weight: 900;
+}
+
+.connector-spark {
+  font-size: 0.7rem;
+  position: absolute;
+  top: -6px;
+  animation: floatSpark 2s ease-in-out infinite;
+}
+
+@keyframes floatSpark {
+  0%, 100% { transform: translateY(0); opacity: 0.5; }
+  50% { transform: translateY(-4px); opacity: 1; }
+}
+
+/* Chaining Suggestion */
+.story-helper-card {
+  border: 1px solid var(--border-color);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.02) 0%, rgba(0, 0, 0, 0) 100%);
+}
+
+.story-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.empty-results {
+  border: 1.5px dashed var(--border-color);
+  background: transparent;
+}
+
+.empty-icon {
+  font-size: 2.5rem;
+}
+</style>

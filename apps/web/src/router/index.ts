@@ -40,6 +40,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../views/FlashCardView.vue'),
   },
   {
+    path: '/number-encoder',
+    name: 'number-encoder',
+    component: () => import('../views/NumberEncoderView.vue'),
+  },
+  {
     path: '/offline',
     name: 'offline',
     component: () => import('../views/OfflineView.vue'),
