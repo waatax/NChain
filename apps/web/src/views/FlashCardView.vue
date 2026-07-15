@@ -81,18 +81,18 @@
               <h2 class="back-keyword">{{ currentItem.canonicalKeyword }}</h2>
             </div>
             
-            <!-- Memory Hint Association -->
-            <div class="back-association mt-12" v-if="associationText">
-              <span class="assoc-label">💡 聯想故事：</span>
-              <p class="assoc-text">{{ associationText }}</p>
-            </div>
-
             <div class="card-tap-cue mt-auto">
               <span class="cue-icon">🔄</span>
               <span>點擊翻回正面</span>
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- Memory Hint Association (Shown outside the card when flipped) -->
+      <div class="back-association mb-24" v-if="isFlipped && associationText">
+        <span class="assoc-label">💡 聯想故事：</span>
+        <p class="assoc-text">{{ associationText }}</p>
       </div>
 
       <!-- Card Actions / Controls -->
@@ -414,7 +414,7 @@ onUnmounted(() => {
 /* Card Back Elements */
 .card-icon-container {
   width: 100%;
-  height: 180px;
+  height: 270px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -422,26 +422,26 @@ onUnmounted(() => {
 }
 
 .card-icon-img {
-  width: 170px;
-  height: 170px;
+  width: 250px;
+  height: 250px;
   object-fit: contain;
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
+  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.25));
 }
 
 .card-icon-placeholder {
-  width: 120px;
-  height: 120px;
+  width: 200px;
+  height: 200px;
   background: linear-gradient(135deg, var(--bg-card) 0%, var(--border-color) 100%);
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 1.5px solid var(--border-color);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 2px solid var(--border-color);
+  box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.08);
 }
 
 .card-placeholder-char {
-  font-size: 3rem;
+  font-size: 5rem;
   font-weight: 800;
   color: var(--text-secondary);
 }
