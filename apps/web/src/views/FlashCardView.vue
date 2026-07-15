@@ -67,6 +67,7 @@
               <img 
                 v-if="hasIcon(currentItem.id)" 
                 :src="getIconUrl(currentItem.id)" 
+                @error="handleIconError(currentItem.id)"
                 class="card-icon-img" 
                 alt="icon" 
               />
@@ -162,12 +163,16 @@ const ranges = [
   { label: '00 - 100 全域', desc: '所有 101 個記憶點', filter: () => true }
 ];
 
-// Helper to determine active transparent watercolor icons (00-16)
-const presentIcons = Array.from({ length: 17 }, (_, i) => String(i).padStart(2, '0'));
+const failedIcons = ref<Set<string>>(new Set());
+
+const handleIconError = (itemId: string) => {
+  const num = itemId.split('-')[1];
+  failedIcons.value.add(num);
+};
 
 const hasIcon = (itemId: string): boolean => {
   const num = itemId.split('-')[1];
-  return presentIcons.includes(num);
+  return !failedIcons.value.has(num);
 };
 
 const getIconUrl = (itemId: string): string => {

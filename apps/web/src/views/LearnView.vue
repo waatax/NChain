@@ -26,7 +26,7 @@
           <!-- FRONT SIDE (Prompt) -->
           <div class="side front">
             <div class="item-display from">
-              <img v-if="hasIcon(currentPairScene.fromItemId)" :src="getIconUrl(currentPairScene.fromItemId)" class="item-icon-img" alt="icon" />
+              <img v-if="hasIcon(currentPairScene.fromItemId)" :src="getIconUrl(currentPairScene.fromItemId)" @error="handleIconError(currentPairScene.fromItemId)" class="item-icon-img" alt="icon" />
               <div v-else class="item-icon-placeholder">
                 <span class="placeholder-char">{{ currentPairScene.displayFromKeyword[0] }}</span>
               </div>
@@ -39,7 +39,7 @@
             <div class="transition-arrow">➔</div>
             
             <div class="item-display to">
-              <img v-if="hasIcon(currentPairScene.toItemId)" :src="getIconUrl(currentPairScene.toItemId)" class="item-icon-img" alt="icon" />
+              <img v-if="hasIcon(currentPairScene.toItemId)" :src="getIconUrl(currentPairScene.toItemId)" @error="handleIconError(currentPairScene.toItemId)" class="item-icon-img" alt="icon" />
               <div v-else class="item-icon-placeholder">
                 <span class="placeholder-char">{{ currentPairScene.displayToKeyword[0] }}</span>
               </div>
@@ -62,7 +62,7 @@
             
             <div class="art-content">
               <div class="art-node from">
-                <img v-if="hasIcon(currentPairScene.fromItemId)" :src="getIconUrl(currentPairScene.fromItemId)" class="art-node-icon" alt="icon" />
+                <img v-if="hasIcon(currentPairScene.fromItemId)" :src="getIconUrl(currentPairScene.fromItemId)" @error="handleIconError(currentPairScene.fromItemId)" class="art-node-icon" alt="icon" />
                 <div v-else class="art-node-icon-placeholder">
                   <span class="art-placeholder-char">{{ currentPairScene.displayFromKeyword[0] }}</span>
                 </div>
@@ -76,7 +76,7 @@
               </div>
               
               <div class="art-node to">
-                <img v-if="hasIcon(currentPairScene.toItemId)" :src="getIconUrl(currentPairScene.toItemId)" class="art-node-icon" alt="icon" />
+                <img v-if="hasIcon(currentPairScene.toItemId)" :src="getIconUrl(currentPairScene.toItemId)" @error="handleIconError(currentPairScene.toItemId)" class="art-node-icon" alt="icon" />
                 <div v-else class="art-node-icon-placeholder">
                   <span class="art-placeholder-char">{{ currentPairScene.displayToKeyword[0] }}</span>
                 </div>
@@ -250,11 +250,16 @@ const getIconUrl = (itemId: string): string => {
   return `${import.meta.env.BASE_URL || '/'}assets/icons/icon_${num}.png`;
 };
 
-const presentIcons = Array.from({ length: 17 }, (_, i) => String(i).padStart(2, '0'));
+const failedIcons = ref<Set<string>>(new Set());
+
+const handleIconError = (itemId: string) => {
+  const num = itemId.split('-')[1];
+  failedIcons.value.add(num);
+};
 
 const hasIcon = (itemId: string): boolean => {
   const num = itemId.split('-')[1];
-  return presentIcons.includes(num);
+  return !failedIcons.value.has(num);
 };
 
 const currentSceneIndex = ref(0);

@@ -54,6 +54,7 @@
                 <img 
                   v-if="hasIcon(seg.itemId)" 
                   :src="getIconUrl(seg.itemId)" 
+                  @error="handleIconError(seg.itemId)"
                   class="node-graphic-img" 
                   alt="icon" 
                 />
@@ -108,13 +109,18 @@ import { contentRepo } from '../repositories';
 const router = useRouter();
 const inputString = ref('');
 
-// Helper to determine active transparent watercolor icons (00-16)
-const presentIcons = Array.from({ length: 17 }, (_, i) => String(i).padStart(2, '0'));
+const failedIcons = ref<Set<string>>(new Set());
+
+const handleIconError = (itemId: string) => {
+  if (!itemId) return;
+  const num = itemId.split('-')[1];
+  failedIcons.value.add(num);
+};
 
 const hasIcon = (itemId: string): boolean => {
   if (!itemId) return false;
   const num = itemId.split('-')[1];
-  return presentIcons.includes(num);
+  return !failedIcons.value.has(num);
 };
 
 const getIconUrl = (itemId: string): string => {
