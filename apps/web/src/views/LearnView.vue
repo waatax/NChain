@@ -231,7 +231,7 @@ const lessonItems = computed(() => {
   return all.filter(i => lesson.value!.itemIds.includes(i.id as any));
 });
 
-const generatedScenes = ['00_01', '01_02', '04_05', '09_10'];
+const generatedScenes = [];
 
 const hasIllustration = (scene: PairScene): boolean => {
   const fromNum = scene.fromItemId.split('-')[1];
@@ -250,9 +250,7 @@ const getIconUrl = (itemId: string): string => {
   return `${import.meta.env.BASE_URL || '/'}assets/icons/icon_${num}.png`;
 };
 
-const presentIcons = [
-  '00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'
-];
+const presentIcons = Array.from({ length: 17 }, (_, i) => String(i).padStart(2, '0'));
 
 const hasIcon = (itemId: string): boolean => {
   const num = itemId.split('-')[1];

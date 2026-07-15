@@ -35,6 +35,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../views/GlobalTestView.vue'),
   },
   {
+    path: '/flash-cards',
+    name: 'flash-cards',
+    component: () => import('../views/FlashCardView.vue'),
+  },
+  {
     path: '/offline',
     name: 'offline',
     component: () => import('../views/OfflineView.vue'),

@@ -20,19 +20,25 @@
           <span class="stat-label">精熟數字</span>
         </div>
       </div>
-      <div class="quick-actions mt-16 flex gap-12">
+      <div class="quick-actions mt-16">
         <button 
-          class="btn btn-primary flex-1" 
+          class="btn btn-primary" 
           :disabled="appStore.dueCardCount === 0"
           @click="startGlobalReview"
         >
           ⏳ 開始複習 ({{ appStore.dueCardCount }} 題)
         </button>
         <button 
-          class="btn btn-secondary flex-1" 
+          class="btn btn-secondary" 
           @click="startGlobalTest"
         >
-          ✍️ 00-100 全域測驗
+          ✍️ 全域測驗
+        </button>
+        <button 
+          class="btn btn-secondary" 
+          @click="startFlashCards"
+        >
+          🃏 卡牌複習 (Flash Cards)
         </button>
       </div>
     </div>
@@ -148,6 +154,10 @@ const startGlobalReview = () => {
 
 const startGlobalTest = () => {
   router.push({ name: 'global-test' });
+};
+
+const startFlashCards = () => {
+  router.push({ name: 'flash-cards' });
 };
 </script>
 
@@ -291,5 +301,11 @@ const startGlobalTest = () => {
 
 .w-full {
   width: 100%;
+}
+
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
 }
 </style>
