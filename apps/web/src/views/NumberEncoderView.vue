@@ -63,8 +63,10 @@
             </div>
 
             <!-- Info -->
-            <span class="node-number">{{ seg.number }}</span>
-            <span class="node-keyword mt-4">{{ seg.keyword || '未定義' }}</span>
+            <div class="node-meta mt-8">
+              <span class="node-number">{{ seg.number }}</span>
+              <span class="node-keyword">{{ seg.keyword || '未定義' }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -254,23 +256,23 @@ const goBack = () => {
 }
 
 .node-graphic-container {
-  width: 64px;
-  height: 64px;
+  width: 100%;
+  height: 105px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .node-graphic-img {
-  width: 56px;
-  height: 56px;
+  width: 96px;
+  height: 96px;
   object-fit: contain;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.15));
 }
 
 .node-graphic-placeholder {
-  width: 52px;
-  height: 52px;
+  width: 84px;
+  height: 84px;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 50%;
   display: flex;
@@ -280,24 +282,32 @@ const goBack = () => {
 }
 
 .node-placeholder-char {
-  font-size: 1.4rem;
+  font-size: 2.2rem;
   font-weight: 800;
   color: var(--text-secondary);
 }
 
+.node-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+}
+
 .node-number {
-  font-size: 1.35rem;
+  font-size: 0.75rem;
   font-weight: 900;
   color: var(--primary);
   background: rgba(139, 92, 246, 0.08);
-  padding: 1px 8px;
-  border-radius: 6px;
+  padding: 1px 5px;
+  border-radius: 4px;
 }
 
 .node-keyword {
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   font-weight: 800;
-  color: var(--text-primary);
+  color: var(--text-secondary);
 }
 
 
