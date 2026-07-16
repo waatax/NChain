@@ -1,120 +1,128 @@
 <template>
-  <div class="container">
+  <div class="container learn-view-container">
     <!-- Header with progress -->
-    <div class="learn-header mb-16" v-if="lesson">
+    <div class="learn-header mb-24" v-if="lesson">
       <div class="header-top">
-        <button class="back-btn" @click="goBack">◀ 返回</button>
+        <button class="back-btn" @click="goBack">
+          <span class="back-icon">◀</span> 返回
+        </button>
         <span class="lesson-title">{{ lesson.title }}</span>
       </div>
-      <div class="progress-bar-container mt-8">
+      <div class="progress-bar-container mt-12">
         <div class="progress-bar" :style="{ width: `${progressPercent}%` }"></div>
       </div>
-      <div class="progress-text mt-4 text-muted text-center">
+      <div class="progress-text mt-6 text-muted text-center">
         進度: {{ currentSceneIndex + 1 }} / {{ totalScenes }}
       </div>
     </div>
 
     <!-- Loading State -->
-    <div v-if="!lesson" class="card text-center">
-      <p>正在加載課程...</p>
+    <div v-if="!lesson" class="loading-card card text-center p-48">
+      <div class="spinner"></div>
+      <p class="text-muted mt-16">正在加載課程...</p>
     </div>
 
-    <!-- PAIR MODE PLAYER (Flashcards) -->
-    <div v-else-if="lesson.mode === 'pair' && currentPairScene" class="player-container">
-      <div class="flashcard card">
-        <div class="card-sides">
-          <!-- FRONT SIDE (Prompt) -->
-          <div class="side front">
-            <div class="item-display from">
-              <img v-if="hasIcon(currentPairScene.fromItemId)" :src="getIconUrl(currentPairScene.fromItemId)" @error="handleIconError(currentPairScene.fromItemId)" class="item-icon-img" alt="icon" />
-              <div v-else class="item-icon-placeholder">
-                <span class="placeholder-char">{{ currentPairScene.displayFromKeyword[0] }}</span>
-              </div>
-              <div class="item-display-meta">
-                <span class="num">{{ currentPairScene.fromItemId.split('-')[1] }}</span>
-                <span class="kw">{{ currentPairScene.displayFromKeyword }}</span>
+    <!-- PAIR MODE PLAYER -->
+    <div v-else-if="lesson.mode === 'pair' && currentPairScene && !isLessonCompleted" class="player-container">
+      <div class="flashcard-wrapper">
+        <!-- CARD DISPLAY -->
+        <div class="flashcard-inner">
+          
+          <!-- FRONT SIDE (From Item) -->
+          <div class="card-side card-front card" v-if="!isRevealed">
+            <span class="card-indicator">起點字 / 提示</span>
+            
+            <div class="graphic-container">
+              <img 
+                v-if="hasIcon(currentPairScene.fromItemId)" 
+                :src="getIconUrl(currentPairScene.fromItemId)" 
+                @error="handleIconError(currentPairScene.fromItemId)" 
+                class="large-icon-img" 
+                alt="icon" 
+              />
+              <div v-else class="large-icon-placeholder">
+                <span class="placeholder-char-large">{{ currentPairScene.displayFromKeyword[0] }}</span>
               </div>
             </div>
             
-            <div class="transition-arrow">➔</div>
-            
-            <div class="item-display to">
-              <img v-if="hasIcon(currentPairScene.toItemId)" :src="getIconUrl(currentPairScene.toItemId)" @error="handleIconError(currentPairScene.toItemId)" class="item-icon-img" alt="icon" />
-              <div v-else class="item-icon-placeholder">
-                <span class="placeholder-char">{{ currentPairScene.displayToKeyword[0] }}</span>
-              </div>
-              <div class="item-display-meta">
-                <span class="num">{{ currentPairScene.toItemId.split('-')[1] }}</span>
-                <span class="kw">{{ currentPairScene.displayToKeyword }}</span>
-              </div>
+            <div class="meta-container mt-16">
+              <span class="item-number-badge">{{ currentPairScene.fromItemId.split('-')[1] }}</span>
+              <span class="item-keyword-large">{{ currentPairScene.displayFromKeyword }}</span>
             </div>
           </div>
 
-          <!-- Generated illustration -->
-          <div class="image-container mt-16" v-if="hasIllustration(currentPairScene)">
-            <img :src="getIllustrationUrl(currentPairScene)" class="scene-image" alt="聯想畫面插圖" />
-          </div>
-
-          <!-- Premium CSS Gradient Fallback Card -->
-          <div class="card-art-fallback mt-16" v-else>
-            <div class="art-backdrop"></div>
-            <div class="art-glow-ring"></div>
+          <!-- BACK SIDE (To Item) -->
+          <div class="card-side card-back card" v-else>
+            <span class="card-indicator">聯想目標字 / 答案</span>
             
-            <div class="art-content">
-              <div class="art-node from">
-                <img v-if="hasIcon(currentPairScene.fromItemId)" :src="getIconUrl(currentPairScene.fromItemId)" @error="handleIconError(currentPairScene.fromItemId)" class="art-node-icon" alt="icon" />
-                <div v-else class="art-node-icon-placeholder">
-                  <span class="art-placeholder-char">{{ currentPairScene.displayFromKeyword[0] }}</span>
-                </div>
-                <span class="art-node-num">{{ currentPairScene.fromItemId.split('-')[1] }}</span>
-                <span class="art-node-kw">{{ currentPairScene.displayFromKeyword }}</span>
-              </div>
-              
-              <div class="art-link">
-                <div class="art-link-line"></div>
-                <span class="art-link-spark">✨</span>
-              </div>
-              
-              <div class="art-node to">
-                <img v-if="hasIcon(currentPairScene.toItemId)" :src="getIconUrl(currentPairScene.toItemId)" @error="handleIconError(currentPairScene.toItemId)" class="art-node-icon" alt="icon" />
-                <div v-else class="art-node-icon-placeholder">
-                  <span class="art-placeholder-char">{{ currentPairScene.displayToKeyword[0] }}</span>
-                </div>
-                <span class="art-node-num">{{ currentPairScene.toItemId.split('-')[1] }}</span>
-                <span class="art-node-kw">{{ currentPairScene.displayToKeyword }}</span>
+            <div class="graphic-container">
+              <img 
+                v-if="hasIcon(currentPairScene.toItemId)" 
+                :src="getIconUrl(currentPairScene.toItemId)" 
+                @error="handleIconError(currentPairScene.toItemId)" 
+                class="large-icon-img" 
+                alt="icon" 
+              />
+              <div v-else class="large-icon-placeholder">
+                <span class="placeholder-char-large">{{ currentPairScene.displayToKeyword[0] }}</span>
               </div>
             </div>
             
-            <span class="fallback-tag">🧠 智慧聯想引擎</span>
+            <div class="meta-container mt-16">
+              <span class="item-number-badge dest">{{ currentPairScene.toItemId.split('-')[1] }}</span>
+              <span class="item-keyword-large">{{ currentPairScene.displayToKeyword }}</span>
+            </div>
           </div>
 
-          <!-- Scene description - Shown Immediately -->
-          <div class="side-back mt-16">
-            <p class="scene-desc-title">💡 聯想畫面：</p>
-            <p class="scene-desc-text">{{ currentPairScene.sceneText }}</p>
-          </div>
         </div>
       </div>
 
-      <!-- Action Buttons -->
-      <div class="player-actions mt-16">
-        <div class="rating-buttons">
-          <p class="rating-prompt text-center mb-8">請在腦海中想像上述畫面，並點擊下方按鈕記錄熟練度：</p>
+      <!-- REVEAL CONTROL (When NOT revealed) -->
+      <div class="reveal-actions mt-24" v-if="!isRevealed">
+        <button class="btn btn-primary btn-reveal w-full py-16" @click="revealAnswer">
+          👁️ 顯示下一個字與聯想畫面
+        </button>
+      </div>
+
+      <!-- ASSOCIATION & RATING (When revealed) -->
+      <div class="revealed-content mt-24" v-else>
+        <!-- Story / Illustration -->
+        <div class="association-details-card card p-20 mb-20">
+          <div class="association-header mb-12">
+            <span class="association-tag">💡 聯想故事鏈</span>
+            <div class="association-flow">
+              <span>【{{ currentPairScene.fromItemId.split('-')[1] }} {{ currentPairScene.displayFromKeyword }}】</span>
+              <span class="flow-arrow">➔</span>
+              <span class="highlight">【{{ currentPairScene.toItemId.split('-')[1] }} {{ currentPairScene.displayToKeyword }}】</span>
+            </div>
+          </div>
+          
+          <p class="scene-story-text">{{ currentPairScene.sceneText }}</p>
+
+          <!-- Scene Illustration if exists -->
+          <div class="scene-illustration-wrapper mt-16" v-if="hasIllustration(currentPairScene)">
+            <img :src="getIllustrationUrl(currentPairScene)" class="scene-illustration-img" alt="聯想畫面插圖" />
+          </div>
+        </div>
+
+        <!-- Rating Buttons -->
+        <div class="rating-section">
+          <p class="rating-prompt text-center mb-12">請在腦海中複習此聯想畫面，並記錄熟練度：</p>
           <div class="buttons-grid">
             <button class="btn btn-danger rate-btn" @click="submitRating('forgot')">
-              <span>忘記</span>
+              <span class="rate-title">忘記</span>
               <span class="rate-sub">重來</span>
             </button>
             <button class="btn btn-warning rate-btn" @click="submitRating('hard')">
-              <span>模糊</span>
+              <span class="rate-title">模糊</span>
               <span class="rate-sub">減半</span>
             </button>
             <button class="btn btn-primary rate-btn" @click="submitRating('good')">
-              <span>記得</span>
+              <span class="rate-title">記得</span>
               <span class="rate-sub">升箱</span>
             </button>
             <button class="btn rate-btn btn-easy" @click="submitRating('easy')">
-              <span>輕鬆</span>
+              <span class="rate-title">輕鬆</span>
               <span class="rate-sub">+2箱</span>
             </button>
           </div>
@@ -123,7 +131,7 @@
     </div>
 
     <!-- NARRATIVE MODE PLAYER (Story highlights) -->
-    <div v-else-if="lesson.mode === 'narrative' && currentNarrativeScene" class="player-container">
+    <div v-else-if="lesson.mode === 'narrative' && currentNarrativeScene && !isLessonCompleted" class="player-container">
       <div class="blind-toggle-container mb-16">
         <label class="switch-label">
           <input type="checkbox" v-model="appStore.settings.blindRecall" />
@@ -206,7 +214,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, reactive } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAppStore } from '../stores/app';
 import { contentRepo, progressRepo } from '../repositories';
@@ -391,9 +399,14 @@ const startQuizDirect = () => {
 </script>
 
 <style scoped>
+.learn-view-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
 .learn-header {
   border-bottom: 1px solid var(--border-color);
-  padding-bottom: 12px;
+  padding-bottom: 16px;
 }
 
 .header-top {
@@ -403,218 +416,258 @@ const startQuizDirect = () => {
 }
 
 .back-btn {
-  background: none;
-  border: none;
-  font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  padding: 6px 12px;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.85rem;
   font-weight: 700;
-  color: var(--primary);
+  color: var(--text-secondary);
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--primary);
 }
 
 .lesson-title {
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   font-weight: 800;
   color: var(--text-primary);
+  letter-spacing: -0.2px;
 }
 
 .progress-bar-container {
-  height: 6px;
+  height: 8px;
   background-color: var(--bg-secondary);
-  border-radius: 3px;
+  border-radius: 4px;
   overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .progress-bar {
   height: 100%;
-  background-color: var(--success);
-  transition: width 0.3s ease;
+  background: linear-gradient(90deg, var(--primary) 0%, var(--success) 100%);
+  border-radius: 4px;
+  transition: width 0.4s cubic-bezier(0.1, 0.8, 0.25, 1);
 }
 
 .progress-text {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
 }
 
-/* Flashcard elements */
-.flashcard {
-  min-height: 220px;
+/* Spinner */
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3.5px solid var(--border-color);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Flashcard Container and Large Icons */
+.flashcard-wrapper {
+  perspective: 1000px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.flashcard-inner {
+  width: 100%;
+  transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+  transform-style: preserve-3d;
+}
+
+.card-side {
+  width: 100%;
+  min-height: 380px;
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
   background: var(--bg-card);
-  border: 2px solid var(--border-color);
-  border-radius: var(--border-radius-lg);
-  padding: 24px;
-  box-shadow: var(--shadow-md);
+  border: 1.5px solid var(--border-color);
+  border-radius: 24px;
+  padding: 32px 24px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15);
+  position: relative;
+  transition: all 0.3s ease;
 }
 
-.card-sides {
-  display: flex;
-  flex-direction: column;
+.card-indicator {
+  position: absolute;
+  top: 16px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-.front {
+.graphic-container {
+  width: 250px;
+  height: 250px;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 20px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.05) 0%, rgba(255, 255, 255, 0.01) 70%);
+  border-radius: 20px;
+  padding: 10px;
 }
 
-.item-display {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: var(--bg-secondary);
-  padding: 16px 8px;
-  border-radius: var(--border-radius-md);
-  width: 135px;
-  min-height: 170px;
-  justify-content: center;
-}
-
-.item-icon-img {
-  width: 82px;
-  height: 82px;
+.large-icon-img {
+  width: 240px;
+  height: 240px;
   object-fit: contain;
-  margin-bottom: 6px;
+  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.18));
+  transition: transform 0.3s ease;
 }
 
-.item-display-meta {
+.large-icon-img:hover {
+  transform: scale(1.03);
+}
+
+.large-icon-placeholder {
+  width: 200px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px dashed var(--border-color);
+  border-radius: 50%;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
 }
 
-.item-display.from {
-  border-left: 4px solid var(--primary);
+.placeholder-char-large {
+  font-size: 5rem;
+  font-weight: 800;
+  color: var(--text-secondary);
 }
 
-.item-display.to {
-  border-left: 4px solid var(--success);
+.meta-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.item-display.masked {
-  background-color: var(--border-color);
-  opacity: 0.5;
+.item-number-badge {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--primary);
+  background: rgba(139, 92, 246, 0.1);
+  padding: 4px 14px;
+  border-radius: 8px;
 }
 
-.item-display .num {
-  font-size: 1.65rem;
+.item-number-badge.dest {
+  color: var(--success);
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.item-keyword-large {
+  font-size: 1.8rem;
   font-weight: 900;
   color: var(--text-primary);
 }
 
-.item-display .kw {
-  font-size: 0.9rem;
-  font-weight: 700;
-  margin-top: 4px;
-}
-
-.transition-arrow {
-  font-size: 1.5rem;
+/* Actions and Buttons */
+.btn-reveal {
+  font-size: 1.05rem;
   font-weight: 800;
-  color: var(--text-muted);
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--primary) 0%, #6d28d9 100%);
+  box-shadow: 0 4px 16px var(--primary-glow);
+  transition: all 0.3s ease;
 }
 
-/* Image Placeholder Style */
-.image-placeholder {
+.btn-reveal:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px var(--primary-glow);
+}
+
+/* Revealed Association Card */
+.association-details-card {
+  border: 1.5px solid var(--border-color);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.03) 0%, rgba(0, 0, 0, 0) 100%);
+  border-radius: 16px;
+}
+
+.association-header {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 140px;
-  background-color: var(--bg-secondary);
-  border-radius: var(--border-radius-md);
-  border: 1.5px dashed var(--border-color);
-  color: var(--text-muted);
+  gap: 6px;
 }
 
-.image-icon {
-  font-size: 2.2rem;
-  margin-bottom: 6px;
-}
-
-.image-label {
+.association-tag {
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 800;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.side-back {
-  border-top: 1px solid var(--border-color);
-  padding-top: 16px;
-}
-
-.scene-desc-title {
-  font-size: 0.85rem;
+.association-flow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.95rem;
   font-weight: 700;
   color: var(--text-secondary);
 }
 
-.scene-desc-text {
-  font-size: 0.95rem;
-  color: var(--text-primary);
-  line-height: 1.6;
-  margin-top: 4px;
-}
-
-/* Narrative story flow */
-.story-card {
-  padding: 24px;
-  border: 2px solid var(--border-color);
-  border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow-md);
-  min-height: 180px;
-  display: flex;
-  align-items: center;
-}
-
-.story-scene-content {
-  font-size: 1.15rem;
-  line-height: 1.8;
-  color: var(--text-primary);
-}
-
-.tokens-flow {
-  display: inline;
-}
-
-.token-item {
-  font-weight: 800;
-  color: var(--primary);
-  border-bottom: 2px solid var(--primary);
-  padding: 0 4px;
-  cursor: pointer;
-  display: inline-block;
-  margin: 0 2px;
-  transition: background-color var(--transition-speed);
-}
-
-.token-item.masked {
-  background-color: var(--primary-glow);
-  color: var(--text-secondary);
-  border-bottom: 2.5px dashed var(--primary);
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-.token-item.unmasked {
-  background-color: hsla(145, 75%, 45%, 0.15);
+.association-flow .highlight {
   color: var(--success);
-  border-bottom-color: var(--success);
-  animation: pulseHighlight 0.4s ease;
 }
 
-@keyframes pulseHighlight {
-  0% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+.flow-arrow {
+  color: var(--text-muted);
 }
 
-/* Rating buttons */
-.rating-buttons {
+.scene-story-text {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.scene-illustration-wrapper {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.scene-illustration-img {
   width: 100%;
+  max-height: 250px;
+  object-fit: cover;
+}
+
+/* Rating Box */
+.rating-section {
+  background: var(--bg-card);
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
 }
 
 .rating-prompt {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 700;
   color: var(--text-secondary);
 }
@@ -628,15 +681,26 @@ const startQuizDirect = () => {
 .rate-btn {
   display: flex;
   flex-direction: column;
-  padding: 8px 4px;
-  border-radius: var(--border-radius-sm);
-  font-size: 0.9rem;
-  height: 54px;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 4px;
+  border-radius: 10px;
+  height: 58px;
+  transition: all 0.2s ease;
+}
+
+.rate-btn:hover {
+  transform: translateY(-2px);
+}
+
+.rate-title {
+  font-size: 0.95rem;
+  font-weight: 800;
 }
 
 .rate-sub {
   font-size: 0.65rem;
-  font-weight: 500;
+  font-weight: 600;
   opacity: 0.8;
   margin-top: 2px;
 }
@@ -645,45 +709,92 @@ const startQuizDirect = () => {
   background-color: var(--success);
   color: white;
 }
+
 .btn-easy:hover {
   background-color: hsl(145, 75%, 35%);
 }
 
-.blind-toggle-container {
-  display: flex;
-  align-items: center;
-}
-
-.switch-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
-/* Recap */
-.recap-card {
+/* Narrative Mode overrides */
+.story-card {
   padding: 24px;
-  border-radius: var(--border-radius-lg);
-  border: 2px solid var(--border-color);
+  border: 1.5px solid var(--border-color);
+  border-radius: 20px;
+  box-shadow: var(--shadow-md);
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+}
+
+.story-scene-content {
+  font-size: 1.15rem;
+  line-height: 1.8;
+}
+
+.token-item {
+  font-weight: 800;
+  color: var(--primary);
+  border-bottom: 2px solid var(--primary);
+  padding: 0 4px;
+  cursor: pointer;
+  display: inline-block;
+  margin: 0 2px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.token-item.masked {
+  background-color: var(--primary-glow);
+  color: var(--text-secondary);
+  border-bottom: 2px dashed var(--primary);
+  font-size: 0.95rem;
+}
+
+.token-item.unmasked {
+  background-color: hsla(145, 75%, 45%, 0.15);
+  color: var(--success);
+  border-bottom-color: var(--success);
+}
+
+.image-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 150px;
+  background-color: var(--bg-secondary);
+  border-radius: 12px;
+  border: 1.5px dashed var(--border-color);
+  color: var(--text-muted);
+}
+
+/* Recap view */
+.recap-card {
+  padding: 32px 24px;
+  border-radius: 24px;
+  border: 1.5px solid var(--border-color);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15);
 }
 
 .trophy-icon {
-  font-size: 3rem;
+  font-size: 3.5rem;
   display: block;
+  animation: bounceRecap 2s infinite;
+}
+
+@keyframes bounceRecap {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
 }
 
 .recap-card h3 {
-  font-size: 1.35rem;
-  font-weight: 800;
-  margin-top: 10px;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--text-primary);
+  margin-top: 12px;
 }
 
 .recap-content h4 {
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 800;
   color: var(--primary);
   border-bottom: 1.5px solid var(--border-color);
@@ -691,38 +802,18 @@ const startQuizDirect = () => {
 }
 
 .recap-section h5 {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: var(--text-secondary);
 }
 
-.recap-text {
-  font-size: 0.85rem;
-  background-color: var(--bg-secondary);
-  padding: 12px;
-  border-radius: var(--border-radius-sm);
-  color: var(--text-primary);
-  line-height: 1.6;
-  margin-top: 6px;
-}
-
-.whitespace-pre {
-  white-space: pre-wrap;
-}
-
-.py-14 {
-  padding-top: 14px;
-  padding-bottom: 14px;
-}
-
-/* Dynamic Keyword Grid List */
 .keyword-list {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 8px 16px;
   background-color: var(--bg-secondary);
-  padding: 12px 16px;
-  border-radius: var(--border-radius-md);
+  padding: 14px 18px;
+  border-radius: 12px;
   border: 1px solid var(--border-color);
 }
 
@@ -734,196 +825,26 @@ const startQuizDirect = () => {
 }
 
 .kw-num {
-  width: 32px;
   text-align: center;
   background-color: var(--primary-glow);
   color: var(--primary);
   border-radius: 4px;
-  padding: 1px 4px;
-  font-size: 0.8rem;
+  padding: 2px 6px;
+  font-size: 0.75rem;
+  min-width: 26px;
 }
 
 .kw-text {
   color: var(--text-primary);
 }
 
-/* Premium AI Illustration & Fallback CSS Art Card */
-.image-container {
-  width: 100%;
-  height: 200px;
-  border-radius: var(--border-radius-md);
-  overflow: hidden;
-  border: 2px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.recap-text {
+  font-size: 0.9rem;
   background-color: var(--bg-secondary);
-}
-
-.scene-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.card-art-fallback {
-  position: relative;
-  width: 100%;
-  height: 180px;
-  background: radial-gradient(circle at 50% 50%, #2e1065 0%, #0f052d 100%);
-  border-radius: var(--border-radius-md);
-  overflow: hidden;
-  border: 1.5px solid rgba(139, 92, 246, 0.3);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.art-backdrop {
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: conic-gradient(from 180deg at 50% 50%, #4f46e5 0deg, #db2777 120deg, #9333ea 240deg, #4f46e5 360deg);
-  animation: rotateBackdrop 25s linear infinite;
-  opacity: 0.12;
-  filter: blur(35px);
-}
-
-@keyframes rotateBackdrop {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.art-glow-ring {
-  position: absolute;
-  width: 120px;
-  height: 120px;
-  background: radial-gradient(circle, rgba(167, 139, 250, 0.15) 0%, transparent 70%);
-  filter: blur(10px);
-}
-
-.art-content {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.art-node {
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 10px 16px;
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 75px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transition: transform var(--transition-speed);
-}
-
-.art-node-num {
-  font-size: 1.25rem;
-  font-weight: 900;
-  background: linear-gradient(135deg, #a78bfa 0%, #f472b6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.art-node-icon {
-  width: 36px;
-  height: 36px;
-  object-fit: contain;
-  margin-bottom: 4px;
-}
-
-.art-node-kw {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #f3f4f6;
-  margin-top: 2px;
-}
-
-.art-link {
-  display: flex;
-  align-items: center;
-  position: relative;
-  width: 50px;
-}
-
-.art-link-line {
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, #4f46e5 0%, #db2777 50%, #9333ea 100%);
-  border-radius: 1px;
-  box-shadow: 0 0 8px rgba(139, 92, 246, 0.5);
-}
-
-.art-link-spark {
-  position: absolute;
-  left: 0;
-  font-size: 0.95rem;
-  animation: travelSpark 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-}
-
-@keyframes travelSpark {
-  0% { left: 0%; opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { left: 80%; opacity: 0; }
-}
-
-.fallback-tag {
-  position: absolute;
-  bottom: 6px;
-  right: 10px;
-  font-size: 0.6rem;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.35);
-  letter-spacing: 0.5px;
-}
-
-/* Icon Placeholders */
-.item-icon-placeholder {
-  width: 82px;
-  height: 82px;
-  background: linear-gradient(135deg, var(--bg-card) 0%, var(--border-color) 100%);
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 6px;
-  border: 1.5px solid var(--border-color);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.placeholder-char {
-  font-size: 2.2rem;
-  font-weight: 800;
-  color: var(--text-secondary);
-}
-
-.art-node-icon-placeholder {
-  width: 36px;
-  height: 36px;
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-.art-placeholder-char {
-  font-size: 0.95rem;
-  font-weight: 800;
-  color: rgba(255, 255, 255, 0.5);
+  padding: 12px 16px;
+  border-radius: 8px;
+  color: var(--text-primary);
+  line-height: 1.6;
+  border: 1px solid var(--border-color);
 }
 </style>
