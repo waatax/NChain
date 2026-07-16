@@ -1123,7 +1123,7 @@ export const staticLessons: Lesson[] = [
   {
     "id": "lesson-00-10",
     "moduleId": "module-00-20",
-    "title": "00–10 鎖鏈至汽水",
+    "title": "00–10 鎖鏈至石頭",
     "rangeStart": "00",
     "rangeEnd": "10",
     "mode": "pair",
@@ -1191,7 +1191,7 @@ export const staticLessons: Lesson[] = [
   {
     "id": "lesson-21-30",
     "moduleId": "module-21-40",
-    "title": "21–30 鱷魚至別針",
+    "title": "21–30 鱷魚至三菱",
     "rangeStart": "21",
     "rangeEnd": "30",
     "mode": "pair",
@@ -1224,7 +1224,7 @@ export const staticLessons: Lesson[] = [
   {
     "id": "lesson-31-40",
     "moduleId": "module-21-40",
-    "title": "31–40 山衣至司令",
+    "title": "31–40 鯊魚至司令",
     "rangeStart": "31",
     "rangeEnd": "40",
     "mode": "pair",
@@ -1257,7 +1257,7 @@ export const staticLessons: Lesson[] = [
   {
     "id": "lesson-41-50",
     "moduleId": "module-41-60",
-    "title": "41–50 死魚至警長",
+    "title": "41–50 死魚至五十元",
     "rangeStart": "41",
     "rangeEnd": "50",
     "mode": "pair",
@@ -1290,7 +1290,7 @@ export const staticLessons: Lesson[] = [
   {
     "id": "lesson-51-60",
     "moduleId": "module-41-60",
-    "title": "51–60 引擎至手槍",
+    "title": "51–60 狐狸至榴槤",
     "rangeStart": "51",
     "rangeEnd": "60",
     "mode": "pair",
@@ -1323,7 +1323,7 @@ export const staticLessons: Lesson[] = [
   {
     "id": "lesson-61-70",
     "moduleId": "module-61-80",
-    "title": "61–70 瘋狂的農莊冒險",
+    "title": "61–70 老人到冰淇淋",
     "rangeStart": "61",
     "rangeEnd": "70",
     "mode": "narrative",
@@ -1356,7 +1356,7 @@ export const staticLessons: Lesson[] = [
   {
     "id": "lesson-71-80",
     "moduleId": "module-61-80",
-    "title": "71–80 極地與巴黎的奇幻冒險",
+    "title": "71–80 蜥蜴到巴黎",
     "rangeStart": "71",
     "rangeEnd": "80",
     "mode": "narrative",
@@ -1379,7 +1379,7 @@ export const staticLessons: Lesson[] = [
   {
     "id": "lesson-81-90",
     "moduleId": "module-81-100",
-    "title": "81–90 西域巴士與微醺精靈",
+    "title": "81–90 白蟻到精靈",
     "rangeStart": "81",
     "rangeEnd": "90",
     "mode": "narrative",
@@ -1412,7 +1412,7 @@ export const staticLessons: Lesson[] = [
   {
     "id": "lesson-91-100",
     "moduleId": "module-81-100",
-    "title": "91–100 從操場到酒吧的瘋狂派對",
+    "title": "91–100 球衣到100元",
     "rangeStart": "91",
     "rangeEnd": "100",
     "mode": "narrative",
