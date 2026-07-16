@@ -85,6 +85,20 @@
             正確答案是: <span class="font-bold text-primary">{{ currentAnswer?.display }}</span>
           </p>
           
+          <!-- Icon Display in Feedback -->
+          <div class="feedback-icon-container my-12" v-if="item">
+            <img 
+              v-if="hasIcon(item.id)" 
+              :src="getIconUrl(item.id)" 
+              @error="handleIconError(item.id)"
+              class="feedback-graphic-img" 
+              alt="icon" 
+            />
+            <div v-else class="feedback-graphic-placeholder">
+              <span class="feedback-placeholder-char">{{ item.canonicalKeyword ? item.canonicalKeyword[0] : '？' }}</span>
+            </div>
+          </div>
+          
           <div class="hint-block mt-8" v-if="pairScene">
             <span class="hint-label">💡 聯想畫面提示：</span>
             <p class="hint-text">{{ pairScene.sceneText }}</p>
@@ -303,6 +317,25 @@ const nextCard = () => {
   } else {
     loadCurrentOptions();
   }
+};
+
+const failedIcons = ref<Set<string>>(new Set());
+
+const handleIconError = (itemId: string) => {
+  if (!itemId) return;
+  const num = itemId.split('-')[1];
+  failedIcons.value.add(num);
+};
+
+const hasIcon = (itemId: string): boolean => {
+  if (!itemId) return false;
+  const num = itemId.split('-')[1];
+  return !failedIcons.value.has(num);
+};
+
+const getIconUrl = (itemId: string): string => {
+  const num = itemId.split('-')[1];
+  return `${import.meta.env.BASE_URL || '/'}assets/icons/icon_${num}.png?v=3`;
 };
 </script>
 
@@ -529,5 +562,40 @@ const nextCard = () => {
 .py-12 {
   padding-top: 12px;
   padding-bottom: 12px;
+}
+
+.feedback-icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--bg-secondary);
+  border: 1px dashed var(--border-color);
+  border-radius: var(--border-radius-md);
+  padding: 12px;
+  max-width: 130px;
+  margin: 12px auto;
+}
+
+.feedback-graphic-img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.08));
+}
+
+.feedback-graphic-placeholder {
+  width: 70px;
+  height: 70px;
+  background-color: var(--bg-primary);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.feedback-placeholder-char {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--text-secondary);
 }
 </style>

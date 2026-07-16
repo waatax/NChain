@@ -1,79 +1,102 @@
 <template>
   <div class="container">
-    <!-- Header Summary Card -->
-    <div class="dashboard-summary card mb-16">
-      <div class="summary-header">
-        <h2>學習概覽</h2>
-        <span class="version-tag" v-if="manifest">v{{ manifest.contentVersion }}</span>
-      </div>
-      <div class="summary-stats">
-        <div class="stat-item">
-          <span class="stat-num">{{ stats.completedItems }} / 101</span>
-          <span class="stat-label">已學習數字</span>
+    <!-- Tab Selector -->
+    <div class="tabs-bar mb-16">
+      <button 
+        class="tab-btn" 
+        :class="{ active: activeTab === 'overview' }" 
+        @click="activeTab = 'overview'"
+      >
+        📊 學習概覽
+      </button>
+      <button 
+        class="tab-btn" 
+        :class="{ active: activeTab === 'lessons' }" 
+        @click="activeTab = 'lessons'"
+      >
+        📚 課程目錄
+      </button>
+    </div>
+
+    <!-- OVERVIEW TAB -->
+    <div v-if="activeTab === 'overview'" class="tab-panel">
+      <!-- Header Summary Card -->
+      <div class="dashboard-summary card mb-16">
+        <div class="summary-header">
+          <h2>學習概覽</h2>
+          <span class="version-tag" v-if="manifest">v{{ manifest.contentVersion }}</span>
         </div>
-        <div class="stat-item">
-          <span class="stat-num text-primary">{{ appStore.dueCardCount }}</span>
-          <span class="stat-label">待複習卡片</span>
+        <div class="summary-stats">
+          <div class="stat-item">
+            <span class="stat-num">{{ stats.completedItems }} / 101</span>
+            <span class="stat-label">已學習數字</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num text-primary">{{ appStore.dueCardCount }}</span>
+            <span class="stat-label">待複習卡片</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num text-success">{{ stats.masteredItems }}</span>
+            <span class="stat-label">精熟數字</span>
+          </div>
         </div>
-        <div class="stat-item">
-          <span class="stat-num text-success">{{ stats.masteredItems }}</span>
-          <span class="stat-label">精熟數字</span>
+        <div class="quick-actions mt-16">
+          <button 
+            class="btn btn-primary" 
+            :disabled="appStore.dueCardCount === 0"
+            @click="startGlobalReview"
+          >
+            ⏳ 複習 ({{ appStore.dueCardCount }} 題)
+          </button>
+          <button 
+            class="btn btn-secondary" 
+            @click="startGlobalTest"
+          >
+            ✍️ 測驗
+          </button>
+          <button 
+            class="btn btn-secondary" 
+            @click="startFlashCards"
+          >
+            🃏 卡牌
+          </button>
+          <button 
+            class="btn btn-secondary" 
+            @click="startNumberEncoder"
+          >
+            🔗 數字編碼
+          </button>
         </div>
-      </div>
-      <div class="quick-actions mt-16">
-        <button 
-          class="btn btn-primary" 
-          :disabled="appStore.dueCardCount === 0"
-          @click="startGlobalReview"
-        >
-          ⏳ 開始複習 ({{ appStore.dueCardCount }} 題)
-        </button>
-        <button 
-          class="btn btn-secondary" 
-          @click="startGlobalTest"
-        >
-          ✍️ 全域測驗
-        </button>
-        <button 
-          class="btn btn-secondary" 
-          @click="startFlashCards"
-        >
-          🃏 卡牌複習 (Flash Cards)
-        </button>
-        <button 
-          class="btn btn-secondary" 
-          @click="startNumberEncoder"
-        >
-          🔗 數字編碼器 (Encoder)
-        </button>
       </div>
     </div>
 
-    <!-- Lessons List -->
-    <h3 class="section-title mb-16">課程目錄</h3>
-    <div class="lessons-list card">
-      <div v-for="l in lessons" :key="l.id" class="lesson-row">
-        <div class="lesson-info">
-          <div class="lesson-title-container">
-            <span class="lesson-mode-tag" :class="l.mode">
-              {{ l.mode === 'pair' ? '配對' : '故事' }}
-            </span>
-            <span class="lesson-name">{{ l.title }}</span>
+    <!-- LESSONS TAB -->
+    <div v-else-if="activeTab === 'lessons'" class="tab-panel">
+      <!-- Lessons List -->
+      <div class="lessons-list card">
+        <div v-for="l in lessons" :key="l.id" class="lesson-row">
+          <div class="lesson-info">
+            <div class="lesson-title-container">
+              <span class="lesson-mode-tag" :class="l.mode">
+                {{ l.mode === 'pair' ? '配對' : '故事' }}
+              </span>
+              <span class="lesson-name">{{ l.title }}</span>
+            </div>
+            <div class="lesson-meta text-muted">
+              數字範圍: {{ l.rangeStart }} – {{ l.rangeEnd }}
+              <span class="dot-separator">•</span>
+              已記: {{ getLessonProgress(l.id)?.completedSceneIds.length || 0 }} / {{ l.sceneIds.length }}
+            </div>
           </div>
-          <div class="lesson-meta text-muted">
-            數字範圍: {{ l.rangeStart }} – {{ l.rangeEnd }}
-            <span class="dot-separator">•</span>
-            已記: {{ getLessonProgress(l.id)?.completedSceneIds.length || 0 }} / {{ l.sceneIds.length }}
+          
+          <div class="lesson-actions">
+            <button class="btn btn-secondary btn-sm" @click="startLesson(l.id)">
+              📖 學習
+            </button>
+            <button class="btn btn-primary btn-sm" @click="startQuiz(l.id)">
+              ✍️ 測驗
+            </button>
           </div>
-        </div>
-        
-        <div class="lesson-actions">
-          <button class="btn btn-secondary btn-sm" @click="startLesson(l.id)">
-            📖 學習
-          </button>
-          <button class="btn btn-primary btn-sm" @click="startQuiz(l.id)">
-            ✍️ 測驗
-          </button>
         </div>
       </div>
     </div>
@@ -85,12 +108,13 @@ import { ref, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAppStore } from '../stores/app';
 import { contentRepo, progressRepo } from '../repositories';
-import { Lesson, ContentManifest, Module } from '../domain/types';
+import { Lesson, ContentManifest } from '../domain/types';
 import { ProgressState } from '../repositories/ProgressRepository';
 
 const router = useRouter();
 const appStore = useAppStore();
 
+const activeTab = ref<'overview' | 'lessons'>('overview');
 const manifest = ref<ContentManifest | null>(null);
 const lessons = ref<Lesson[]>([]);
 const progressMap = reactive<Map<string, ProgressState>>(new Map());
@@ -112,7 +136,6 @@ onMounted(async () => {
   calculateStats();
 });
 
-
 const getLessonProgress = (id: string): ProgressState | undefined => {
   return progressMap.get(id);
 };
@@ -127,13 +150,6 @@ const calculateStats = async () => {
   
   // Load review cards to count mastered items
   // Mastery = box >= 3
-  const dueCounts = await progressRepo.getCardCountSummary();
-  const allCards = await progressRepo.getDueCards(); // Not directly mastered, wait
-  
-  // To find actual mastered, let's count cards with box >= 3
-  // Since we don't have a direct query, we can query them or just query counts.
-  // Let's count unique itemIds that have cards with box >= 3.
-  // Let's get cards with box >= 3 from IndexedDB
   const dbInstance = (progressRepo as any).db;
   if (dbInstance && dbInstance.reviewCards) {
     try {
@@ -172,6 +188,42 @@ const startNumberEncoder = () => {
 </script>
 
 <style scoped>
+.tabs-bar {
+  display: flex;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: 4px;
+  gap: 4px;
+}
+
+.tab-btn {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 10px 16px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  transition: all var(--transition-speed);
+}
+
+.tab-btn:hover {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.tab-btn.active {
+  background-color: var(--primary-glow);
+  color: var(--primary);
+}
+
 .dashboard-summary {
   background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
   position: relative;
@@ -219,32 +271,6 @@ const startNumberEncoder = () => {
   font-size: 0.75rem;
   color: var(--text-secondary);
   margin-top: 4px;
-}
-
-.section-title {
-  font-size: 1.05rem;
-  font-weight: 800;
-  color: var(--text-primary);
-}
-
-.module-card {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius-md);
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-}
-
-.module-header {
-  background-color: var(--bg-secondary);
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.module-header h4 {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--text-primary);
 }
 
 .lessons-list {
@@ -307,10 +333,6 @@ const startNumberEncoder = () => {
   padding: 6px 12px;
   font-size: 0.8rem;
   border-radius: 6px;
-}
-
-.w-full {
-  width: 100%;
 }
 
 .quick-actions {
