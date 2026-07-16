@@ -291,6 +291,8 @@ const getOptionClass = (opt: ReviewOption) => {
   return 'btn-muted-opt';
 };
 
+let autoTransitionTimeout: any = null;
+
 const selectOption = async (opt: ReviewOption) => {
   if (!currentCard.value) return;
   
@@ -302,9 +304,19 @@ const selectOption = async (opt: ReviewOption) => {
   const rating = correct ? 'good' : 'forgot';
   await progressRepo.submitReviewResult(currentCard.value.cardId, rating);
   await appStore.refreshReviewCounts();
+
+  if (correct) {
+    autoTransitionTimeout = setTimeout(() => {
+      nextCard();
+    }, 800);
+  }
 };
 
 const nextCard = () => {
+  if (autoTransitionTimeout) {
+    clearTimeout(autoTransitionTimeout);
+    autoTransitionTimeout = null;
+  }
   isRevealed.value = false;
   selectedOption.value = null;
   isCorrect.value = false;
