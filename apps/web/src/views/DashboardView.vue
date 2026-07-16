@@ -467,7 +467,8 @@ const constants = ref<Constant[]>([
     engName: 'Pi',
     symbol: 'π',
     valueHtml: 'π = 3.14159265358979323846...',
-    tagline: '主宰平面幾何對稱、簡諧旋轉與所有波動現象的純數學超越常數。',
+    approxValueHtml: 'π ≈ 3.<span style="letter-spacing:0.05em">1415926535 8979323846 2643383279 5028841971 6939937510 5820974944 5923078164 0628620899 8628034825 3421170679</span>',
+    tagline: '主宰平面幾何對稱、簡諧旋轉與所有波動現象的純數學超越常數（前 100 位精確展開）。',
     hue: 220,
     essence: '任何歐幾里得幾何平面圓的周長與直徑之比。是一個無理數且為超越數，無任何物理單位因次。',
     formulaHtml: '圓周長：<span class="math-eq">C = 2πr</span><br>球體體積：<span class="math-eq">V = <span class="math-fraction"><span class="math-num">4</span><span class="math-den">3</span></span>πr<sup>3</sup></span>',
@@ -887,6 +888,9 @@ html.dark .constant-card:hover {
   font-size: 1.05rem;
   font-weight: 800;
   color: var(--theme-color);
+  word-break: break-all;
+  overflow-wrap: anywhere;
+  line-height: 1.7;
 }
 
 .detail-section {
