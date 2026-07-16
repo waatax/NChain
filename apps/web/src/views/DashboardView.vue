@@ -21,7 +21,7 @@
         :class="{ active: activeTab === 'constants' }" 
         @click="activeTab = 'constants'"
       >
-        📐 常數對照
+        📐 科學常數
       </button>
     </div>
 
