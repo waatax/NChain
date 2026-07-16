@@ -125,7 +125,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 import { contentRepo } from '../repositories';
 import { MnemonicItem } from '../domain/types';
 
@@ -133,6 +134,18 @@ const searchQuery = ref('');
 const gridCols = ref(3); // Default to 3 columns per row
 const failedIcons = ref<Set<string>>(new Set());
 const selectedItem = ref<MnemonicItem | null>(null);
+
+const route = useRoute();
+
+onMounted(() => {
+  const numQuery = route.query.number;
+  if (numQuery) {
+    const matched = items.find(item => item.number === numQuery);
+    if (matched) {
+      showDetail(matched);
+    }
+  }
+});
 
 const items = contentRepo.getItems().sort((a, b) => a.numericValue - b.numericValue);
 

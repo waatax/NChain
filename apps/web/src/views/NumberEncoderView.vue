@@ -49,7 +49,11 @@
             <span class="node-index">#{{ idx + 1 }}</span>
             
             <!-- Graphic / Placeholder -->
-            <div class="node-graphic-container mb-8">
+            <div 
+              class="node-graphic-container mb-8 clickable" 
+              @click="navigateToDetail(seg.number)"
+              title="點擊查看記憶詳情"
+            >
               <img 
                 v-if="hasIcon(seg.itemId)" 
                 :src="getIconUrl(seg.itemId)" 
@@ -102,6 +106,10 @@ import { contentRepo } from '../repositories';
 
 const router = useRouter();
 const inputString = ref('');
+
+const navigateToDetail = (number: string) => {
+  router.push({ path: '/catalog', query: { number } });
+};
 
 const failedIcons = ref<Set<string>>(new Set());
 
@@ -261,6 +269,15 @@ const goBack = () => {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.node-graphic-container.clickable {
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease;
+}
+
+.node-graphic-container.clickable:hover {
+  transform: scale(1.08);
 }
 
 .node-graphic-img {
