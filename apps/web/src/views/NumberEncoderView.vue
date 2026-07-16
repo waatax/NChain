@@ -130,9 +130,9 @@ const getIconUrl = (itemId: string): string => {
   return `${import.meta.env.BASE_URL || '/'}assets/icons/icon_${num}.png?v=3`;
 };
 
-// Filter input to only allow numbers
+// Filter input to only allow numbers, spaces, commas, hyphens, and dots
 const sanitizeInput = () => {
-  inputString.value = inputString.value.replace(/\D/g, '');
+  inputString.value = inputString.value.replace(/[^0-9\s,.-]/g, '');
 };
 
 const clearInput = () => {
@@ -151,26 +151,35 @@ interface EncodedSegment {
 }
 
 const encodedSegments = computed<EncodedSegment[]>(() => {
-  const clean = inputString.value.trim();
-  if (!clean) return [];
+  const raw = inputString.value.trim();
+  if (!raw) return [];
 
-  const segments: string[] = [];
-  let i = 0;
-  while (i < clean.length) {
-    if (i === clean.length - 1) {
-      // Odd digit leftover, pad with a leading '0' as requested (e.g. 5 -> 05)
-      segments.push('0' + clean[i]);
-      i++;
-    } else {
-      segments.push(clean.substring(i, i + 2));
-      i += 2;
+  // Check if there's any delimiter like space, comma, dot, hyphen
+  const hasDelimiter = /[\s,.-]/.test(raw);
+  let segments: string[] = [];
+
+  if (hasDelimiter) {
+    // Split by delimiters, filter out empty strings, and keep each as is
+    segments = raw.split(/[\s,.-]+/).filter(s => s.length > 0 && /^\d+$/.test(s));
+  } else {
+    // Standard 2-digit splitting
+    let i = 0;
+    while (i < raw.length) {
+      if (i === raw.length - 1) {
+        // Odd digit leftover -> Keep as a single digit now that 0-9 are core codes!
+        segments.push(raw[i]);
+        i++;
+      } else {
+        segments.push(raw.substring(i, i + 2));
+        i += 2;
+      }
     }
   }
 
   const allItems = contentRepo.getItems();
 
   return segments.map(num => {
-    // Match segment to mnemonic item (number pad e.g. 05)
+    // Match segment to mnemonic item (number pad e.g. 05 or single digit e.g. 5)
     const matched = allItems.find(item => item.number === num);
     return {
       number: num,

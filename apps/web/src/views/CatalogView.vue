@@ -147,7 +147,12 @@ onMounted(() => {
   }
 });
 
-const items = contentRepo.getItems().sort((a, b) => a.numericValue - b.numericValue);
+const items = contentRepo.getItems().sort((a, b) => {
+  if (a.numericValue !== b.numericValue) {
+    return a.numericValue - b.numericValue;
+  }
+  return a.number.length - b.number.length;
+});
 
 const filteredItems = computed(() => {
   const query = searchQuery.value.trim().toLowerCase();

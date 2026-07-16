@@ -3,6 +3,116 @@ import { MnemonicItem, Lesson, Module, PairScene, NarrativeStory, NarrativeScene
 
 export const staticItems: MnemonicItem[] = [
   {
+    "id": "item-0",
+    "number": "0",
+    "numericValue": 0,
+    "canonicalKeyword": "雞蛋",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "custom"
+    }
+  },
+  {
+    "id": "item-1",
+    "number": "1",
+    "numericValue": 1,
+    "canonicalKeyword": "鉛筆",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "custom"
+    }
+  },
+  {
+    "id": "item-2",
+    "number": "2",
+    "numericValue": 2,
+    "canonicalKeyword": "鴨子",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "custom"
+    }
+  },
+  {
+    "id": "item-3",
+    "number": "3",
+    "numericValue": 3,
+    "canonicalKeyword": "叉子",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "custom"
+    }
+  },
+  {
+    "id": "item-4",
+    "number": "4",
+    "numericValue": 4,
+    "canonicalKeyword": "帆船",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "custom"
+    }
+  },
+  {
+    "id": "item-5",
+    "number": "5",
+    "numericValue": 5,
+    "canonicalKeyword": "鉤子",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "custom"
+    }
+  },
+  {
+    "id": "item-6",
+    "number": "6",
+    "numericValue": 6,
+    "canonicalKeyword": "蝸牛",
+    "aliases": ["鍋牛"],
+    "source": {
+      "sheet": "1-100",
+      "cell": "custom"
+    }
+  },
+  {
+    "id": "item-7",
+    "number": "7",
+    "numericValue": 7,
+    "canonicalKeyword": "拐杖糖",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "custom"
+    }
+  },
+  {
+    "id": "item-8",
+    "number": "8",
+    "numericValue": 8,
+    "canonicalKeyword": "葫蘆",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "custom"
+    }
+  },
+  {
+    "id": "item-9",
+    "number": "9",
+    "numericValue": 9,
+    "canonicalKeyword": "酒",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "custom"
+    }
+  },
+  {
     "id": "item-00",
     "number": "00",
     "numericValue": 0,
