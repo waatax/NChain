@@ -583,21 +583,21 @@ const getIconUrl = (itemId: string): string => {
   background-color: var(--bg-secondary);
   border: 1px dashed var(--border-color);
   border-radius: var(--border-radius-md);
-  padding: 12px;
-  max-width: 130px;
-  margin: 12px auto;
+  padding: 24px;
+  max-width: 380px;
+  margin: 16px auto;
 }
 
 .feedback-graphic-img {
-  width: 80px;
-  height: 80px;
+  width: 320px;
+  height: 320px;
   object-fit: contain;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.08));
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.12));
 }
 
 .feedback-graphic-placeholder {
-  width: 70px;
-  height: 70px;
+  width: 280px;
+  height: 280px;
   background-color: var(--bg-primary);
   border-radius: 50%;
   display: flex;
@@ -606,7 +606,7 @@ const getIconUrl = (itemId: string): string => {
 }
 
 .feedback-placeholder-char {
-  font-size: 1.8rem;
+  font-size: 7.2rem;
   font-weight: 800;
   color: var(--text-secondary);
 }
