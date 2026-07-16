@@ -1231,6 +1231,39 @@ export const staticItems: MnemonicItem[] = [
 
 export const staticLessons: Lesson[] = [
   {
+    "id": "lesson-0-9",
+    "moduleId": "module-00-20",
+    "title": "0–9 單數形碼",
+    "rangeStart": "0",
+    "rangeEnd": "9",
+    "mode": "pair",
+    "itemIds": [
+      "item-0",
+      "item-1",
+      "item-2",
+      "item-3",
+      "item-4",
+      "item-5",
+      "item-6",
+      "item-7",
+      "item-8",
+      "item-9"
+    ],
+    "sceneIds": [
+      "pair-0-1",
+      "pair-1-2",
+      "pair-2-3",
+      "pair-3-4",
+      "pair-4-5",
+      "pair-5-6",
+      "pair-6-7",
+      "pair-7-8",
+      "pair-8-9"
+    ],
+    "summary": "個位數字的視覺形像聯想，奠定數字編碼的形碼記憶基礎。",
+    "order": 0
+  },
+  {
     "id": "lesson-00-10",
     "moduleId": "module-00-20",
     "title": "00–10 鎖鏈至石頭",
@@ -1559,6 +1592,7 @@ export const staticModules: Module[] = [
     "id": "module-00-20",
     "title": "數字 00–20 基礎與日常聯想",
     "lessonIds": [
+      "lesson-0-9",
       "lesson-00-10",
       "lesson-11-20"
     ],
@@ -1603,6 +1637,168 @@ export const staticModules: Module[] = [
 ];
 
 export const staticPairScenes: PairScene[] = [
+  {
+    "id": "pair-0-1",
+    "kind": "pair",
+    "lessonId": "lesson-0-9",
+    "order": 1,
+    "fromItemId": "item-0",
+    "toItemId": "item-1",
+    "displayFromKeyword": "雞蛋",
+    "displayToKeyword": "鉛筆",
+    "sceneText": "一隻手拿著尖銳的鉛筆去戳破一顆生雞蛋，蛋黃與蛋白瞬間流滿了整張桌子。",
+    "image": null,
+    "source": {
+      "sheet": "0-9",
+      "rowStart": 1,
+      "rowEnd": 2,
+      "rawText": "【0 雞蛋】 ➔ 【1 鉛筆】 | 畫面：拿鉛筆去戳破一顆生雞蛋，蛋黃流了出來。"
+    }
+  },
+  {
+    "id": "pair-1-2",
+    "kind": "pair",
+    "lessonId": "lesson-0-9",
+    "order": 2,
+    "fromItemId": "item-1",
+    "toItemId": "item-2",
+    "displayFromKeyword": "鉛筆",
+    "displayToKeyword": "鴨子",
+    "sceneText": "一個調皮的男孩拿著彩色鉛筆在小鴨子的背上畫畫，鴨子癢得拼命搖屁股嘎嘎叫。",
+    "image": null,
+    "source": {
+      "sheet": "0-9",
+      "rowStart": 3,
+      "rowEnd": 4,
+      "rawText": "【1 鉛筆】 ➔ 【2 鴨子】 | 畫面：拿鉛筆在鴨子背上畫畫，鴨子生氣地嘎嘎叫。"
+    }
+  },
+  {
+    "id": "pair-2-3",
+    "kind": "pair",
+    "lessonId": "lesson-0-9",
+    "order": 3,
+    "fromItemId": "item-2",
+    "toItemId": "item-3",
+    "displayFromKeyword": "鴨子",
+    "displayToKeyword": "叉子",
+    "sceneText": "池塘裡的鴨子用扁扁的嘴巴咬起一把金屬叉子，滑稽地揮舞甩動，發出叮噹聲響。",
+    "image": null,
+    "source": {
+      "sheet": "0-9",
+      "rowStart": 5,
+      "rowEnd": 6,
+      "rawText": "【2 鴨子】 ➔ 【3 叉子】 | 畫面：鴨子用扁扁的嘴巴咬起一個鐵叉子，甩來甩去。"
+    }
+  },
+  {
+    "id": "pair-3-4",
+    "kind": "pair",
+    "lessonId": "lesson-0-9",
+    "order": 4,
+    "fromItemId": "item-3",
+    "toItemId": "item-4",
+    "displayFromKeyword": "叉子",
+    "displayToKeyword": "帆船",
+    "sceneText": "小水池裡放著一艘玩具帆船，桅杆折斷了，於是用一把鋼叉子插在船身中央當作代替桅杆。",
+    "image": null,
+    "source": {
+      "sheet": "0-9",
+      "rowStart": 7,
+      "rowEnd": 8,
+      "rawText": "【3 叉子】 ➔ 【4 帆船】 | 畫面：用叉子當作桅杆插在玩具帆船上，放入水池航行。"
+    }
+  },
+  {
+    "id": "pair-4-5",
+    "kind": "pair",
+    "lessonId": "lesson-0-9",
+    "order": 5,
+    "fromItemId": "item-4",
+    "toItemId": "item-5",
+    "displayFromKeyword": "帆船",
+    "displayToKeyword": "鉤子",
+    "sceneText": "在波濤洶湧的大海中航行的帆船，白色風帆突然被一個從天而降的巨大鋼鐵鉤子死死勾住。",
+    "image": null,
+    "source": {
+      "sheet": "0-9",
+      "rowStart": 9,
+      "rowEnd": 10,
+      "rawText": "【4 帆船】 ➔ 【5 鉤子】 | 畫面：帆船的風帆被一個大鐵鉤子勾住，動彈不得。"
+    }
+  },
+  {
+    "id": "pair-5-6",
+    "kind": "pair",
+    "lessonId": "lesson-0-9",
+    "order": 6,
+    "fromItemId": "item-5",
+    "toItemId": "item-6",
+    "displayFromKeyword": "鉤子",
+    "displayToKeyword": "蝸牛",
+    "sceneText": "鋒利的起重鉤子吊起一隻巨大的蝸牛，蝸牛嚇得把觸角和整個黏糊糊的身體都縮回了螺旋殼裡。",
+    "image": null,
+    "source": {
+      "sheet": "0-9",
+      "rowStart": 11,
+      "rowEnd": 12,
+      "rawText": "【5 鉤子】 ➔ 【6 蝸牛】 | 畫面：鉤子把一隻正在慢吞吞爬行的蝸牛吊了起來。"
+    }
+  },
+  {
+    "id": "pair-6-7",
+    "kind": "pair",
+    "lessonId": "lesson-0-9",
+    "order": 7,
+    "fromItemId": "item-6",
+    "toItemId": "item-7",
+    "displayFromKeyword": "蝸牛",
+    "displayToKeyword": "拐杖糖",
+    "sceneText": "小蝸牛慢吞吞地爬上了一根巨大的紅白相間拐杖糖，在上面留下了一道長長的黏液軌跡。",
+    "image": null,
+    "source": {
+      "sheet": "0-9",
+      "rowStart": 13,
+      "rowEnd": 14,
+      "rawText": "【6 蝸牛】 ➔ 【7 拐杖糖】 | 畫面：蝸牛慢慢爬上了一根紅白相間的拐杖糖，黏在上面。"
+    }
+  },
+  {
+    "id": "pair-7-8",
+    "kind": "pair",
+    "lessonId": "lesson-0-9",
+    "order": 8,
+    "fromItemId": "item-7",
+    "toItemId": "item-8",
+    "displayFromKeyword": "拐杖糖",
+    "displayToKeyword": "葫蘆",
+    "sceneText": "拿著硬梆梆的柺杖糖用力敲擊掛在藤蔓上的金色大葫蘆，發出清脆的「咚咚」聲響。",
+    "image": null,
+    "source": {
+      "sheet": "0-9",
+      "rowStart": 15,
+      "rowEnd": 16,
+      "rawText": "【7 拐杖糖】 ➔ 【8 葫蘆】 | 畫面：拿拐杖糖去敲擊金黃色的葫蘆，發出清脆的聲響。"
+    }
+  },
+  {
+    "id": "pair-8-9",
+    "kind": "pair",
+    "lessonId": "lesson-0-9",
+    "order": 9,
+    "fromItemId": "item-8",
+    "toItemId": "item-9",
+    "displayFromKeyword": "葫蘆",
+    "displayToKeyword": "酒",
+    "sceneText": "拔開葫蘆頂端的塞子，將裡面裝著的甘醇紅酒緩緩倒入水晶高腳酒杯中，香氣四溢。",
+    "image": null,
+    "source": {
+      "sheet": "0-9",
+      "rowStart": 17,
+      "rowEnd": 18,
+      "rawText": "【8 葫蘆】 ➔ 【9 酒】 | 畫面：葫蘆裡面裝滿了香醇 of 紅酒，倒進高腳杯中。"
+    }
+  },
   {
     "id": "pair-00-01",
     "kind": "pair",

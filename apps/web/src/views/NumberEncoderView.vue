@@ -26,6 +26,27 @@
         </button>
       </div>
 
+      <!-- Mode Selector -->
+      <div class="mode-selector-container mt-16 flex gap-12 items-center">
+        <span class="text-muted text-xs">編碼型態：</span>
+        <div class="segmented-control">
+          <button 
+            class="segment-btn" 
+            :class="{ active: encodingMode === 'double' }"
+            @click="encodingMode = 'double'"
+          >
+            雙位編碼 (00–99)
+          </button>
+          <button 
+            class="segment-btn" 
+            :class="{ active: encodingMode === 'single' }"
+            @click="encodingMode = 'single'"
+          >
+            個位形碼 (0–9)
+          </button>
+        </div>
+      </div>
+
       <div class="quick-examples mt-12 flex gap-8 items-center flex-wrap">
         <span class="text-muted text-xs">熱門範例：</span>
         <button class="example-tag" @click="setExample('1234567890')">1234567890</button>
@@ -38,7 +59,9 @@
     <div v-if="encodedSegments.length > 0" class="results-container max-w-4xl mx-auto">
       <div class="results-header mb-16 flex justify-between items-center">
         <h4 class="section-title">🧩 編碼圖卡鏈結 (共 {{ encodedSegments.length }} 組)</h4>
-        <span class="segment-rule text-muted text-xs">自動切分規則：每兩位數為一組記憶點</span>
+        <span class="segment-rule text-muted text-xs">
+          自動切分規則：{{ encodingMode === 'double' ? '每兩位數為一組記憶點' : '個別數字形碼對照' }}
+        </span>
       </div>
 
       <!-- Multi-row Grid: 3 cards per row -->
@@ -100,12 +123,27 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, computed, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import { contentRepo } from '../repositories';
 
 const router = useRouter();
+const route = useRoute();
 const inputString = ref('');
+const encodingMode = ref<'double' | 'single'>('double');
+
+onMounted(() => {
+  const num = route.query.number;
+  if (num) {
+    inputString.value = String(num);
+  }
+  const mode = route.query.mode;
+  if (mode === 'single') {
+    encodingMode.value = 'single';
+  } else if (mode === 'double') {
+    encodingMode.value = 'double';
+  }
+});
 
 const navigateToDetail = (number: string) => {
   router.push({ path: '/catalog', query: { number } });
@@ -161,6 +199,9 @@ const encodedSegments = computed<EncodedSegment[]>(() => {
   if (hasDelimiter) {
     // Split by delimiters, filter out empty strings, and keep each as is
     segments = raw.split(/[\s,.-]+/).filter(s => s.length > 0 && /^\d+$/.test(s));
+  } else if (encodingMode.value === 'single') {
+    // Split digit-by-digit
+    segments = raw.split('');
   } else {
     // Standard 2-digit splitting
     let i = 0;
@@ -356,5 +397,32 @@ const goBack = () => {
 
 .empty-icon {
   font-size: 2.5rem;
+}
+
+/* Mode Selector Segmented Control */
+.segmented-control {
+  display: flex;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  padding: 2px;
+}
+
+.segment-btn {
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.segment-btn.active {
+  background-color: var(--primary);
+  color: white;
+  box-shadow: var(--shadow-sm);
 }
 </style>

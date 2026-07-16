@@ -289,6 +289,7 @@ interface Constant {
   name: string;
   engName: string;
   symbol: string;
+  digits?: string;
   valueHtml: string;
   approxValueHtml?: string;
   tagline: string;
@@ -514,6 +515,27 @@ const constants = ref<Constant[]>([
     ]
   }
 ]);
+
+constants.value.forEach(c => {
+  if (c.id === 'c') c.digits = '299792458';
+  else if (c.id === 'h') c.digits = '662607015';
+  else if (c.id === 'Na') c.digits = '602214076';
+  else if (c.id === 'G') c.digits = '667430';
+  else if (c.id === 'e_charge') c.digits = '1602176634';
+  else if (c.id === 'kb') c.digits = '1380649';
+  else if (c.id === 'pi') c.digits = '31415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679';
+  else if (c.id === 'e_euler') c.digits = '271828182845904523536';
+});
+
+const goToEncoder = (digits?: string) => {
+  router.push({
+    path: '/number-encoder',
+    query: {
+      number: digits || '',
+      mode: 'single'
+    }
+  });
+};
 
 const expandedConstantId = ref<string | null>(null);
 
