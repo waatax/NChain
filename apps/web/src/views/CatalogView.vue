@@ -561,15 +561,15 @@ const closeDetail = () => {
 }
 
 .modal-graphic-img {
-  width: 128px;
-  height: 128px;
+  width: 256px;
+  height: 256px;
   object-fit: contain;
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.2));
 }
 
 .modal-placeholder {
-  width: 100px;
-  height: 100px;
+  width: 200px;
+  height: 200px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px dashed var(--border-color);
   border-radius: 50%;
@@ -579,7 +579,7 @@ const closeDetail = () => {
 }
 
 .modal-placeholder-char {
-  font-size: 2.5rem;
+  font-size: 5rem;
   font-weight: 800;
   color: var(--text-secondary);
 }
