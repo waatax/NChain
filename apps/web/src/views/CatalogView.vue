@@ -5,30 +5,66 @@
       <p class="text-muted">點擊卡片查看在故事或場景中的出現位置</p>
     </div>
 
-    <!-- Search Input -->
-    <div class="search-container mb-16">
-      <span class="search-icon">🔍</span>
-      <input 
-        type="text" 
-        v-model="searchQuery" 
-        placeholder="搜尋數字、關鍵字或別名 (例如: 05, 鎖鏈, 鱷魚)..." 
-        class="search-input"
-      />
+    <!-- Controls Row -->
+    <div class="controls-row mb-16">
+      <!-- Search Input -->
+      <div class="search-container">
+        <span class="search-icon">🔍</span>
+        <input 
+          type="text" 
+          v-model="searchQuery" 
+          placeholder="搜尋數字、關鍵字或別名 (例如: 05, 鎖鏈)..." 
+          class="search-input"
+        />
+      </div>
+
+      <!-- Column Selector -->
+      <div class="col-selector-container">
+        <div class="segmented-control">
+          <button 
+            v-for="col in [1, 2, 3, 4]" 
+            :key="col" 
+            :class="['segment-btn', { active: gridCols === col }]"
+            @click="gridCols = col"
+          >
+            {{ col }} 列
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Grid Layout -->
-    <div class="items-grid">
+    <div :class="['items-grid', 'cols-' + gridCols]">
       <div 
         v-for="item in filteredItems" 
         :key="item.id" 
         class="item-card card" 
         @click="showDetail(item)"
       >
-        <span class="item-number">{{ item.number }}</span>
-        <span class="item-keyword">{{ item.canonicalKeyword }}</span>
-        <span v-if="item.aliases.length > 0" class="item-aliases">
-          別名: {{ item.aliases.join(', ') }}
-        </span>
+        <!-- Card Graphic -->
+        <div class="item-graphic mb-8">
+          <img 
+            v-if="hasIcon(item.id)" 
+            :src="getIconUrl(item.id)" 
+            @error="handleIconError(item.id)"
+            class="item-graphic-img" 
+            alt="icon" 
+          />
+          <div v-else class="item-graphic-placeholder">
+            <span class="item-placeholder-char">{{ item.canonicalKeyword ? item.canonicalKeyword[0] : '？' }}</span>
+          </div>
+        </div>
+
+        <!-- Card Text -->
+        <div class="item-info">
+          <div class="item-meta">
+            <span class="item-number">{{ item.number }}</span>
+            <span class="item-keyword">{{ item.canonicalKeyword }}</span>
+          </div>
+          <span v-if="item.aliases.length > 0 && gridCols !== 4" class="item-aliases">
+            {{ item.aliases.join(', ') }}
+          </span>
+        </div>
       </div>
     </div>
 
@@ -45,6 +81,19 @@
         </div>
         
         <div class="modal-body mt-16">
+          <!-- Large Modal Image -->
+          <div class="modal-image-wrapper mb-16">
+            <img 
+              v-if="hasIcon(selectedItem.id)" 
+              :src="getIconUrl(selectedItem.id)" 
+              class="modal-graphic-img" 
+              alt="icon" 
+            />
+            <div v-else class="modal-placeholder">
+              <span class="modal-placeholder-char">{{ selectedItem.canonicalKeyword ? selectedItem.canonicalKeyword[0] : '？' }}</span>
+            </div>
+          </div>
+
           <div class="detail-row">
             <span class="detail-label">主關鍵字：</span>
             <span class="detail-val highlight">{{ selectedItem.canonicalKeyword }}</span>
@@ -81,6 +130,8 @@ import { contentRepo } from '../repositories';
 import { MnemonicItem } from '../domain/types';
 
 const searchQuery = ref('');
+const gridCols = ref(3); // Default to 3 columns per row
+const failedIcons = ref<Set<string>>(new Set());
 const selectedItem = ref<MnemonicItem | null>(null);
 
 const items = contentRepo.getItems().sort((a, b) => a.numericValue - b.numericValue);
@@ -102,6 +153,23 @@ const getLessonTitleForItem = (itemId: string): string => {
   const allLessons = contentRepo.getLessons();
   const lesson = allLessons.find(l => l.itemIds.includes(itemId as any));
   return lesson ? lesson.title : '未知課程';
+};
+
+const handleIconError = (itemId: string) => {
+  if (!itemId) return;
+  const num = itemId.split('-')[1];
+  failedIcons.value.add(num);
+};
+
+const hasIcon = (itemId: string): boolean => {
+  if (!itemId) return false;
+  const num = itemId.split('-')[1];
+  return !failedIcons.value.has(num);
+};
+
+const getIconUrl = (itemId: string): string => {
+  const num = itemId.split('-')[1];
+  return `${import.meta.env.BASE_URL || '/'}assets/icons/icon_${num}.png`;
 };
 
 const mentions = computed(() => {
@@ -149,6 +217,13 @@ const closeDetail = () => {
   font-weight: 800;
 }
 
+.controls-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
 .search-container {
   display: flex;
   align-items: center;
@@ -157,6 +232,8 @@ const closeDetail = () => {
   border-radius: var(--border-radius-sm);
   padding: 8px 12px;
   box-shadow: var(--shadow-sm);
+  flex: 1;
+  min-width: 200px;
 }
 
 .search-icon {
@@ -174,16 +251,40 @@ const closeDetail = () => {
   font-family: var(--font-family);
 }
 
-.items-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+.col-selector-container {
+  display: flex;
+  align-items: center;
 }
 
-@media (max-width: 400px) {
-  .items-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+.segmented-control {
+  display: flex;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  padding: 2px;
+}
+
+.segment-btn {
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.segment-btn.active {
+  background-color: var(--primary);
+  color: white;
+  box-shadow: var(--shadow-sm);
+}
+
+.items-grid {
+  display: grid;
+  gap: 12px;
 }
 
 .item-card {
@@ -191,9 +292,12 @@ const closeDetail = () => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 16px 8px;
   cursor: pointer;
   text-align: center;
+  transition: transform 0.2s, border-color 0.2s;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
 }
 
 .item-card:hover {
@@ -201,17 +305,58 @@ const closeDetail = () => {
   border-color: var(--primary);
 }
 
+.item-graphic {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.item-graphic-img {
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.12));
+}
+
+.item-graphic-placeholder {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px dashed var(--border-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.item-placeholder-char {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+}
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.item-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
 .item-number {
-  font-size: 1.25rem;
+  font-size: 0.75rem;
   font-weight: 900;
   color: var(--primary);
-  letter-spacing: -0.5px;
+  background: rgba(139, 92, 246, 0.08);
+  padding: 1px 5px;
+  border-radius: 4px;
 }
 
 .item-keyword {
-  font-size: 0.95rem;
-  font-weight: 700;
-  margin-top: 4px;
+  font-size: 0.85rem;
+  font-weight: 800;
   color: var(--text-primary);
 }
 
@@ -224,6 +369,137 @@ const closeDetail = () => {
   text-overflow: ellipsis;
   width: 100%;
   padding: 0 4px;
+  text-align: center;
+}
+
+/* cols-1 */
+.cols-1 .item-card {
+  flex-direction: row !important;
+  justify-content: flex-start !important;
+  gap: 16px;
+  padding: 12px 20px;
+  text-align: left;
+}
+
+.cols-1 .item-graphic {
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+}
+
+.cols-1 .item-graphic-img {
+  width: 64px;
+  height: 64px;
+}
+
+.cols-1 .item-graphic-placeholder {
+  width: 60px;
+  height: 60px;
+}
+
+.cols-1 .item-info {
+  align-items: flex-start;
+}
+
+.cols-1 .item-meta {
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.cols-1 .item-number {
+  font-size: 1.1rem;
+  padding: 2px 6px;
+}
+
+.cols-1 .item-keyword {
+  font-size: 1.1rem;
+}
+
+.cols-1 .item-aliases {
+  text-align: left;
+  padding: 0;
+  margin-top: 2px;
+}
+
+/* cols-2 */
+.cols-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.cols-2 .item-card {
+  padding: 16px 8px;
+}
+
+.cols-2 .item-graphic {
+  height: 100px;
+  width: 100%;
+}
+
+.cols-2 .item-graphic-img {
+  width: 90px;
+  height: 90px;
+}
+
+.cols-2 .item-graphic-placeholder {
+  width: 80px;
+  height: 80px;
+}
+
+/* cols-3 */
+.cols-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.cols-3 .item-card {
+  padding: 12px 4px;
+}
+
+.cols-3 .item-graphic {
+  height: 80px;
+  width: 100%;
+}
+
+.cols-3 .item-graphic-img {
+  width: 72px;
+  height: 72px;
+}
+
+.cols-3 .item-graphic-placeholder {
+  width: 64px;
+  height: 64px;
+}
+
+/* cols-4 */
+.cols-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.cols-4 .item-card {
+  padding: 8px 2px;
+}
+
+.cols-4 .item-graphic {
+  height: 60px;
+  width: 100%;
+}
+
+.cols-4 .item-graphic-img {
+  width: 52px;
+  height: 52px;
+}
+
+.cols-4 .item-graphic-placeholder {
+  width: 48px;
+  height: 48px;
+}
+
+.cols-4 .item-keyword {
+  font-size: 0.75rem;
+}
+
+.cols-4 .item-number {
+  font-size: 0.7rem;
+  padding: 0px 3px;
 }
 
 /* Modal details */
@@ -271,6 +547,40 @@ const closeDetail = () => {
   border: none;
   font-size: 1rem;
   cursor: pointer;
+  color: var(--text-secondary);
+}
+
+.modal-image-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid var(--border-color);
+}
+
+.modal-graphic-img {
+  width: 128px;
+  height: 128px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
+}
+
+.modal-placeholder {
+  width: 100px;
+  height: 100px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px dashed var(--border-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-placeholder-char {
+  font-size: 2.5rem;
+  font-weight: 800;
   color: var(--text-secondary);
 }
 
