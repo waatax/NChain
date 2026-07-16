@@ -23,6 +23,13 @@
       >
         📐 常數對照
       </button>
+      <button 
+        class="tab-btn" 
+        :class="{ active: activeTab === 'shapecode' }" 
+        @click="activeTab = 'shapecode'"
+      >
+        🔢 形碼
+      </button>
     </div>
 
     <!-- OVERVIEW TAB -->
@@ -268,6 +275,24 @@
         </div>
       </div>
     </div>
+
+    <!-- SHAPE CODE TAB -->
+    <div v-else-if="activeTab === 'shapecode'" class="tab-panel">
+      <div class="shapecode-container">
+        <div class="shapecode-header mb-16">
+          <h3 class="shapecode-title">數字形狀編碼（形碼法）</h3>
+          <p class="shapecode-desc text-muted">根據數字的外觀形狀聯想對應的物件，建立直覺記憶鏈結。</p>
+        </div>
+        <div class="shapecode-grid">
+          <div v-for="item in shapeCodes" :key="item.digit" class="shapecode-card" :style="{ '--sc-hue': item.hue }">
+            <div class="sc-digit">{{ item.digit }}</div>
+            <div class="sc-emoji">{{ item.emoji }}</div>
+            <div class="sc-name">{{ item.name }}</div>
+            <div class="sc-reason">{{ item.reason }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -282,7 +307,20 @@ import { ProgressState } from '../repositories/ProgressRepository';
 const router = useRouter();
 const appStore = useAppStore();
 
-const activeTab = ref<'overview' | 'lessons' | 'constants'>('overview');
+const activeTab = ref<'overview' | 'lessons' | 'constants' | 'shapecode'>('overview');
+
+const shapeCodes = [
+  { digit: '1', emoji: '✏️', name: '鉛筆', reason: '細長如鉛筆', hue: 45 },
+  { digit: '2', emoji: '🦆', name: '鴨子', reason: '彎頸似數字 2', hue: 200 },
+  { digit: '3', emoji: '🍴', name: '叉子', reason: '三叉如數字 3', hue: 160 },
+  { digit: '4', emoji: '⛵', name: '帆船', reason: '帆面三角形似 4', hue: 210 },
+  { digit: '5', emoji: '🪝', name: '鉤子', reason: '彎鉤形似 5', hue: 25 },
+  { digit: '6', emoji: '🐌', name: '蝸牛', reason: '螺旋殼似 6', hue: 120 },
+  { digit: '7', emoji: '🍬', name: '拐杖糖', reason: '手杖彎如 7', hue: 340 },
+  { digit: '8', emoji: '🎃', name: '葫蘆', reason: '上下圓似 8', hue: 30 },
+  { digit: '9', emoji: '🍷', name: '酒', reason: '酒杯形似 9', hue: 0 },
+  { digit: '0', emoji: '🥚', name: '雞蛋', reason: '橢圓形似 0', hue: 55 },
+];
 
 interface Constant {
   id: string;
@@ -1081,5 +1119,79 @@ html.dark .constant-card:hover {
   color: var(--text-secondary);
   line-height: 1.5;
   margin-top: 10px;
+}
+
+/* === SHAPE CODE TAB === */
+.shapecode-container {
+  padding-bottom: 24px;
+}
+
+.shapecode-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 4px 0;
+}
+
+.shapecode-desc {
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.shapecode-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+@media (min-width: 480px) {
+  .shapecode-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+.shapecode-card {
+  --theme-color: hsl(var(--sc-hue), 70%, 55%);
+  --theme-glow: hsl(var(--sc-hue), 70%, 55%, 0.12);
+  background: var(--bg-card);
+  border: 1.5px solid hsl(var(--sc-hue), 60%, 50%, 0.35);
+  border-radius: 14px;
+  padding: 16px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+  box-shadow: 0 2px 12px hsl(var(--sc-hue), 60%, 50%, 0.1);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.shapecode-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px hsl(var(--sc-hue), 60%, 50%, 0.22);
+}
+
+.sc-digit {
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--theme-color);
+  line-height: 1;
+}
+
+.sc-emoji {
+  font-size: 2.4rem;
+  line-height: 1;
+}
+
+.sc-name {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.sc-reason {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
 }
 </style>
