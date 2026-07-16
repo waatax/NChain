@@ -255,7 +255,7 @@ const getIllustrationUrl = (scene: PairScene): string => {
 
 const getIconUrl = (itemId: string): string => {
   const num = itemId.split('-')[1];
-  return `${import.meta.env.BASE_URL || '/'}assets/icons/icon_${num}.png`;
+  return `${import.meta.env.BASE_URL || '/'}assets/icons/icon_${num}.png?v=3`;
 };
 
 const failedIcons = ref<Set<string>>(new Set());

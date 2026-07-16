@@ -182,7 +182,7 @@ const hasIcon = (itemId: string): boolean => {
 
 const getIconUrl = (itemId: string): string => {
   const num = itemId.split('-')[1];
-  return `${import.meta.env.BASE_URL || '/'}assets/icons/icon_${num}.png`;
+  return `${import.meta.env.BASE_URL || '/'}assets/icons/icon_${num}.png?v=3`;
 };
 
 const mentions = computed(() => {
