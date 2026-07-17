@@ -187,7 +187,7 @@ const getIconUrl = (itemId: string): string => {
 
 // Filter input to only allow numbers, spaces, commas, hyphens, and dots
 const sanitizeInput = () => {
-  inputString.value = inputString.value.replace(/[^0-9\s,.-]/g, '');
+  inputString.value = inputString.value.replace(/[^0-9\s,，.-]/g, '');
 };
 
 const clearInput = () => {
@@ -207,8 +207,11 @@ interface EncodedSegment {
 }
 
 const encodedSegments = computed<EncodedSegment[]>(() => {
-  const raw = inputString.value.trim();
+  let raw = inputString.value.trim();
   if (!raw) return [];
+
+  // Ignore half-width commas and full-width commas
+  raw = raw.replace(/,|，/g, '');
 
   // Helper to split a number string based on delimiter / mode
   const getSegments = (str: string) => {

@@ -155,19 +155,34 @@
           </div>
           
           <div class="constant-brief" v-if="expandedConstantId !== c.id">
-            <div class="constant-value" v-html="c.valueHtml"></div>
+            <div class="constant-value-row">
+              <div class="constant-value" v-html="c.valueHtml"></div>
+              <button class="btn btn-secondary btn-xs" @click.stop="goToEncoder(c.digits)">
+                🔗 編碼
+              </button>
+            </div>
             <p class="constant-tagline">{{ c.tagline }}</p>
           </div>
           
           <div class="constant-details" v-else @click.stop>
             <div class="constant-value-large mb-12">
               <span class="detail-label">定義值：</span>
-              <div class="value-text" v-html="c.valueHtml"></div>
+              <div class="constant-value-row">
+                <div class="value-text" v-html="c.valueHtml"></div>
+                <button class="btn btn-secondary btn-xs" @click="goToEncoder(c.digits)">
+                  🔗 數字編碼
+                </button>
+              </div>
             </div>
             
             <div class="constant-value-large mb-12" v-if="c.approxValueHtml">
               <span class="detail-label">約略值：</span>
-              <div class="value-text" v-html="c.approxValueHtml"></div>
+              <div class="constant-value-row">
+                <div class="value-text" v-html="c.approxValueHtml"></div>
+                <button class="btn btn-secondary btn-xs" @click="goToEncoder(c.digits)">
+                  🔗 數字編碼
+                </button>
+              </div>
             </div>
             
             <div class="detail-section mb-12">
@@ -1186,5 +1201,22 @@ html.dark .constant-card:hover {
 .segment-btn.active {
   background-color: var(--primary-glow);
   color: var(--primary);
+}
+
+/* Constants Layout & Small Button Styles */
+.constant-value-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-xs {
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  border-radius: 6px;
+  cursor: pointer;
+  line-height: 1.2;
 }
 </style>
