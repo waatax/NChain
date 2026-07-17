@@ -45,6 +45,12 @@
             >
               🃏 卡牌
             </button>
+            <button 
+              class="btn btn-secondary" 
+              @click="startFlashMemory"
+            >
+              ⚡ 閃卡記憶
+            </button>
           </div>
         </div>
       </aside>
@@ -134,13 +140,19 @@
                 >
                   ✍️ 測驗
                 </button>
-                <button 
-                  class="btn btn-secondary" 
-                  @click="startFlashCards"
-                >
-                  🃏 卡牌
-                </button>
-              </div>
+                 <button 
+                   class="btn btn-secondary" 
+                   @click="startFlashCards"
+                 >
+                   🃏 卡牌
+                 </button>
+                 <button 
+                   class="btn btn-secondary" 
+                   @click="startFlashMemory"
+                 >
+                   ⚡ 閃卡記憶
+                 </button>
+               </div>
             </div>
           </div>
 
@@ -759,6 +771,10 @@ const startGlobalTest = () => {
 
 const startFlashCards = () => {
   router.push({ name: 'flash-cards' });
+};
+
+const startFlashMemory = () => {
+  router.push({ name: 'flash-memory' });
 };
 
 const startNumberEncoder = () => {

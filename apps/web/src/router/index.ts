@@ -40,6 +40,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../views/FlashCardView.vue'),
   },
   {
+    path: '/flash-memory',
+    name: 'flash-memory',
+    component: () => import('../views/FlashMemoryView.vue'),
+  },
+  {
     path: '/number-encoder',
     name: 'number-encoder',
     redirect: to => {
