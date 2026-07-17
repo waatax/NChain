@@ -571,7 +571,7 @@ const goToEncoder = (digits?: string) => {
     path: '/',
     query: {
       number: digits || '',
-      mode: 'single',
+      mode: 'double',
       tab: 'encoder'
     }
   });
