@@ -42,7 +42,9 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/number-encoder',
     name: 'number-encoder',
-    component: () => import('../views/NumberEncoderView.vue'),
+    redirect: to => {
+      return { path: '/', query: { ...to.query, tab: 'encoder' } };
+    }
   },
   {
     path: '/offline',

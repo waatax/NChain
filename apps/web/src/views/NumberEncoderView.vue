@@ -1,7 +1,7 @@
 <template>
-  <div class="container py-24">
+  <div :class="{ 'container py-24': !props.isEmbedded }">
     <!-- Header Nav -->
-    <div class="header-nav mb-24">
+    <div v-if="!props.isEmbedded" class="header-nav mb-24">
       <button class="btn btn-secondary back-btn" @click="goBack">
         ◀ 返回主頁
       </button>
@@ -64,11 +64,16 @@
         </span>
       </div>
 
-      <!-- Multi-row Grid: 3 cards per row -->
       <div class="mnemonic-grid mb-24">
         <div v-for="(seg, idx) in encodedSegments" :key="idx" class="grid-node-wrapper">
+          <!-- If Decimal Point -->
+          <div v-if="seg.isDecimalPoint" class="decimal-point-node card">
+            <span class="decimal-dot">.</span>
+            <span class="decimal-label">小數點</span>
+          </div>
+
           <!-- Node Card -->
-          <div class="chain-node card">
+          <div v-else class="chain-node card">
             <span class="node-index">#{{ idx + 1 }}</span>
             
             <!-- Graphic / Placeholder -->
@@ -123,16 +128,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { contentRepo } from '../repositories';
+
+const props = defineProps<{
+  isEmbedded?: boolean;
+}>();
 
 const router = useRouter();
 const route = useRoute();
 const inputString = ref('');
 const encodingMode = ref<'double' | 'single'>('double');
 
-onMounted(() => {
+const updateFromQuery = () => {
   const num = route.query.number;
   if (num) {
     inputString.value = String(num);
@@ -143,7 +152,15 @@ onMounted(() => {
   } else if (mode === 'double') {
     encodingMode.value = 'double';
   }
+};
+
+onMounted(() => {
+  updateFromQuery();
 });
+
+watch(() => route.query, () => {
+  updateFromQuery();
+}, { deep: true });
 
 const navigateToDetail = (number: string) => {
   router.push({ path: '/catalog', query: { number } });
@@ -186,48 +203,75 @@ interface EncodedSegment {
   number: string;
   keyword: string;
   itemId: string;
+  isDecimalPoint?: boolean;
 }
 
 const encodedSegments = computed<EncodedSegment[]>(() => {
   const raw = inputString.value.trim();
   if (!raw) return [];
 
-  // Check if there's any delimiter like space, comma, dot, hyphen
-  const hasDelimiter = /[\s,.-]/.test(raw);
-  let segments: string[] = [];
+  // Helper to split a number string based on delimiter / mode
+  const getSegments = (str: string) => {
+    if (!str) return [];
+    const hasDelimiter = /[\s,.-]/.test(str);
+    let segments: string[] = [];
 
-  if (hasDelimiter) {
-    // Split by delimiters, filter out empty strings, and keep each as is
-    segments = raw.split(/[\s,.-]+/).filter(s => s.length > 0 && /^\d+$/.test(s));
-  } else if (encodingMode.value === 'single') {
-    // Split digit-by-digit
-    segments = raw.split('');
-  } else {
-    // Standard 2-digit splitting
-    let i = 0;
-    while (i < raw.length) {
-      if (i === raw.length - 1) {
-        // Odd digit leftover -> Keep as a single digit now that 0-9 are core codes!
-        segments.push(raw[i]);
-        i++;
-      } else {
-        segments.push(raw.substring(i, i + 2));
-        i += 2;
+    if (hasDelimiter) {
+      segments = str.split(/[\s,.-]+/).filter(s => s.length > 0 && /^\d+$/.test(s));
+    } else if (encodingMode.value === 'single') {
+      segments = str.split('');
+    } else {
+      let i = 0;
+      while (i < str.length) {
+        if (i === str.length - 1) {
+          segments.push(str[i]);
+          i++;
+        } else {
+          segments.push(str.substring(i, i + 2));
+          i += 2;
+        }
       }
     }
-  }
+    return segments;
+  };
 
   const allItems = contentRepo.getItems();
-
-  return segments.map(num => {
-    // Match segment to mnemonic item (number pad e.g. 05 or single digit e.g. 5)
+  const mapSegment = (num: string): EncodedSegment => {
     const matched = allItems.find(item => item.number === num);
     return {
       number: num,
       keyword: matched ? matched.canonicalKeyword : '未知',
-      itemId: matched ? matched.id : ''
+      itemId: matched ? matched.id : `unknown-${num}`
     };
-  });
+  };
+
+  // Check if there's a decimal point
+  const dotIndex = raw.indexOf('.');
+  if (dotIndex !== -1) {
+    const intPartStr = raw.substring(0, dotIndex).trim();
+    const fracPartStr = raw.substring(dotIndex + 1).trim();
+
+    const intSegments = getSegments(intPartStr);
+    const fracSegments = getSegments(fracPartStr);
+
+    const result: EncodedSegment[] = [];
+    intSegments.forEach(num => result.push(mapSegment(num)));
+
+    // Insert decimal point indicator
+    result.push({
+      number: '.',
+      keyword: '小數點',
+      itemId: 'decimal-point',
+      isDecimalPoint: true
+    });
+
+    fracSegments.forEach(num => result.push(mapSegment(num)));
+    return result;
+  }
+
+  // Normal processing without decimal point
+  const segments = getSegments(raw);
+  return segments.map(num => mapSegment(num));
 });
 
 const goBack = () => {
@@ -424,5 +468,34 @@ const goBack = () => {
   background-color: var(--primary);
   color: white;
   box-shadow: var(--shadow-sm);
+}
+
+/* Decimal Point Card */
+.decimal-point-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 148px;
+  background: rgba(139, 92, 246, 0.05) !important;
+  border: 1.5px dashed var(--primary) !important;
+  border-radius: var(--border-radius-md);
+  position: relative;
+}
+
+.decimal-dot {
+  font-size: 4rem;
+  line-height: 1;
+  font-weight: 900;
+  color: var(--primary);
+  margin-top: -12px;
+}
+
+.decimal-label {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--text-secondary);
 }
 </style>

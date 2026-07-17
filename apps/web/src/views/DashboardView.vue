@@ -11,10 +11,10 @@
       </button>
       <button 
         class="tab-btn" 
-        :class="{ active: activeTab === 'lessons' }" 
-        @click="activeTab = 'lessons'"
+        :class="{ active: activeTab === 'encoder' }" 
+        @click="activeTab = 'encoder'"
       >
-        📚 課程目錄
+        🔗 數字編碼
       </button>
       <button 
         class="tab-btn" 
@@ -75,11 +75,9 @@
           </button>
         </div>
       </div>
-    </div>
 
-    <!-- LESSONS TAB -->
-    <div v-else-if="activeTab === 'lessons'" class="tab-panel">
-      <!-- Lessons List -->
+      <!-- Lessons Catalog inside Overview tab -->
+      <h3 class="section-title mt-24 mb-12">📚 課程目錄</h3>
       <div class="lessons-list card">
         <div v-for="l in lessons" :key="l.id" class="lesson-row">
           <div class="lesson-info">
@@ -106,6 +104,11 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- ENCODER TAB -->
+    <div v-else-if="activeTab === 'encoder'" class="tab-panel">
+      <NumberEncoderView :isEmbedded="true" />
     </div>
 
     <!-- CONSTANTS TAB -->
@@ -272,17 +275,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, reactive, onMounted, watch } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import { useAppStore } from '../stores/app';
 import { contentRepo, progressRepo } from '../repositories';
 import { Lesson, ContentManifest } from '../domain/types';
 import { ProgressState } from '../repositories/ProgressRepository';
+import NumberEncoderView from './NumberEncoderView.vue';
 
 const router = useRouter();
+const route = useRoute();
 const appStore = useAppStore();
 
-const activeTab = ref<'overview' | 'lessons' | 'constants'>('overview');
+const activeTab = ref<'overview' | 'encoder' | 'constants'>('overview');
 
 interface Constant {
   id: string;
@@ -529,10 +534,11 @@ constants.value.forEach(c => {
 
 const goToEncoder = (digits?: string) => {
   router.push({
-    path: '/number-encoder',
+    path: '/',
     query: {
       number: digits || '',
-      mode: 'single'
+      mode: 'single',
+      tab: 'encoder'
     }
   });
 };
@@ -557,6 +563,14 @@ const stats = reactive({
 });
 
 onMounted(async () => {
+  if (route.query.tab === 'encoder' || route.query.number) {
+    activeTab.value = 'encoder';
+  } else if (route.query.tab === 'constants') {
+    activeTab.value = 'constants';
+  } else if (route.query.tab === 'overview') {
+    activeTab.value = 'overview';
+  }
+
   manifest.value = contentRepo.getManifest();
   lessons.value = contentRepo.getLessons();
   
@@ -566,6 +580,16 @@ onMounted(async () => {
   
   // Calculate aggregate stats
   calculateStats();
+});
+
+watch(() => route.query.tab, (newTab) => {
+  if (newTab === 'encoder') {
+    activeTab.value = 'encoder';
+  } else if (newTab === 'constants') {
+    activeTab.value = 'constants';
+  } else if (newTab === 'overview') {
+    activeTab.value = 'overview';
+  }
 });
 
 const getLessonProgress = (id: string): ProgressState | undefined => {
@@ -615,7 +639,7 @@ const startFlashCards = () => {
 };
 
 const startNumberEncoder = () => {
-  router.push({ name: 'number-encoder' });
+  activeTab.value = 'encoder';
 };
 </script>
 
