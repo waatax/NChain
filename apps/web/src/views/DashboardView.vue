@@ -27,80 +27,98 @@
 
     <!-- OVERVIEW TAB -->
     <div v-if="activeTab === 'overview'" class="tab-panel">
-      <!-- Header Summary Card -->
-      <div class="dashboard-summary card mb-16">
-        <div class="summary-header">
-          <h2>學習概覽</h2>
-          <span class="version-tag" v-if="manifest">v{{ manifest.contentVersion }}</span>
-        </div>
-        <div class="summary-stats">
-          <div class="stat-item">
-            <span class="stat-num">{{ stats.completedItems }} / 101</span>
-            <span class="stat-label">已學習數字</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-num text-primary">{{ appStore.dueCardCount }}</span>
-            <span class="stat-label">待複習卡片</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-num text-success">{{ stats.masteredItems }}</span>
-            <span class="stat-label">精熟數字</span>
-          </div>
-        </div>
-        <div class="quick-actions mt-16">
+      <!-- Sub-tabs Selector inside Overview -->
+      <div class="sub-tabs-bar mb-16">
+        <div class="segmented-control">
           <button 
-            class="btn btn-primary" 
-            :disabled="appStore.dueCardCount === 0"
-            @click="startGlobalReview"
+            class="segment-btn" 
+            :class="{ active: overviewSubTab === 'progress' }"
+            @click="overviewSubTab = 'progress'"
           >
-            ⏳ 複習 ({{ appStore.dueCardCount }} 題)
+            📈 學習進度
           </button>
           <button 
-            class="btn btn-secondary" 
-            @click="startGlobalTest"
+            class="segment-btn" 
+            :class="{ active: overviewSubTab === 'lessons' }"
+            @click="overviewSubTab = 'lessons'"
           >
-            ✍️ 測驗
-          </button>
-          <button 
-            class="btn btn-secondary" 
-            @click="startFlashCards"
-          >
-            🃏 卡牌
-          </button>
-          <button 
-            class="btn btn-secondary" 
-            @click="startNumberEncoder"
-          >
-            🔗 數字編碼
+            📚 課程目錄
           </button>
         </div>
       </div>
 
-      <!-- Lessons Catalog inside Overview tab -->
-      <h3 class="section-title mt-24 mb-12">📚 課程目錄</h3>
-      <div class="lessons-list card">
-        <div v-for="l in lessons" :key="l.id" class="lesson-row">
-          <div class="lesson-info">
-            <div class="lesson-title-container">
-              <span class="lesson-mode-tag" :class="l.mode">
-                {{ l.mode === 'pair' ? '配對' : '故事' }}
-              </span>
-              <span class="lesson-name">{{ l.title }}</span>
+      <!-- Sub-tab 1: Progress Summary -->
+      <div v-if="overviewSubTab === 'progress'" class="overview-sub-panel">
+        <!-- Header Summary Card -->
+        <div class="dashboard-summary card mb-16">
+          <div class="summary-header">
+            <h2>學習概覽</h2>
+            <span class="version-tag" v-if="manifest">v{{ manifest.contentVersion }}</span>
+          </div>
+          <div class="summary-stats">
+            <div class="stat-item">
+              <span class="stat-num">{{ stats.completedItems }} / 101</span>
+              <span class="stat-label">已學習數字</span>
             </div>
-            <div class="lesson-meta text-muted">
-              數字範圍: {{ l.rangeStart }} – {{ l.rangeEnd }}
-              <span class="dot-separator">•</span>
-              已記: {{ getLessonProgress(l.id)?.completedSceneIds.length || 0 }} / {{ l.sceneIds.length }}
+            <div class="stat-item">
+              <span class="stat-num text-primary">{{ appStore.dueCardCount }}</span>
+              <span class="stat-label">待複習卡片</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-num text-success">{{ stats.masteredItems }}</span>
+              <span class="stat-label">精熟數字</span>
             </div>
           </div>
-          
-          <div class="lesson-actions">
-            <button class="btn btn-secondary btn-sm" @click="startLesson(l.id)">
-              📖 學習
+          <div class="quick-actions mt-16">
+            <button 
+              class="btn btn-primary" 
+              :disabled="appStore.dueCardCount === 0"
+              @click="startGlobalReview"
+            >
+              ⏳ 複習 ({{ appStore.dueCardCount }} 題)
             </button>
-            <button class="btn btn-primary btn-sm" @click="startQuiz(l.id)">
+            <button 
+              class="btn btn-secondary" 
+              @click="startGlobalTest"
+            >
               ✍️ 測驗
             </button>
+            <button 
+              class="btn btn-secondary" 
+              @click="startFlashCards"
+            >
+              🃏 卡牌
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sub-tab 2: Lessons Catalog -->
+      <div v-else-if="overviewSubTab === 'lessons'" class="overview-sub-panel">
+        <div class="lessons-list card">
+          <div v-for="l in lessons" :key="l.id" class="lesson-row">
+            <div class="lesson-info">
+              <div class="lesson-title-container">
+                <span class="lesson-mode-tag" :class="l.mode">
+                  {{ l.mode === 'pair' ? '配對' : '故事' }}
+                </span>
+                <span class="lesson-name">{{ l.title }}</span>
+              </div>
+              <div class="lesson-meta text-muted">
+                數字範圍: {{ l.rangeStart }} – {{ l.rangeEnd }}
+                <span class="dot-separator">•</span>
+                已記: {{ getLessonProgress(l.id)?.completedSceneIds.length || 0 }} / {{ l.sceneIds.length }}
+              </div>
+            </div>
+            
+            <div class="lesson-actions">
+              <button class="btn btn-secondary btn-sm" @click="startLesson(l.id)">
+                📖 學習
+              </button>
+              <button class="btn btn-primary btn-sm" @click="startQuiz(l.id)">
+                ✍️ 測驗
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -288,6 +306,7 @@ const route = useRoute();
 const appStore = useAppStore();
 
 const activeTab = ref<'overview' | 'encoder' | 'constants'>('overview');
+const overviewSubTab = ref<'progress' | 'lessons'>('progress');
 
 interface Constant {
   id: string;
@@ -1127,5 +1146,45 @@ html.dark .constant-card:hover {
   color: var(--text-secondary);
   line-height: 1.5;
   margin-top: 10px;
+}
+
+/* Overview Sub-tabs Segmented Control */
+.sub-tabs-bar {
+  display: flex;
+  justify-content: center;
+}
+
+.segmented-control {
+  display: flex;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  padding: 4px;
+  gap: 4px;
+}
+
+.segment-btn {
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.segment-btn:hover {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.segment-btn.active {
+  background-color: var(--primary-glow);
+  color: var(--primary);
 }
 </style>
