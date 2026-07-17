@@ -1,75 +1,83 @@
 <template>
-  <div class="container">
+  <div class="container catalog-container">
     <div class="catalog-header mb-16">
       <h2>00–100 記憶關鍵字圖鑑</h2>
       <p class="text-muted">點擊卡片查看在故事或場景中的出現位置</p>
     </div>
 
-    <!-- Controls Row -->
-    <div class="controls-row mb-16">
-      <!-- Search Input -->
-      <div class="search-container">
-        <span class="search-icon">🔍</span>
-        <input 
-          type="text" 
-          v-model="searchQuery" 
-          placeholder="搜尋數字、關鍵字或別名 (例如: 05, 鎖鏈)..." 
-          class="search-input"
-        />
-      </div>
-
-      <!-- Column Selector -->
-      <div class="col-selector-container">
-        <div class="segmented-control">
-          <button 
-            v-for="col in [1, 2, 3, 4]" 
-            :key="col" 
-            :class="['segment-btn', { active: gridCols === col }]"
-            @click="gridCols = col"
-          >
-            {{ col }} 列
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Grid Layout -->
-    <div :class="['items-grid', 'cols-' + gridCols]">
-      <div 
-        v-for="item in filteredItems" 
-        :key="item.id" 
-        class="item-card card" 
-        @click="showDetail(item)"
-      >
-        <!-- Card Graphic -->
-        <div class="item-graphic mb-8">
-          <img 
-            v-if="hasIcon(item.id)" 
-            :src="getIconUrl(item.id)" 
-            @error="handleIconError(item.id)"
-            class="item-graphic-img" 
-            alt="icon" 
+    <!-- Layout Wrapper -->
+    <div class="catalog-layout-wrapper">
+      
+      <!-- Left Sidebar (Controls) -->
+      <aside class="catalog-sidebar">
+        <!-- Search Input -->
+        <div class="search-container mb-16">
+          <span class="search-icon">🔍</span>
+          <input 
+            type="text" 
+            v-model="searchQuery" 
+            placeholder="搜尋數字、關鍵字或別名..." 
+            class="search-input"
           />
-          <div v-else class="item-graphic-placeholder">
-            <span class="item-placeholder-char">{{ item.canonicalKeyword ? item.canonicalKeyword[0] : '？' }}</span>
+        </div>
+
+        <!-- Column Selector -->
+        <div class="col-selector-container">
+          <span class="control-label mb-8" style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-secondary);">排列列數：</span>
+          <div class="segmented-control">
+            <button 
+              v-for="col in [1, 2, 3, 4]" 
+              :key="col" 
+              :class="['segment-btn', { active: gridCols === col }]"
+              @click="gridCols = col"
+            >
+              {{ col }} 列
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Right main area -->
+      <div class="catalog-main-content">
+        <!-- Grid Layout -->
+        <div :class="['items-grid', 'cols-' + gridCols]">
+          <div 
+            v-for="item in filteredItems" 
+            :key="item.id" 
+            class="item-card card" 
+            @click="showDetail(item)"
+          >
+            <!-- Card Graphic -->
+            <div class="item-graphic mb-8">
+              <img 
+                v-if="hasIcon(item.id)" 
+                :src="getIconUrl(item.id)" 
+                @error="handleIconError(item.id)"
+                class="item-graphic-img" 
+                alt="icon" 
+              />
+              <div v-else class="item-graphic-placeholder">
+                <span class="item-placeholder-char">{{ item.canonicalKeyword ? item.canonicalKeyword[0] : '？' }}</span>
+              </div>
+            </div>
+
+            <!-- Card Text -->
+            <div class="item-info">
+              <div class="item-meta">
+                <span class="item-number">{{ item.number }}</span>
+                <span class="item-keyword">{{ item.canonicalKeyword }}</span>
+              </div>
+              <span v-if="item.aliases.length > 0 && gridCols !== 4" class="item-aliases">
+                {{ item.aliases.join(', ') }}
+              </span>
+            </div>
           </div>
         </div>
 
-        <!-- Card Text -->
-        <div class="item-info">
-          <div class="item-meta">
-            <span class="item-number">{{ item.number }}</span>
-            <span class="item-keyword">{{ item.canonicalKeyword }}</span>
-          </div>
-          <span v-if="item.aliases.length > 0 && gridCols !== 4" class="item-aliases">
-            {{ item.aliases.join(', ') }}
-          </span>
+        <div v-if="filteredItems.length === 0" class="empty-state card text-center mt-16">
+          <p>找不到符合的數字或關鍵字 😢</p>
         </div>
       </div>
-    </div>
-
-    <div v-if="filteredItems.length === 0" class="empty-state card text-center mt-16">
-      <p>找不到符合的數字或關鍵字 😢</p>
     </div>
 
     <!-- Details Modal -->
@@ -660,5 +668,39 @@ const closeDetail = () => {
 .mention-text {
   color: var(--text-primary);
   line-height: 1.5;
+}
+
+/* Catalog responsive layout */
+.catalog-layout-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@media (min-width: 1024px) {
+  .catalog-layout-wrapper {
+    flex-direction: row !important;
+    gap: 24px !important;
+    align-items: flex-start !important;
+    width: 100% !important;
+  }
+
+  .catalog-sidebar {
+    width: 260px !important;
+    flex-shrink: 0 !important;
+    position: sticky !important;
+    top: 90px !important;
+    z-index: 10 !important;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .catalog-main-content {
+    flex: 1 !important;
+    min-width: 0 !important;
+  }
 }
 </style>

@@ -1,56 +1,12 @@
 <template>
-  <div class="container">
-    <!-- Tab Selector -->
-    <div class="tabs-bar mb-16">
-      <button 
-        class="tab-btn" 
-        :class="{ active: activeTab === 'overview' }" 
-        @click="activeTab = 'overview'"
-      >
-        📊 學習概覽
-      </button>
-      <button 
-        class="tab-btn" 
-        :class="{ active: activeTab === 'encoder' }" 
-        @click="activeTab = 'encoder'"
-      >
-        🔗 數字編碼
-      </button>
-      <button 
-        class="tab-btn" 
-        :class="{ active: activeTab === 'constants' }" 
-        @click="activeTab = 'constants'"
-      >
-        📐 科學常數
-      </button>
-    </div>
-
-    <!-- OVERVIEW TAB -->
-    <div v-if="activeTab === 'overview'" class="tab-panel">
-      <!-- Sub-tabs Selector inside Overview -->
-      <div class="sub-tabs-bar mb-16">
-        <div class="segmented-control">
-          <button 
-            class="segment-btn" 
-            :class="{ active: overviewSubTab === 'progress' }"
-            @click="overviewSubTab = 'progress'"
-          >
-            📈 學習進度
-          </button>
-          <button 
-            class="segment-btn" 
-            :class="{ active: overviewSubTab === 'lessons' }"
-            @click="overviewSubTab = 'lessons'"
-          >
-            📚 課程目錄
-          </button>
-        </div>
-      </div>
-
-      <!-- Sub-tab 1: Progress Summary -->
-      <div v-if="overviewSubTab === 'progress'" class="overview-sub-panel">
+  <div class="container dashboard-container">
+    <!-- Desktop Layout Wrapper -->
+    <div class="dashboard-layout-wrapper">
+      
+      <!-- Left Sidebar (Desktop Only) -->
+      <aside class="dashboard-sidebar desktop-only-sidebar" v-if="isDesktop">
         <!-- Header Summary Card -->
-        <div class="dashboard-summary card mb-16">
+        <div class="dashboard-summary card">
           <div class="summary-header">
             <h2>學習概覽</h2>
             <span class="version-tag" v-if="manifest">v{{ manifest.contentVersion }}</span>
@@ -91,43 +47,139 @@
             </button>
           </div>
         </div>
-      </div>
+      </aside>
 
-      <!-- Sub-tab 2: Lessons Catalog -->
-      <div v-else-if="overviewSubTab === 'lessons'" class="overview-sub-panel">
-        <div class="lessons-list card">
-          <div v-for="l in lessons" :key="l.id" class="lesson-row">
-            <div class="lesson-info">
-              <div class="lesson-title-container">
-                <span class="lesson-mode-tag" :class="l.mode">
-                  {{ l.mode === 'pair' ? '配對' : '故事' }}
-                </span>
-                <span class="lesson-name">{{ l.title }}</span>
-              </div>
-              <div class="lesson-meta text-muted">
-                數字範圍: {{ l.rangeStart }} – {{ l.rangeEnd }}
-                <span class="dot-separator">•</span>
-                已記: {{ getLessonProgress(l.id)?.completedSceneIds.length || 0 }} / {{ l.sceneIds.length }}
-              </div>
-            </div>
-            
-            <div class="lesson-actions">
-              <button class="btn btn-secondary btn-sm" @click="startLesson(l.id)">
-                📖 學習
+      <!-- Right Main Content Panel -->
+      <div class="dashboard-main-content">
+        <!-- Tab Selector -->
+        <div class="tabs-bar mb-16">
+          <button 
+            class="tab-btn" 
+            :class="{ active: activeTab === 'overview' }" 
+            @click="activeTab = 'overview'"
+          >
+            📊 學習概覽
+          </button>
+          <button 
+            class="tab-btn" 
+            :class="{ active: activeTab === 'encoder' }" 
+            @click="activeTab = 'encoder'"
+          >
+            🔗 數字編碼
+          </button>
+          <button 
+            class="tab-btn" 
+            :class="{ active: activeTab === 'constants' }" 
+            @click="activeTab = 'constants'"
+          >
+            📐 科學常數
+          </button>
+        </div>
+
+        <!-- OVERVIEW TAB -->
+        <div v-if="activeTab === 'overview'" class="tab-panel">
+          <!-- Sub-tabs Selector inside Overview (Mobile Only) -->
+          <div class="sub-tabs-bar mb-16 mobile-only-block" v-if="!isDesktop">
+            <div class="segmented-control">
+              <button 
+                class="segment-btn" 
+                :class="{ active: overviewSubTab === 'progress' }"
+                @click="overviewSubTab = 'progress'"
+              >
+                📈 學習進度
               </button>
-              <button class="btn btn-primary btn-sm" @click="startQuiz(l.id)">
-                ✍️ 測驗
+              <button 
+                class="segment-btn" 
+                :class="{ active: overviewSubTab === 'lessons' }"
+                @click="overviewSubTab = 'lessons'"
+              >
+                📚 課程目錄
               </button>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- ENCODER TAB -->
-    <div v-else-if="activeTab === 'encoder'" class="tab-panel">
-      <NumberEncoderView :isEmbedded="true" :initialNumber="encoderNumber" :initialMode="encoderMode" />
-    </div>
+          <!-- Sub-tab 1: Progress Summary (Mobile Only) -->
+          <div v-if="overviewSubTab === 'progress' && !isDesktop" class="overview-sub-panel mobile-only-block">
+            <!-- Header Summary Card -->
+            <div class="dashboard-summary card mb-16">
+              <div class="summary-header">
+                <h2>學習概覽</h2>
+                <span class="version-tag" v-if="manifest">v{{ manifest.contentVersion }}</span>
+              </div>
+              <div class="summary-stats">
+                <div class="stat-item">
+                  <span class="stat-num">{{ stats.completedItems }} / 101</span>
+                  <span class="stat-label">已學習數字</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-num text-primary">{{ appStore.dueCardCount }}</span>
+                  <span class="stat-label">待複習卡片</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-num text-success">{{ stats.masteredItems }}</span>
+                  <span class="stat-label">精熟數字</span>
+                </div>
+              </div>
+              <div class="quick-actions mt-16">
+                <button 
+                  class="btn btn-primary" 
+                  :disabled="appStore.dueCardCount === 0"
+                  @click="startGlobalReview"
+                >
+                  ⏳ 複習 ({{ appStore.dueCardCount }} 題)
+                </button>
+                <button 
+                  class="btn btn-secondary" 
+                  @click="startGlobalTest"
+                >
+                  ✍️ 測驗
+                </button>
+                <button 
+                  class="btn btn-secondary" 
+                  @click="startFlashCards"
+                >
+                  🃏 卡牌
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sub-tab 2: Lessons Catalog (Mobile when tab === 'lessons', always on desktop) -->
+          <div v-if="overviewSubTab === 'lessons' || isDesktop" class="overview-sub-panel">
+            <h3 class="section-title mb-12 desktop-only-block">📚 課程目錄</h3>
+            <div class="lessons-list card">
+              <div v-for="l in lessons" :key="l.id" class="lesson-row">
+                <div class="lesson-info">
+                  <div class="lesson-title-container">
+                    <span class="lesson-mode-tag" :class="l.mode">
+                      {{ l.mode === 'pair' ? '配對' : '故事' }}
+                    </span>
+                    <span class="lesson-name">{{ l.title }}</span>
+                  </div>
+                  <div class="lesson-meta text-muted">
+                    數字範圍: {{ l.rangeStart }} – {{ l.rangeEnd }}
+                    <span class="dot-separator">•</span>
+                    已記: {{ getLessonProgress(l.id)?.completedSceneIds.length || 0 }} / {{ l.sceneIds.length }}
+                  </div>
+                </div>
+                
+                <div class="lesson-actions">
+                  <button class="btn btn-secondary btn-sm" @click="startLesson(l.id)">
+                    📖 學習
+                  </button>
+                  <button class="btn btn-primary btn-sm" @click="startQuiz(l.id)">
+                    ✍️ 測驗
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ENCODER TAB -->
+        <div v-else-if="activeTab === 'encoder'" class="tab-panel">
+          <NumberEncoderView :isEmbedded="true" :initialNumber="encoderNumber" :initialMode="encoderMode" />
+        </div>
 
     <!-- CONSTANTS TAB -->
     <div v-else-if="activeTab === 'constants'" class="tab-panel">
@@ -223,10 +275,11 @@
           <h3>⚖️ 學術對照與深層耦合</h3>
         </div>
 
-        <!-- TWO E COMPARE CARD -->
-        <div class="topic-card mb-16">
-          <div class="topic-title mb-12">兩個 「e」 的深度學術釐清</div>
-          <p class="topic-desc mb-12">在科學領域中，小寫字母 <code>e</code> 同時被用作物理的「基本電荷」與數學的「歐拉數」。以下為兩者的對照：</p>
+        <div class="special-topics-grid">
+          <!-- TWO E COMPARE CARD -->
+          <div class="topic-card mb-16">
+            <div class="topic-title mb-12">兩個 「e」 的深度學術釐清</div>
+            <p class="topic-desc mb-12">在科學領域中，小寫字母 <code>e</code> 同時被用作物理的「基本電荷」與數學的「歐拉數」。以下為兩者的對照：</p>
           <div class="table-responsive">
             <table class="compare-table">
               <thead>
@@ -293,12 +346,15 @@
           </div>
         </div>
       </div>
+      </div>
+      </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, watch } from 'vue';
+import { ref, reactive, onMounted, onUnmounted, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAppStore } from '../stores/app';
 import { contentRepo, progressRepo } from '../repositories';
@@ -314,6 +370,13 @@ const activeTab = ref<'overview' | 'encoder' | 'constants'>('overview');
 const overviewSubTab = ref<'progress' | 'lessons'>('progress');
 const encoderNumber = ref('');
 const encoderMode = ref<'double' | 'single'>('double');
+
+const isDesktop = ref(false);
+let mediaQuery: MediaQueryList | null = null;
+
+const handleMediaChange = (e: MediaQueryListEvent | MediaQueryList) => {
+  isDesktop.value = e.matches;
+};
 
 interface Constant {
   id: string;
@@ -593,6 +656,10 @@ const stats = reactive({
 });
 
 onMounted(async () => {
+  mediaQuery = window.matchMedia('(min-width: 1024px)');
+  isDesktop.value = mediaQuery.matches;
+  mediaQuery.addEventListener('change', handleMediaChange);
+
   if (route.query.tab === 'encoder' || route.query.number) {
     activeTab.value = 'encoder';
     encoderNumber.value = String(route.query.number || '');
@@ -614,6 +681,12 @@ onMounted(async () => {
   
   // Calculate aggregate stats
   calculateStats();
+});
+
+onUnmounted(() => {
+  if (mediaQuery) {
+    mediaQuery.removeEventListener('change', handleMediaChange);
+  }
 });
 
 watch(() => route.query, (q) => {
@@ -1231,5 +1304,90 @@ html.dark .constant-card:hover {
   border-radius: 6px;
   cursor: pointer;
   line-height: 1.2;
+}
+
+/* Desktop Responsive Layout Enhancements */
+.mobile-only-block {
+  display: block;
+}
+
+.desktop-only-block {
+  display: none;
+}
+
+.dashboard-sidebar {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .mobile-only-block {
+    display: none !important;
+  }
+
+  .desktop-only-block {
+    display: block !important;
+  }
+
+  .dashboard-layout-wrapper {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .dashboard-sidebar {
+    display: block;
+    width: 320px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 90px;
+    z-index: 10;
+  }
+
+  .dashboard-main-content {
+    flex: 1;
+    min-width: 0; /* Prevent flex overflow */
+  }
+
+  /* Grid Layouts on Desktop */
+  .lessons-list {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)) !important;
+    gap: 16px !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .lesson-row {
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--border-radius-md) !important;
+    background: var(--bg-card) !important;
+    padding: 20px !important;
+    margin-bottom: 0 !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .lesson-actions {
+    width: 100% !important;
+    justify-content: flex-end !important;
+    margin-top: auto;
+  }
+
+  .constants-container {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)) !important;
+    gap: 16px !important;
+  }
+
+  .special-topics-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 16px !important;
+  }
 }
 </style>

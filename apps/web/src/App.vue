@@ -14,7 +14,16 @@
   <div v-else class="app-layout">
     <header class="app-header">
       <router-link to="/" class="app-title">🧠 數字鎖鏈 NChain</router-link>
-      <div class="header-actions">
+      <div class="header-actions" style="display: flex; align-items: center;">
+        <nav class="desktop-nav">
+          <router-link to="/" class="desktop-nav-item">📊 概覽</router-link>
+          <router-link to="/catalog" class="desktop-nav-item">📖 圖鑑</router-link>
+          <router-link to="/review" class="desktop-nav-item">
+            ⏳ 複習
+            <span v-if="appStore.dueCardCount > 0" class="nav-badge">{{ appStore.dueCardCount }}</span>
+          </router-link>
+          <router-link to="/settings" class="desktop-nav-item">⚙️ 設定</router-link>
+        </nav>
         <button class="icon-btn" @click="toggleTheme" :title="themeTitle">
           {{ appStore.settings.theme === 'dark' ? '☀️' : '🌙' }}
         </button>

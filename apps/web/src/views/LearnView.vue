@@ -23,155 +23,163 @@
     </div>
 
     <!-- PAIR MODE PLAYER -->
-    <div v-else-if="lesson.mode === 'pair' && currentPairScene && !isLessonCompleted" class="player-container">
-      <div class="flashcard-wrapper">
-        <!-- CARD DISPLAY -->
-        <div class="flashcard-inner">
-          
-          <!-- FRONT SIDE (From Item) -->
-          <div class="card-side card-front card" v-if="!isRevealed">
-            <span class="card-indicator">起點字 / 提示</span>
+    <div v-else-if="lesson.mode === 'pair' && currentPairScene && !isLessonCompleted" class="player-container learn-split-layout">
+      <div class="learn-left-col">
+        <div class="flashcard-wrapper">
+          <!-- CARD DISPLAY -->
+          <div class="flashcard-inner">
             
-            <div class="graphic-container">
-              <img 
-                v-if="hasIcon(currentPairScene.fromItemId)" 
-                :src="getIconUrl(currentPairScene.fromItemId)" 
-                @error="handleIconError(currentPairScene.fromItemId)" 
-                class="large-icon-img" 
-                alt="icon" 
-              />
-              <div v-else class="large-icon-placeholder">
-                <span class="placeholder-char-large">{{ currentPairScene.displayFromKeyword[0] }}</span>
+            <!-- FRONT SIDE (From Item) -->
+            <div class="card-side card-front card" v-if="!isRevealed">
+              <span class="card-indicator">起點字 / 提示</span>
+              
+              <div class="graphic-container">
+                <img 
+                  v-if="hasIcon(currentPairScene.fromItemId)" 
+                  :src="getIconUrl(currentPairScene.fromItemId)" 
+                  @error="handleIconError(currentPairScene.fromItemId)" 
+                  class="large-icon-img" 
+                  alt="icon" 
+                />
+                <div v-else class="large-icon-placeholder">
+                  <span class="placeholder-char-large">{{ currentPairScene.displayFromKeyword[0] }}</span>
+                </div>
+              </div>
+              
+              <div class="meta-container mt-16">
+                <span class="item-number-badge">{{ currentPairScene.fromItemId.split('-')[1] }}</span>
+                <span class="item-keyword-large">{{ currentPairScene.displayFromKeyword }}</span>
               </div>
             </div>
-            
-            <div class="meta-container mt-16">
-              <span class="item-number-badge">{{ currentPairScene.fromItemId.split('-')[1] }}</span>
-              <span class="item-keyword-large">{{ currentPairScene.displayFromKeyword }}</span>
-            </div>
-          </div>
 
-          <!-- BACK SIDE (To Item) -->
-          <div class="card-side card-back card" v-else>
-            <span class="card-indicator">聯想目標字 / 答案</span>
-            
-            <div class="graphic-container">
-              <img 
-                v-if="hasIcon(currentPairScene.toItemId)" 
-                :src="getIconUrl(currentPairScene.toItemId)" 
-                @error="handleIconError(currentPairScene.toItemId)" 
-                class="large-icon-img" 
-                alt="icon" 
-              />
-              <div v-else class="large-icon-placeholder">
-                <span class="placeholder-char-large">{{ currentPairScene.displayToKeyword[0] }}</span>
+            <!-- BACK SIDE (To Item) -->
+            <div class="card-side card-back card" v-else>
+              <span class="card-indicator">聯想目標字 / 答案</span>
+              
+              <div class="graphic-container">
+                <img 
+                  v-if="hasIcon(currentPairScene.toItemId)" 
+                  :src="getIconUrl(currentPairScene.toItemId)" 
+                  @error="handleIconError(currentPairScene.toItemId)" 
+                  class="large-icon-img" 
+                  alt="icon" 
+                />
+                <div v-else class="large-icon-placeholder">
+                  <span class="placeholder-char-large">{{ currentPairScene.displayToKeyword[0] }}</span>
+                </div>
+              </div>
+              
+              <div class="meta-container mt-16">
+                <span class="item-number-badge dest">{{ currentPairScene.toItemId.split('-')[1] }}</span>
+                <span class="item-keyword-large">{{ currentPairScene.displayToKeyword }}</span>
               </div>
             </div>
-            
-            <div class="meta-container mt-16">
-              <span class="item-number-badge dest">{{ currentPairScene.toItemId.split('-')[1] }}</span>
-              <span class="item-keyword-large">{{ currentPairScene.displayToKeyword }}</span>
-            </div>
-          </div>
 
+          </div>
         </div>
       </div>
 
-      <!-- REVEAL CONTROL (When NOT revealed) -->
-      <div class="reveal-actions mt-24" v-if="!isRevealed">
-        <button class="btn btn-primary btn-reveal w-full py-16" @click="revealAnswer">
-          👁️ 顯示下一個字與聯想畫面
-        </button>
-      </div>
-
-      <!-- ASSOCIATION & RATING (When revealed) -->
-      <div class="revealed-content mt-24" v-else>
-        <!-- Story / Illustration -->
-        <div class="association-details-card card p-20 mb-20">
-          <div class="association-header mb-12">
-            <span class="association-tag">💡 聯想故事鏈</span>
-            <div class="association-flow">
-              <span>【{{ currentPairScene.fromItemId.split('-')[1] }} {{ currentPairScene.displayFromKeyword }}】</span>
-              <span class="flow-arrow">➔</span>
-              <span class="highlight">【{{ currentPairScene.toItemId.split('-')[1] }} {{ currentPairScene.displayToKeyword }}】</span>
-            </div>
-          </div>
-          
-          <p class="scene-story-text">{{ currentPairScene.sceneText }}</p>
-
-          <!-- Scene Illustration if exists -->
-          <div class="scene-illustration-wrapper mt-16" v-if="hasIllustration(currentPairScene)">
-            <img :src="getIllustrationUrl(currentPairScene)" class="scene-illustration-img" alt="聯想畫面插圖" />
-          </div>
+      <div class="learn-right-col">
+        <!-- REVEAL CONTROL (When NOT revealed) -->
+        <div class="reveal-actions" v-if="!isRevealed">
+          <button class="btn btn-primary btn-reveal w-full py-16" @click="revealAnswer">
+            👁️ 顯示下一個字與聯想畫面
+          </button>
         </div>
 
-        <!-- Rating Buttons -->
-        <div class="rating-section">
-          <p class="rating-prompt text-center mb-12">請在腦海中複習此聯想畫面，並記錄熟練度：</p>
-          <div class="buttons-grid">
-            <button class="btn btn-danger rate-btn" @click="submitRating('forgot')">
-              <span class="rate-title">忘記</span>
-              <span class="rate-sub">重來</span>
-            </button>
-            <button class="btn btn-warning rate-btn" @click="submitRating('hard')">
-              <span class="rate-title">模糊</span>
-              <span class="rate-sub">減半</span>
-            </button>
-            <button class="btn btn-primary rate-btn" @click="submitRating('good')">
-              <span class="rate-title">記得</span>
-              <span class="rate-sub">升箱</span>
-            </button>
-            <button class="btn rate-btn btn-easy" @click="submitRating('easy')">
-              <span class="rate-title">輕鬆</span>
-              <span class="rate-sub">+2箱</span>
-            </button>
+        <!-- ASSOCIATION & RATING (When revealed) -->
+        <div class="revealed-content" v-else>
+          <!-- Story / Illustration -->
+          <div class="association-details-card card p-20 mb-20">
+            <div class="association-header mb-12">
+              <span class="association-tag">💡 聯想故事鏈</span>
+              <div class="association-flow">
+                <span>【{{ currentPairScene.fromItemId.split('-')[1] }} {{ currentPairScene.displayFromKeyword }}】</span>
+                <span class="flow-arrow">➔</span>
+                <span class="highlight">【{{ currentPairScene.toItemId.split('-')[1] }} {{ currentPairScene.displayToKeyword }}】</span>
+              </div>
+            </div>
+            
+            <p class="scene-story-text">{{ currentPairScene.sceneText }}</p>
+
+            <!-- Scene Illustration if exists -->
+            <div class="scene-illustration-wrapper mt-16" v-if="hasIllustration(currentPairScene)">
+              <img :src="getIllustrationUrl(currentPairScene)" class="scene-illustration-img" alt="聯想畫面插圖" />
+            </div>
+          </div>
+
+          <!-- Rating Buttons -->
+          <div class="rating-section">
+            <p class="rating-prompt text-center mb-12">請在腦海中複習此聯想畫面，並記錄熟練度：</p>
+            <div class="buttons-grid">
+              <button class="btn btn-danger rate-btn" @click="submitRating('forgot')">
+                <span class="rate-title">忘記</span>
+                <span class="rate-sub">重來</span>
+              </button>
+              <button class="btn btn-warning rate-btn" @click="submitRating('hard')">
+                <span class="rate-title">模糊</span>
+                <span class="rate-sub">減半</span>
+              </button>
+              <button class="btn btn-primary rate-btn" @click="submitRating('good')">
+                <span class="rate-title">記得</span>
+                <span class="rate-sub">升箱</span>
+              </button>
+              <button class="btn rate-btn btn-easy" @click="submitRating('easy')">
+                <span class="rate-title">輕鬆</span>
+                <span class="rate-sub">+2箱</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <!-- NARRATIVE MODE PLAYER (Story highlights) -->
-    <div v-else-if="lesson.mode === 'narrative' && currentNarrativeScene && !isLessonCompleted" class="player-container">
-      <div class="blind-toggle-container mb-16">
-        <label class="switch-label">
-          <input type="checkbox" v-model="appStore.settings.blindRecall" />
-          <span class="switch-text">👁️ 啟用盲背模式 (點擊遮罩揭露關鍵字)</span>
-        </label>
-      </div>
+    <div v-else-if="lesson.mode === 'narrative' && currentNarrativeScene && !isLessonCompleted" class="player-container learn-split-layout">
+      <div class="learn-left-col">
+        <div class="blind-toggle-container mb-16">
+          <label class="switch-label">
+            <input type="checkbox" v-model="appStore.settings.blindRecall" />
+            <span class="switch-text">👁️ 啟用盲背模式 (點擊遮罩揭露關鍵字)</span>
+          </label>
+        </div>
 
-      <div class="story-card card">
-        <div class="story-scene-content">
-          <div class="tokens-flow">
-            <template v-for="(token, tIdx) in currentNarrativeScene.tokens" :key="tIdx">
-              <!-- Item Token -->
-              <span 
-                v-if="token.itemId" 
-                class="token-item" 
-                :class="{ 
-                  masked: appStore.settings.blindRecall && !unmaskedTokens.has(tIdx),
-                  unmasked: unmaskedTokens.has(tIdx)
-                }"
-                @click="revealToken(tIdx)"
-              >
-                {{ appStore.settings.blindRecall && !unmaskedTokens.has(tIdx) ? '[ ❓ 點擊揭露 ]' : token.text }}
-              </span>
-              <!-- Plain Text Token -->
-              <span v-else class="token-text">{{ token.text }}</span>
-            </template>
+        <div class="story-card card">
+          <div class="story-scene-content">
+            <div class="tokens-flow">
+              <template v-for="(token, tIdx) in currentNarrativeScene.tokens" :key="tIdx">
+                <!-- Item Token -->
+                <span 
+                  v-if="token.itemId" 
+                  class="token-item" 
+                  :class="{ 
+                    masked: appStore.settings.blindRecall && !unmaskedTokens.has(tIdx),
+                    unmasked: unmaskedTokens.has(tIdx)
+                  }"
+                  @click="revealToken(tIdx)"
+                >
+                  {{ appStore.settings.blindRecall && !unmaskedTokens.has(tIdx) ? '[ ❓ 點擊揭露 ]' : token.text }}
+                </span>
+                <!-- Plain Text Token -->
+                <span v-else class="token-text">{{ token.text }}</span>
+              </template>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Image Placeholder -->
-      <div class="image-placeholder mt-16">
-        <span class="image-icon">🎭</span>
-        <span class="image-label">劇本插圖</span>
-      </div>
+      <div class="learn-right-col">
+        <!-- Image Placeholder -->
+        <div class="image-placeholder">
+          <span class="image-icon">🎭</span>
+          <span class="image-label">劇本插圖</span>
+        </div>
 
-      <div class="player-actions mt-16">
-        <button class="btn btn-primary w-full py-14" @click="nextNarrativeScene">
-          {{ currentSceneIndex < totalScenes - 1 ? '➡️ 下一幕' : '🏁 查看故事總結' }}
-        </button>
+        <div class="player-actions mt-16">
+          <button class="btn btn-primary w-full py-14" @click="nextNarrativeScene">
+            {{ currentSceneIndex < totalScenes - 1 ? '➡️ 下一幕' : '🏁 查看故事總結' }}
+          </button>
+        </div>
       </div>
     </div>
 
@@ -846,5 +854,43 @@ const startQuizDirect = () => {
   color: var(--text-primary);
   line-height: 1.6;
   border: 1px solid var(--border-color);
+}
+
+/* Learn split layout responsive rules */
+.learn-split-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@media (min-width: 1024px) {
+  .learn-split-layout {
+    flex-direction: row !important;
+    gap: 32px !important;
+    align-items: flex-start !important;
+  }
+
+  .learn-left-col {
+    flex: 1.1 !important;
+    min-width: 0;
+  }
+
+  .learn-right-col {
+    flex: 0.9 !important;
+    min-width: 0;
+    position: sticky;
+    top: 90px;
+  }
+
+  .flashcard-wrapper {
+    max-width: 100% !important;
+  }
+
+  .rating-section {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 20px;
+    border-radius: var(--border-radius-lg);
+  }
 }
 </style>
