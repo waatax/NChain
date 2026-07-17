@@ -126,7 +126,7 @@
 
     <!-- ENCODER TAB -->
     <div v-else-if="activeTab === 'encoder'" class="tab-panel">
-      <NumberEncoderView :isEmbedded="true" />
+      <NumberEncoderView :isEmbedded="true" :initialNumber="encoderNumber" :initialMode="encoderMode" />
     </div>
 
     <!-- CONSTANTS TAB -->
@@ -149,40 +149,30 @@
                 <span class="constant-en-name">{{ c.engName }}</span>
               </div>
             </div>
-            <div class="constant-chevron">
-              {{ expandedConstantId === c.id ? '▲' : '▼' }}
+            <div class="constant-actions" @click.stop>
+              <button class="btn btn-secondary btn-xs" @click="goToEncoder(c.digits)">
+                🔗 數字編碼
+              </button>
+              <div class="constant-chevron" @click="toggleConstant(c.id)">
+                {{ expandedConstantId === c.id ? '▲' : '▼' }}
+              </div>
             </div>
           </div>
           
           <div class="constant-brief" v-if="expandedConstantId !== c.id">
-            <div class="constant-value-row">
-              <div class="constant-value" v-html="c.valueHtml"></div>
-              <button class="btn btn-secondary btn-xs" @click.stop="goToEncoder(c.digits)">
-                🔗 編碼
-              </button>
-            </div>
+            <div class="constant-value" v-html="c.valueHtml"></div>
             <p class="constant-tagline">{{ c.tagline }}</p>
           </div>
           
           <div class="constant-details" v-else @click.stop>
             <div class="constant-value-large mb-12">
               <span class="detail-label">定義值：</span>
-              <div class="constant-value-row">
-                <div class="value-text" v-html="c.valueHtml"></div>
-                <button class="btn btn-secondary btn-xs" @click="goToEncoder(c.digits)">
-                  🔗 數字編碼
-                </button>
-              </div>
+              <div class="value-text" v-html="c.valueHtml"></div>
             </div>
             
             <div class="constant-value-large mb-12" v-if="c.approxValueHtml">
               <span class="detail-label">約略值：</span>
-              <div class="constant-value-row">
-                <div class="value-text" v-html="c.approxValueHtml"></div>
-                <button class="btn btn-secondary btn-xs" @click="goToEncoder(c.digits)">
-                  🔗 數字編碼
-                </button>
-              </div>
+              <div class="value-text" v-html="c.approxValueHtml"></div>
             </div>
             
             <div class="detail-section mb-12">
@@ -322,6 +312,8 @@ const appStore = useAppStore();
 
 const activeTab = ref<'overview' | 'encoder' | 'constants'>('overview');
 const overviewSubTab = ref<'progress' | 'lessons'>('progress');
+const encoderNumber = ref('');
+const encoderMode = ref<'double' | 'single'>('double');
 
 interface Constant {
   id: string;
@@ -557,16 +549,20 @@ const constants = ref<Constant[]>([
 
 constants.value.forEach(c => {
   if (c.id === 'c') c.digits = '299792458';
-  else if (c.id === 'h') c.digits = '662607015';
-  else if (c.id === 'Na') c.digits = '602214076';
-  else if (c.id === 'G') c.digits = '667430';
-  else if (c.id === 'e_charge') c.digits = '1602176634';
-  else if (c.id === 'kb') c.digits = '1380649';
-  else if (c.id === 'pi') c.digits = '31415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679';
-  else if (c.id === 'e_euler') c.digits = '271828182845904523536';
+  else if (c.id === 'h') c.digits = '6.62607015';
+  else if (c.id === 'Na') c.digits = '6.02214076';
+  else if (c.id === 'G') c.digits = '6.67430';
+  else if (c.id === 'e_charge') c.digits = '1.602176634';
+  else if (c.id === 'kb') c.digits = '1.380649';
+  else if (c.id === 'pi') c.digits = '3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679';
+  else if (c.id === 'e_euler') c.digits = '2.71828182845904523536';
 });
 
 const goToEncoder = (digits?: string) => {
+  encoderNumber.value = digits || '';
+  encoderMode.value = 'double';
+  activeTab.value = 'encoder';
+  
   router.push({
     path: '/',
     query: {
@@ -599,6 +595,10 @@ const stats = reactive({
 onMounted(async () => {
   if (route.query.tab === 'encoder' || route.query.number) {
     activeTab.value = 'encoder';
+    encoderNumber.value = String(route.query.number || '');
+    if (route.query.mode === 'single' || route.query.mode === 'double') {
+      encoderMode.value = route.query.mode;
+    }
   } else if (route.query.tab === 'constants') {
     activeTab.value = 'constants';
   } else if (route.query.tab === 'overview') {
@@ -616,15 +616,22 @@ onMounted(async () => {
   calculateStats();
 });
 
-watch(() => route.query.tab, (newTab) => {
-  if (newTab === 'encoder') {
+watch(() => route.query, (q) => {
+  if (q.tab === 'encoder') {
     activeTab.value = 'encoder';
-  } else if (newTab === 'constants') {
+  } else if (q.tab === 'constants') {
     activeTab.value = 'constants';
-  } else if (newTab === 'overview') {
+  } else if (q.tab === 'overview') {
     activeTab.value = 'overview';
   }
-});
+  
+  if (q.number !== undefined) {
+    encoderNumber.value = String(q.number || '');
+  }
+  if (q.mode === 'single' || q.mode === 'double') {
+    encoderMode.value = q.mode;
+  }
+}, { deep: true });
 
 const getLessonProgress = (id: string): ProgressState | undefined => {
   return progressMap.get(id);
@@ -1209,6 +1216,12 @@ html.dark .constant-card:hover {
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
+}
+
+.constant-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .btn-xs {

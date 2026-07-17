@@ -134,12 +134,27 @@ import { contentRepo } from '../repositories';
 
 const props = defineProps<{
   isEmbedded?: boolean;
+  initialNumber?: string;
+  initialMode?: 'double' | 'single';
 }>();
 
 const router = useRouter();
 const route = useRoute();
 const inputString = ref('');
 const encodingMode = ref<'double' | 'single'>('double');
+
+// Watch props for embedded mode
+watch(() => props.initialNumber, (newVal) => {
+  if (newVal !== undefined) {
+    inputString.value = newVal;
+  }
+}, { immediate: true });
+
+watch(() => props.initialMode, (newVal) => {
+  if (newVal) {
+    encodingMode.value = newVal;
+  }
+}, { immediate: true });
 
 const updateFromQuery = () => {
   const num = route.query.number;
