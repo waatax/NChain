@@ -677,7 +677,7 @@ const closeDetail = () => {
   gap: 16px;
 }
 
-@media (min-width: 1024px) {
+.layout-landscape {
   .catalog-layout-wrapper {
     flex-direction: row !important;
     gap: 24px !important;

@@ -3,6 +3,7 @@ export interface LocalSettings {
   blindRecall: boolean;
   reducedMotion: boolean;
   downloadedImagesOnly: boolean;
+  forceLayout?: 'auto' | 'portrait' | 'landscape';
 }
 
 const SETTINGS_KEY = 'number-chain.settings.v1';
@@ -11,7 +12,8 @@ const DEFAULT_SETTINGS: LocalSettings = {
   theme: 'light',
   blindRecall: false,
   reducedMotion: false,
-  downloadedImagesOnly: false
+  downloadedImagesOnly: false,
+  forceLayout: 'auto'
 };
 
 export class SettingsRepository {

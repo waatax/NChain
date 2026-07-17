@@ -11,7 +11,7 @@
     <button class="btn btn-primary mt-16" @click="appStore.initialize">重試</button>
   </div>
 
-  <div v-else class="app-layout">
+  <div v-else class="app-layout" :class="{ 'layout-landscape': isLandscapeMode }">
     <header class="app-header">
       <router-link to="/" class="app-title">🧠 數字鎖鏈 NChain</router-link>
       <div class="header-actions" style="display: flex; align-items: center;">
@@ -24,6 +24,10 @@
           </router-link>
           <router-link to="/settings" class="desktop-nav-item">⚙️ 設定</router-link>
         </nav>
+        <!-- Layout Mode Switcher -->
+        <button class="icon-btn" @click="toggleLayoutMode" :title="layoutTitle" style="margin-right: 8px; font-size: 1.05rem;">
+          {{ layoutIcon }}
+        </button>
         <button class="icon-btn" @click="toggleTheme" :title="themeTitle">
           {{ appStore.settings.theme === 'dark' ? '☀️' : '🌙' }}
         </button>
@@ -59,14 +63,64 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, computed } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useAppStore } from './stores/app';
 
 const appStore = useAppStore();
 
+const isWidescreen = ref(false);
+let mediaQuery: MediaQueryList | null = null;
+
+const handleMediaChange = (e: MediaQueryListEvent | MediaQueryList) => {
+  isWidescreen.value = e.matches;
+};
+
 onMounted(() => {
   appStore.initialize();
+  mediaQuery = window.matchMedia('(min-width: 1024px)');
+  isWidescreen.value = mediaQuery.matches;
+  mediaQuery.addEventListener('change', handleMediaChange);
 });
+
+onUnmounted(() => {
+  if (mediaQuery) {
+    mediaQuery.removeEventListener('change', handleMediaChange);
+  }
+});
+
+const isLandscapeMode = computed(() => {
+  const force = appStore.settings.forceLayout || 'auto';
+  if (force === 'portrait') return false;
+  if (force === 'landscape') return true;
+  return isWidescreen.value;
+});
+
+const layoutIcon = computed(() => {
+  const force = appStore.settings.forceLayout || 'auto';
+  if (force === 'portrait') return '📱';
+  if (force === 'landscape') return '💻';
+  return '🔄';
+});
+
+const layoutTitle = computed(() => {
+  const force = appStore.settings.forceLayout || 'auto';
+  if (force === 'portrait') return '版面：強制直式';
+  if (force === 'landscape') return '版面：強制橫式';
+  return '版面：自適應';
+});
+
+const toggleLayoutMode = () => {
+  const current = appStore.settings.forceLayout || 'auto';
+  let next: 'auto' | 'portrait' | 'landscape' = 'auto';
+  if (current === 'auto') {
+    next = 'landscape';
+  } else if (current === 'landscape') {
+    next = 'portrait';
+  } else {
+    next = 'auto';
+  }
+  appStore.updateSettings({ forceLayout: next });
+};
 
 const themeTitle = computed(() => 
   appStore.settings.theme === 'dark' ? '切換成淺色模式' : '切換成深色模式'

@@ -277,26 +277,27 @@ a:hover {
 }
 
 /* Widescreen Desktop Styles */
-@media (min-width: 1024px) {
-  .container {
-    max-width: 1200px !important;
-    padding-bottom: 32px !important; /* Remove bottom nav bar space */
-  }
+.layout-landscape .container {
+  max-width: 1200px !important;
+  padding-bottom: 32px !important; /* Remove bottom nav bar space */
+}
 
-  .bottom-nav {
-    display: none !important;
-  }
+.layout-landscape .bottom-nav {
+  display: none !important;
+}
 
-  .desktop-nav {
-    display: flex !important;
-  }
+.layout-landscape .desktop-nav {
+  display: flex !important;
+}
 
-  /* Centered card players for reviews & tests */
-  .player-container, .quiz-container, .results-container, .error-summary-card {
-    max-width: 800px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-    width: 100% !important;
-  }
+/* Centered card players for reviews & tests */
+.layout-landscape .player-container, 
+.layout-landscape .quiz-container, 
+.layout-landscape .results-container, 
+.layout-landscape .error-summary-card {
+  max-width: 800px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  width: 100% !important;
 }
 

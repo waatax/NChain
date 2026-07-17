@@ -371,12 +371,21 @@ const overviewSubTab = ref<'progress' | 'lessons'>('progress');
 const encoderNumber = ref('');
 const encoderMode = ref<'double' | 'single'>('double');
 
-const isDesktop = ref(false);
+import { computed } from 'vue';
+
+const isWidescreen = ref(false);
 let mediaQuery: MediaQueryList | null = null;
 
 const handleMediaChange = (e: MediaQueryListEvent | MediaQueryList) => {
-  isDesktop.value = e.matches;
+  isWidescreen.value = e.matches;
 };
+
+const isDesktop = computed(() => {
+  const force = appStore.settings.forceLayout || 'auto';
+  if (force === 'portrait') return false;
+  if (force === 'landscape') return true;
+  return isWidescreen.value;
+});
 
 interface Constant {
   id: string;
@@ -657,7 +666,7 @@ const stats = reactive({
 
 onMounted(async () => {
   mediaQuery = window.matchMedia('(min-width: 1024px)');
-  isDesktop.value = mediaQuery.matches;
+  isWidescreen.value = mediaQuery.matches;
   mediaQuery.addEventListener('change', handleMediaChange);
 
   if (route.query.tab === 'encoder' || route.query.number) {
@@ -1319,7 +1328,7 @@ html.dark .constant-card:hover {
   display: none;
 }
 
-@media (min-width: 1024px) {
+.layout-landscape {
   .mobile-only-block {
     display: none !important;
   }

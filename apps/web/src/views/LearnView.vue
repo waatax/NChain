@@ -863,7 +863,7 @@ const startQuizDirect = () => {
   gap: 16px;
 }
 
-@media (min-width: 1024px) {
+.layout-landscape {
   .learn-split-layout {
     flex-direction: row !important;
     gap: 32px !important;
