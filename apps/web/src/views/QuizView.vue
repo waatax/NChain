@@ -27,6 +27,20 @@
         <div class="question-text mt-16 text-center">
           <p class="prompt">{{ currentQuestion.prompt }}</p>
           <p class="sub-prompt" v-if="currentQuestion.subPrompt">{{ currentQuestion.subPrompt }}</p>
+          
+          <!-- Watercolor icon directly in prompt for Keyword to Number -->
+          <div class="prompt-icon-container my-12" v-if="currentQuestion.type === 'keyword-to-number' && targetMnemonicItem">
+            <img 
+              v-if="hasIcon(targetMnemonicItem.id)" 
+              :src="getIconUrl(targetMnemonicItem.id)" 
+              @error="handleIconError(targetMnemonicItem.id)"
+              class="prompt-graphic-img" 
+              alt="icon" 
+            />
+            <div v-else class="prompt-graphic-placeholder">
+              <span class="prompt-placeholder-char">{{ targetMnemonicItem.canonicalKeyword ? targetMnemonicItem.canonicalKeyword[0] : '？' }}</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -45,6 +59,42 @@
         </button>
       </div>
 
+      <!-- Answer Feedback details -->
+      <div class="feedback-card card mt-16" v-if="selectedOption !== null">
+        <div class="feedback-header" :class="isCorrect ? 'text-success' : 'text-danger'">
+          <span class="fb-icon">{{ isCorrect ? '✅' : '❌' }}</span>
+          <span class="fb-title">{{ isCorrect ? '答對了！' : '答錯了！' }}</span>
+        </div>
+        
+        <div class="feedback-body mt-8">
+          <p class="ans-explain">
+            正確答案是: <span class="font-bold text-primary">{{ currentQuestion.answer.display }}</span>
+          </p>
+          
+          <!-- Icon Display in Feedback -->
+          <div class="feedback-icon-container my-12" v-if="targetMnemonicItem">
+            <img 
+              v-if="hasIcon(targetMnemonicItem.id)" 
+              :src="getIconUrl(targetMnemonicItem.id)" 
+              @error="handleIconError(targetMnemonicItem.id)"
+              class="feedback-graphic-img" 
+              alt="icon" 
+            />
+            <div v-else class="feedback-graphic-placeholder">
+              <span class="feedback-placeholder-char">{{ targetMnemonicItem.canonicalKeyword ? targetMnemonicItem.canonicalKeyword[0] : '？' }}</span>
+            </div>
+          </div>
+          
+          <div class="hint-block mt-8" v-if="currentQuestion.association">
+            <span class="hint-label">💡 聯想畫面提示：</span>
+            <p class="hint-text">{{ currentQuestion.association }}</p>
+          </div>
+        </div>
+
+        <button class="btn btn-primary w-full mt-12 py-12" @click="nextQuestion">
+          下一題 ➡️
+        </button>
+      </div>
     </div>
 
     <!-- Quiz Results Screen -->
@@ -87,6 +137,7 @@ interface Question {
   answer: QuizOption;
   association?: string;
   cardId?: string; // For spaced repetition update
+  itemId?: string;
 }
 
 const props = defineProps<{
@@ -112,6 +163,12 @@ const progressPercent = computed(() => {
 const currentQuestion = computed((): Question | null => {
   if (questions.value.length === 0) return null;
   return questions.value[currentQuestionIndex.value];
+});
+
+const targetMnemonicItem = computed((): MnemonicItem | null => {
+  if (!currentQuestion.value || !currentQuestion.value.itemId) return null;
+  const item = contentRepo.getItem(currentQuestion.value.itemId);
+  return item || null;
 });
 
 onMounted(() => {
@@ -160,7 +217,8 @@ const createNumToKwQuestion = (item: MnemonicItem, allItems: MnemonicItem[]): Qu
     prompt: `數字【 ${item.number} 】對應的記憶聯想詞是？`,
     options,
     answer: { value: item.number, display: item.canonicalKeyword },
-    cardId: `${item.id}_number-to-keyword`
+    cardId: `${item.id}_number-to-keyword`,
+    itemId: item.id
   };
 };
 
@@ -176,7 +234,8 @@ const createKwToNumQuestion = (item: MnemonicItem, allItems: MnemonicItem[]): Qu
     prompt: `聯想詞【 ${item.canonicalKeyword} 】對應的數字是？`,
     options,
     answer: { value: item.number, display: item.number },
-    cardId: `${item.id}_keyword-to-number`
+    cardId: `${item.id}_keyword-to-number`,
+    itemId: item.id
   };
 };
 
@@ -196,7 +255,8 @@ const createPairNextItemQuestion = (scene: PairScene, allItems: MnemonicItem[]):
     options,
     answer: { value: toNum, display: `${toNum} ${scene.displayToKeyword}` },
     association: scene.sceneText,
-    cardId: `${scene.fromItemId}_pair-next-item`
+    cardId: `${scene.fromItemId}_pair-next-item`,
+    itemId: scene.toItemId
   };
 };
 
@@ -225,7 +285,8 @@ const createStoryClozeQuestion = (scene: NarrativeScene, allItems: MnemonicItem[
     options,
     answer: { value: targetNum, display: cleanKeyword },
     association: scene.originalText,
-    cardId: `${targetItemId}_story-cloze`
+    cardId: `${targetItemId}_story-cloze`,
+    itemId: targetItemId
   };
 };
 
@@ -302,9 +363,6 @@ const selectOption = async (opt: QuizOption) => {
     await progressRepo.submitReviewResult(cardId, rating);
     await appStore.refreshReviewCounts();
   }
-
-  // Auto-advance to next question instantly
-  nextQuestion();
 };
 
 const nextQuestion = () => {
@@ -315,6 +373,25 @@ const nextQuestion = () => {
   } else {
     isQuizFinished.value = true;
   }
+};
+
+const failedIcons = ref<Set<string>>(new Set());
+
+const handleIconError = (itemId: string) => {
+  if (!itemId) return;
+  const num = itemId.split('-')[1];
+  failedIcons.value.add(num);
+};
+
+const hasIcon = (itemId: string): boolean => {
+  if (!itemId) return false;
+  const num = itemId.split('-')[1];
+  return !failedIcons.value.has(num);
+};
+
+const getIconUrl = (itemId: string): string => {
+  const num = itemId.split('-')[1];
+  return `${import.meta.env.BASE_URL || '/'}assets/icons/icon_${num}.png?v=3`;
 };
 
 const restartQuiz = () => {
@@ -568,5 +645,73 @@ const goBack = () => {
 .py-12 {
   padding-top: 12px;
   padding-bottom: 12px;
+}
+
+/* Prompt Icon Styles */
+.prompt-icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 16px auto;
+  max-width: 260px;
+}
+
+.prompt-graphic-img {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.08));
+}
+
+.prompt-graphic-placeholder {
+  width: 180px;
+  height: 180px;
+  background-color: var(--bg-secondary);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.prompt-placeholder-char {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+}
+
+/* Feedback Graphic Styles */
+.feedback-icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--bg-secondary);
+  border: 1px dashed var(--border-color);
+  border-radius: var(--border-radius-md);
+  padding: 24px;
+  max-width: 380px;
+  margin: 16px auto;
+}
+
+.feedback-graphic-img {
+  width: 280px;
+  height: 280px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.12));
+}
+
+.feedback-graphic-placeholder {
+  width: 240px;
+  height: 240px;
+  background-color: var(--bg-primary);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.feedback-placeholder-char {
+  font-size: 5.5rem;
+  font-weight: 800;
+  color: var(--text-secondary);
 }
 </style>

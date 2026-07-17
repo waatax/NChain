@@ -33,8 +33,21 @@
           </div>
 
           <!-- Type 2: Keyword to Number -->
-          <div v-else-if="currentCard.promptType === 'keyword-to-number'" class="center-kw">
-            {{ item?.canonicalKeyword }}
+          <div v-else-if="currentCard.promptType === 'keyword-to-number'" class="center-kw flex-col items-center">
+            <div class="center-kw-text mb-12">{{ item?.canonicalKeyword }}</div>
+            <!-- Display the watercolor icon directly in the prompt! -->
+            <div class="prompt-icon-container my-12" v-if="item">
+              <img 
+                v-if="hasIcon(item.id)" 
+                :src="getIconUrl(item.id)" 
+                @error="handleIconError(item.id)"
+                class="prompt-graphic-img" 
+                alt="icon" 
+              />
+              <div v-else class="prompt-graphic-placeholder">
+                <span class="prompt-placeholder-char">{{ item.canonicalKeyword ? item.canonicalKeyword[0] : '？' }}</span>
+              </div>
+            </div>
           </div>
 
           <!-- Type 3: Pair Next Item -->
@@ -607,6 +620,38 @@ const getIconUrl = (itemId: string): string => {
 
 .feedback-placeholder-char {
   font-size: 7.2rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+}
+
+/* Prompt Icon Styles */
+.prompt-icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 16px auto;
+  max-width: 260px;
+}
+
+.prompt-graphic-img {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.08));
+}
+
+.prompt-graphic-placeholder {
+  width: 180px;
+  height: 180px;
+  background-color: var(--bg-secondary);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.prompt-placeholder-char {
+  font-size: 3.5rem;
   font-weight: 800;
   color: var(--text-secondary);
 }

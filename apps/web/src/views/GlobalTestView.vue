@@ -108,8 +108,15 @@
         
         <div v-else class="errors-list mt-12">
           <div v-for="(err, idx) in incorrectQuestions" :key="idx" class="error-row mb-12">
-            <div class="error-row-header">
+            <div class="error-row-header" style="display: flex; align-items: center; gap: 8px;">
               <span class="badge-num">{{ err.item.number }}</span>
+              <img 
+                v-if="hasIcon(err.item.id)" 
+                :src="getIconUrl(err.item.id)" 
+                @error="handleIconError(err.item.id)"
+                class="error-thumbnail" 
+                alt="icon" 
+              />
               <span class="kw-text font-bold">{{ err.item.canonicalKeyword }}</span>
               <span class="text-danger" style="margin-left: auto; font-size: 0.8rem;">
                 您的回答: {{ err.userAnswer }}
@@ -364,6 +371,25 @@ const nextQuestion = () => {
     }
     gameState.value = 'results';
   }
+};
+
+const failedIcons = ref<Set<string>>(new Set());
+
+const handleIconError = (itemId: string) => {
+  if (!itemId) return;
+  const num = itemId.split('-')[1];
+  failedIcons.value.add(num);
+};
+
+const hasIcon = (itemId: string): boolean => {
+  if (!itemId) return false;
+  const num = itemId.split('-')[1];
+  return !failedIcons.value.has(num);
+};
+
+const getIconUrl = (itemId: string): string => {
+  const num = itemId.split('-')[1];
+  return `${import.meta.env.BASE_URL || '/'}assets/icons/icon_${num}.png?v=3`;
 };
 
 const restartTest = () => {
@@ -721,5 +747,15 @@ const goBack = () => {
 
 .mt-32 {
   margin-top: 32px;
+}
+
+.error-thumbnail {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  border-radius: 6px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  padding: 2px;
 }
 </style>
