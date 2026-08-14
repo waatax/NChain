@@ -1,0 +1,1117 @@
+[
+  {
+    "id": "item-00",
+    "number": "00",
+    "numericValue": 0,
+    "canonicalKeyword": "鎖鏈",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "B2"
+    }
+  },
+  {
+    "id": "item-01",
+    "number": "01",
+    "numericValue": 1,
+    "canonicalKeyword": "葉子",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "B3"
+    }
+  },
+  {
+    "id": "item-11",
+    "number": "11",
+    "numericValue": 11,
+    "canonicalKeyword": "筷子",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "E3"
+    }
+  },
+  {
+    "id": "item-21",
+    "number": "21",
+    "numericValue": 21,
+    "canonicalKeyword": "鱷魚",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "H3"
+    }
+  },
+  {
+    "id": "item-31",
+    "number": "31",
+    "numericValue": 31,
+    "canonicalKeyword": "鯊魚",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "K3"
+    }
+  },
+  {
+    "id": "item-41",
+    "number": "41",
+    "numericValue": 41,
+    "canonicalKeyword": "死魚",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "N3"
+    }
+  },
+  {
+    "id": "item-02",
+    "number": "02",
+    "numericValue": 2,
+    "canonicalKeyword": "肥鵝",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "B4"
+    }
+  },
+  {
+    "id": "item-12",
+    "number": "12",
+    "numericValue": 12,
+    "canonicalKeyword": "嬰兒",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "E4"
+    }
+  },
+  {
+    "id": "item-22",
+    "number": "22",
+    "numericValue": 22,
+    "canonicalKeyword": "鴛鴦",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "H4"
+    }
+  },
+  {
+    "id": "item-32",
+    "number": "32",
+    "numericValue": 32,
+    "canonicalKeyword": "傘兒",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "K4"
+    }
+  },
+  {
+    "id": "item-42",
+    "number": "42",
+    "numericValue": 42,
+    "canonicalKeyword": "死鵝",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "N4"
+    }
+  },
+  {
+    "id": "item-03",
+    "number": "03",
+    "numericValue": 3,
+    "canonicalKeyword": "扇子",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "B5"
+    }
+  },
+  {
+    "id": "item-13",
+    "number": "13",
+    "numericValue": 13,
+    "canonicalKeyword": "醫生",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "E5"
+    }
+  },
+  {
+    "id": "item-23",
+    "number": "23",
+    "numericValue": 23,
+    "canonicalKeyword": "耳塞",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "H5"
+    }
+  },
+  {
+    "id": "item-33",
+    "number": "33",
+    "numericValue": 33,
+    "canonicalKeyword": "閃閃",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "K5"
+    }
+  },
+  {
+    "id": "item-43",
+    "number": "43",
+    "numericValue": 43,
+    "canonicalKeyword": "石山",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "N5"
+    }
+  },
+  {
+    "id": "item-04",
+    "number": "04",
+    "numericValue": 4,
+    "canonicalKeyword": "柿子",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "B6"
+    }
+  },
+  {
+    "id": "item-14",
+    "number": "14",
+    "numericValue": 14,
+    "canonicalKeyword": "鑰匙",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "E6"
+    }
+  },
+  {
+    "id": "item-24",
+    "number": "24",
+    "numericValue": 24,
+    "canonicalKeyword": "盒子",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "H6"
+    }
+  },
+  {
+    "id": "item-34",
+    "number": "34",
+    "numericValue": 34,
+    "canonicalKeyword": "紳士",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "K6"
+    }
+  },
+  {
+    "id": "item-44",
+    "number": "44",
+    "numericValue": 44,
+    "canonicalKeyword": "石獅",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "N6"
+    }
+  },
+  {
+    "id": "item-05",
+    "number": "05",
+    "numericValue": 5,
+    "canonicalKeyword": "手套",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "B7"
+    }
+  },
+  {
+    "id": "item-15",
+    "number": "15",
+    "numericValue": 15,
+    "canonicalKeyword": "鸚鵡",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "E7"
+    }
+  },
+  {
+    "id": "item-25",
+    "number": "25",
+    "numericValue": 25,
+    "canonicalKeyword": "二胡",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "H7"
+    }
+  },
+  {
+    "id": "item-35",
+    "number": "35",
+    "numericValue": 35,
+    "canonicalKeyword": "珊瑚",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "K7"
+    }
+  },
+  {
+    "id": "item-45",
+    "number": "45",
+    "numericValue": 45,
+    "canonicalKeyword": "師傅",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "N7"
+    }
+  },
+  {
+    "id": "item-06",
+    "number": "06",
+    "numericValue": 6,
+    "canonicalKeyword": "肥牛",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "B8"
+    }
+  },
+  {
+    "id": "item-16",
+    "number": "16",
+    "numericValue": 16,
+    "canonicalKeyword": "石榴",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "E8"
+    }
+  },
+  {
+    "id": "item-26",
+    "number": "26",
+    "numericValue": 26,
+    "canonicalKeyword": "河流",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "H8"
+    }
+  },
+  {
+    "id": "item-36",
+    "number": "36",
+    "numericValue": 36,
+    "canonicalKeyword": "山鹿",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "K8"
+    }
+  },
+  {
+    "id": "item-46",
+    "number": "46",
+    "numericValue": 46,
+    "canonicalKeyword": "飼料",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "N8"
+    }
+  },
+  {
+    "id": "item-07",
+    "number": "07",
+    "numericValue": 7,
+    "canonicalKeyword": "汽水",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "B9"
+    }
+  },
+  {
+    "id": "item-17",
+    "number": "17",
+    "numericValue": 17,
+    "canonicalKeyword": "儀器",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "E9"
+    }
+  },
+  {
+    "id": "item-27",
+    "number": "27",
+    "numericValue": 27,
+    "canonicalKeyword": "耳機",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "H9"
+    }
+  },
+  {
+    "id": "item-37",
+    "number": "37",
+    "numericValue": 37,
+    "canonicalKeyword": "山雞",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "K9"
+    }
+  },
+  {
+    "id": "item-47",
+    "number": "47",
+    "numericValue": 47,
+    "canonicalKeyword": "司機",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "N9"
+    }
+  },
+  {
+    "id": "item-08",
+    "number": "08",
+    "numericValue": 8,
+    "canonicalKeyword": "泥巴",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "B10"
+    }
+  },
+  {
+    "id": "item-18",
+    "number": "18",
+    "numericValue": 18,
+    "canonicalKeyword": "腰包",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "E10"
+    }
+  },
+  {
+    "id": "item-28",
+    "number": "28",
+    "numericValue": 28,
+    "canonicalKeyword": "惡霸",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "H10"
+    }
+  },
+  {
+    "id": "item-38",
+    "number": "38",
+    "numericValue": 38,
+    "canonicalKeyword": "婦女",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "K10"
+    }
+  },
+  {
+    "id": "item-48",
+    "number": "48",
+    "numericValue": 48,
+    "canonicalKeyword": "石板",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "N10"
+    }
+  },
+  {
+    "id": "item-09",
+    "number": "09",
+    "numericValue": 9,
+    "canonicalKeyword": "酒瓶",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "B11"
+    }
+  },
+  {
+    "id": "item-19",
+    "number": "19",
+    "numericValue": 19,
+    "canonicalKeyword": "藥酒",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "E11"
+    }
+  },
+  {
+    "id": "item-29",
+    "number": "29",
+    "numericValue": 29,
+    "canonicalKeyword": "二舅",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "H11"
+    }
+  },
+  {
+    "id": "item-39",
+    "number": "39",
+    "numericValue": 39,
+    "canonicalKeyword": "三角型",
+    "aliases": [
+      "三角形"
+    ],
+    "source": {
+      "sheet": "1-100",
+      "cell": "K11"
+    }
+  },
+  {
+    "id": "item-49",
+    "number": "49",
+    "numericValue": 49,
+    "canonicalKeyword": "石臼",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "N11"
+    }
+  },
+  {
+    "id": "item-10",
+    "number": "10",
+    "numericValue": 10,
+    "canonicalKeyword": "石頭",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "B12"
+    }
+  },
+  {
+    "id": "item-20",
+    "number": "20",
+    "numericValue": 20,
+    "canonicalKeyword": "耳玲",
+    "aliases": [
+      "耳玲（耳鈴/耳環）"
+    ],
+    "source": {
+      "sheet": "1-100",
+      "cell": "E12"
+    }
+  },
+  {
+    "id": "item-30",
+    "number": "30",
+    "numericValue": 30,
+    "canonicalKeyword": "三菱",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "H12"
+    }
+  },
+  {
+    "id": "item-40",
+    "number": "40",
+    "numericValue": 40,
+    "canonicalKeyword": "司令",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "K12"
+    }
+  },
+  {
+    "id": "item-50",
+    "number": "50",
+    "numericValue": 50,
+    "canonicalKeyword": "五十元",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "N12"
+    }
+  },
+  {
+    "id": "item-51",
+    "number": "51",
+    "numericValue": 51,
+    "canonicalKeyword": "狐狸",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "B15"
+    }
+  },
+  {
+    "id": "item-61",
+    "number": "61",
+    "numericValue": 61,
+    "canonicalKeyword": "老人",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "E15"
+    }
+  },
+  {
+    "id": "item-71",
+    "number": "71",
+    "numericValue": 71,
+    "canonicalKeyword": "蜥蜴",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "H15"
+    }
+  },
+  {
+    "id": "item-81",
+    "number": "81",
+    "numericValue": 81,
+    "canonicalKeyword": "白蟻",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "K15"
+    }
+  },
+  {
+    "id": "item-91",
+    "number": "91",
+    "numericValue": 91,
+    "canonicalKeyword": "球衣",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "N15"
+    }
+  },
+  {
+    "id": "item-52",
+    "number": "52",
+    "numericValue": 52,
+    "canonicalKeyword": "鼓兒",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "B16"
+    }
+  },
+  {
+    "id": "item-62",
+    "number": "62",
+    "numericValue": 62,
+    "canonicalKeyword": "驢兒",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "E16"
+    }
+  },
+  {
+    "id": "item-72",
+    "number": "72",
+    "numericValue": 72,
+    "canonicalKeyword": "企鵝",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "H16"
+    }
+  },
+  {
+    "id": "item-82",
+    "number": "82",
+    "numericValue": 82,
+    "canonicalKeyword": "白鵝",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "K16"
+    }
+  },
+  {
+    "id": "item-92",
+    "number": "92",
+    "numericValue": 92,
+    "canonicalKeyword": "球兒",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "N16"
+    }
+  },
+  {
+    "id": "item-53",
+    "number": "53",
+    "numericValue": 53,
+    "canonicalKeyword": "火山",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "B17"
+    }
+  },
+  {
+    "id": "item-63",
+    "number": "63",
+    "numericValue": 63,
+    "canonicalKeyword": "硫酸",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "E17"
+    }
+  },
+  {
+    "id": "item-73",
+    "number": "73",
+    "numericValue": 73,
+    "canonicalKeyword": "花旗蔘",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "H17"
+    }
+  },
+  {
+    "id": "item-83",
+    "number": "83",
+    "numericValue": 83,
+    "canonicalKeyword": "芭蕉扇",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "K17"
+    }
+  },
+  {
+    "id": "item-93",
+    "number": "93",
+    "numericValue": 93,
+    "canonicalKeyword": "舊傘",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "N17"
+    }
+  },
+  {
+    "id": "item-54",
+    "number": "54",
+    "numericValue": 54,
+    "canonicalKeyword": "武士",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "B18"
+    }
+  },
+  {
+    "id": "item-64",
+    "number": "64",
+    "numericValue": 64,
+    "canonicalKeyword": "螺絲",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "E18"
+    }
+  },
+  {
+    "id": "item-74",
+    "number": "74",
+    "numericValue": 74,
+    "canonicalKeyword": "騎士",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "H18"
+    }
+  },
+  {
+    "id": "item-84",
+    "number": "84",
+    "numericValue": 84,
+    "canonicalKeyword": "巴士",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "K18"
+    }
+  },
+  {
+    "id": "item-94",
+    "number": "94",
+    "numericValue": 94,
+    "canonicalKeyword": "教師",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "N18"
+    }
+  },
+  {
+    "id": "item-55",
+    "number": "55",
+    "numericValue": 55,
+    "canonicalKeyword": "火車",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "B19"
+    }
+  },
+  {
+    "id": "item-65",
+    "number": "65",
+    "numericValue": 65,
+    "canonicalKeyword": "老虎",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "E19"
+    }
+  },
+  {
+    "id": "item-75",
+    "number": "75",
+    "numericValue": 75,
+    "canonicalKeyword": "積木",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "H19"
+    }
+  },
+  {
+    "id": "item-85",
+    "number": "85",
+    "numericValue": 85,
+    "canonicalKeyword": "寶物",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "K19"
+    }
+  },
+  {
+    "id": "item-95",
+    "number": "95",
+    "numericValue": 95,
+    "canonicalKeyword": "酒壺",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "N19"
+    }
+  },
+  {
+    "id": "item-56",
+    "number": "56",
+    "numericValue": 56,
+    "canonicalKeyword": "無聊",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "B20"
+    }
+  },
+  {
+    "id": "item-66",
+    "number": "66",
+    "numericValue": 66,
+    "canonicalKeyword": "溜溜球",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "E20"
+    }
+  },
+  {
+    "id": "item-76",
+    "number": "76",
+    "numericValue": 76,
+    "canonicalKeyword": "犀牛",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "H20"
+    }
+  },
+  {
+    "id": "item-86",
+    "number": "86",
+    "numericValue": 86,
+    "canonicalKeyword": "八路",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "K20"
+    }
+  },
+  {
+    "id": "item-96",
+    "number": "96",
+    "numericValue": 96,
+    "canonicalKeyword": "酒樓",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "N20"
+    }
+  },
+  {
+    "id": "item-57",
+    "number": "57",
+    "numericValue": 57,
+    "canonicalKeyword": "武器",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "B21"
+    }
+  },
+  {
+    "id": "item-67",
+    "number": "67",
+    "numericValue": 67,
+    "canonicalKeyword": "油漆",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "E21"
+    }
+  },
+  {
+    "id": "item-77",
+    "number": "77",
+    "numericValue": 77,
+    "canonicalKeyword": "七夕",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "H21"
+    }
+  },
+  {
+    "id": "item-87",
+    "number": "87",
+    "numericValue": 87,
+    "canonicalKeyword": "白旗",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "K21"
+    }
+  },
+  {
+    "id": "item-97",
+    "number": "97",
+    "numericValue": 97,
+    "canonicalKeyword": "手機",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "N21"
+    }
+  },
+  {
+    "id": "item-58",
+    "number": "58",
+    "numericValue": 58,
+    "canonicalKeyword": "火把",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "B22"
+    }
+  },
+  {
+    "id": "item-68",
+    "number": "68",
+    "numericValue": 68,
+    "canonicalKeyword": "喇叭",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "E22"
+    }
+  },
+  {
+    "id": "item-78",
+    "number": "78",
+    "numericValue": 78,
+    "canonicalKeyword": "青蛙",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "H22"
+    }
+  },
+  {
+    "id": "item-88",
+    "number": "88",
+    "numericValue": 88,
+    "canonicalKeyword": "爸爸",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "K22"
+    }
+  },
+  {
+    "id": "item-98",
+    "number": "98",
+    "numericValue": 98,
+    "canonicalKeyword": "酒吧",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "N22"
+    }
+  },
+  {
+    "id": "item-59",
+    "number": "59",
+    "numericValue": 59,
+    "canonicalKeyword": "五角形",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "B23"
+    }
+  },
+  {
+    "id": "item-69",
+    "number": "69",
+    "numericValue": 69,
+    "canonicalKeyword": "牛角",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "E23"
+    }
+  },
+  {
+    "id": "item-79",
+    "number": "79",
+    "numericValue": 79,
+    "canonicalKeyword": "氣球",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "H23"
+    }
+  },
+  {
+    "id": "item-89",
+    "number": "89",
+    "numericValue": 89,
+    "canonicalKeyword": "白酒",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "K23"
+    }
+  },
+  {
+    "id": "item-99",
+    "number": "99",
+    "numericValue": 99,
+    "canonicalKeyword": "舅舅",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "N23"
+    }
+  },
+  {
+    "id": "item-60",
+    "number": "60",
+    "numericValue": 60,
+    "canonicalKeyword": "榴槤",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "B24"
+    }
+  },
+  {
+    "id": "item-70",
+    "number": "70",
+    "numericValue": 70,
+    "canonicalKeyword": "冰淇淋",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "E24"
+    }
+  },
+  {
+    "id": "item-80",
+    "number": "80",
+    "numericValue": 80,
+    "canonicalKeyword": "巴黎",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "H24"
+    }
+  },
+  {
+    "id": "item-90",
+    "number": "90",
+    "numericValue": 90,
+    "canonicalKeyword": "精靈",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "K24"
+    }
+  },
+  {
+    "id": "item-100",
+    "number": "100",
+    "numericValue": 100,
+    "canonicalKeyword": "百元",
+    "aliases": [],
+    "source": {
+      "sheet": "1-100",
+      "cell": "N24"
+    }
+  }
+]

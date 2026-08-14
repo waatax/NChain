@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "contentVersion": "2026.07.14.11",
+  "generatedAt": "2026-07-14T03:40:08.824681Z",
+  "sourceFileSha256": "087cccd6e22af16a6f93335ce6b34afb9649d7e9b88b12cac889a6e91b782e6e",
+  "counts": {
+    "items": 101,
+    "lessons": 10,
+    "pairScenes": 55,
+    "stories": 4,
+    "narrativeScenes": 36
+  }
+}
