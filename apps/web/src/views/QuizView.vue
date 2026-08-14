@@ -68,7 +68,7 @@
         
         <div class="feedback-body mt-8">
           <p class="ans-explain">
-            正確答案是: <span class="font-bold text-primary">{{ currentQuestion.answer.display }}</span>
+            {{ t('正確答案是:') }} <span class="font-bold text-primary">{{ currentQuestion.answer.display }}</span>
           </p>
           
           <!-- Icon Display in Feedback -->
@@ -101,7 +101,7 @@
     <div v-else-if="isQuizFinished" class="results-container mt-16">
       <div class="card results-card text-center">
         <span class="results-emoji">{{ score >= 8 ? '🎉' : '💪' }}</span>
-        <h3>測驗完成！</h3>
+        <h3>{{ t('測驗完成！') }}</h3>
         <div class="score-display mt-12">
           <span class="score-num">{{ score }}</span>
           <span class="score-denom">/ {{ questions.length }}</span>
@@ -118,11 +118,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { useI18n } from '../utils/i18n';
+const { t } = useI18n();
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAppStore } from '../stores/app';
 import { contentRepo, progressRepo } from '../repositories';
 import { Lesson, MnemonicItem, PairScene, NarrativeScene } from '../domain/types';
+import { soundFx } from '../utils/sound';
+import { sakuraConfetti } from '../utils/confetti';
 
 interface QuizOption {
   value: string; // number string e.g. "05" or keyword
@@ -154,6 +158,46 @@ const selectedOption = ref<QuizOption | null>(null);
 const isCorrect = ref(false);
 const score = ref(0);
 const isQuizFinished = ref(false);
+
+const handleKeyDown = (e: KeyboardEvent) => {
+  if (isQuizFinished.value) {
+    if (e.key === 'Enter' || e.code === 'Space') {
+      restartQuiz();
+    }
+    return;
+  }
+
+  if (selectedOption.value !== null) {
+    if (e.key === 'Enter' || e.code === 'Space') {
+      e.preventDefault();
+      nextQuestion();
+    }
+    return;
+  }
+
+  const currentOpts = currentQuestion.value?.options;
+  if (!currentOpts) return;
+
+  if (e.key === '1' && currentOpts[0]) selectOption(currentOpts[0]);
+  else if (e.key === '2' && currentOpts[1]) selectOption(currentOpts[1]);
+  else if (e.key === '3' && currentOpts[2]) selectOption(currentOpts[2]);
+  else if (e.key === '4' && currentOpts[3]) selectOption(currentOpts[3]);
+};
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeyDown);
+  const loadedLesson = contentRepo.getLesson(props.lessonId);
+  if (!loadedLesson) {
+    router.replace('/');
+    return;
+  }
+  lesson.value = loadedLesson;
+  generateQuiz(loadedLesson);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeyDown);
+});
 
 const progressPercent = computed(() => {
   if (questions.value.length === 0) return 0;
@@ -354,6 +398,9 @@ const selectOption = async (opt: QuizOption) => {
   
   if (correct) {
     score.value++;
+    soundFx.playSuccess();
+  } else {
+    soundFx.playError();
   }
 
   // Save Leitner schedule result
@@ -366,12 +413,17 @@ const selectOption = async (opt: QuizOption) => {
 };
 
 const nextQuestion = () => {
+  soundFx.playTap();
   if (currentQuestionIndex.value < questions.value.length - 1) {
     currentQuestionIndex.value++;
     selectedOption.value = null;
     isCorrect.value = false;
   } else {
     isQuizFinished.value = true;
+    soundFx.playComplete();
+    if (score.value >= 7) {
+      sakuraConfetti.trigger(70);
+    }
   }
 };
 

@@ -83,7 +83,7 @@
         <!-- REVEAL CONTROL (When NOT revealed) -->
         <div class="reveal-actions" v-if="!isRevealed">
           <button class="btn btn-primary btn-reveal w-full py-16" @click="revealAnswer">
-            👁️ 顯示下一個字與聯想畫面
+            👁️ 顯示下一個字與{{ t('聯想畫面') }}
           </button>
         </div>
 
@@ -104,13 +104,13 @@
 
             <!-- Scene Illustration if exists -->
             <div class="scene-illustration-wrapper mt-16" v-if="hasIllustration(currentPairScene)">
-              <img :src="getIllustrationUrl(currentPairScene)" class="scene-illustration-img" alt="聯想畫面插圖" />
+              <img :src="getIllustrationUrl(currentPairScene)" class="scene-illustration-img" alt="{{ t('聯想畫面') }}插圖" />
             </div>
           </div>
 
           <!-- Rating Buttons -->
           <div class="rating-section">
-            <p class="rating-prompt text-center mb-12">請在腦海中複習此聯想畫面，並記錄熟練度：</p>
+            <p class="rating-prompt text-center mb-12">請在腦海中複習此{{ t('聯想畫面') }}，並記錄熟練度：</p>
             <div class="buttons-grid">
               <button class="btn btn-danger rate-btn" @click="submitRating('forgot')">
                 <span class="rate-title">忘記</span>
@@ -140,7 +140,7 @@
         <div class="blind-toggle-container mb-16">
           <label class="switch-label">
             <input type="checkbox" v-model="appStore.settings.blindRecall" />
-            <span class="switch-text">👁️ 啟用盲背模式 (點擊遮罩揭露關鍵字)</span>
+            <span class="switch-text">👁️ {{ t('👁️ 啟用盲背模式 (點擊遮罩揭露關鍵字)') }}</span>
           </label>
         </div>
 
@@ -222,12 +222,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { useI18n } from '../utils/i18n';
+const { t } = useI18n();
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAppStore } from '../stores/app';
 import { contentRepo, progressRepo } from '../repositories';
 import { Lesson, PairScene, NarrativeScene, NarrativeStory } from '../domain/types';
 import { ProgressState, zQuizType } from '../repositories/ProgressRepository';
+import { soundFx } from '../utils/sound';
+import { sakuraConfetti } from '../utils/confetti';
 
 const props = defineProps<{
   lessonId: string;
@@ -274,6 +278,7 @@ const handleIconError = (itemId: string) => {
 };
 
 const hasIcon = (itemId: string): boolean => {
+  if (!itemId) return false;
   const num = itemId.split('-')[1];
   return !failedIcons.value.has(num);
 };
@@ -287,7 +292,26 @@ const unmaskedTokens = ref<Set<number>>(new Set());
 // Progress state tracking
 const completedScenes = ref<string[]>([]);
 
+const handleKeyDown = (e: KeyboardEvent) => {
+  if (isLessonCompleted.value) return;
+  
+  if (e.code === 'Space') {
+    e.preventDefault();
+    if (!isRevealed.value && lesson.value?.mode === 'pair') {
+      revealAnswer();
+    } else if (lesson.value?.mode === 'narrative') {
+      nextNarrativeScene();
+    }
+  } else if (isRevealed.value && lesson.value?.mode === 'pair') {
+    if (e.key === '1') submitRating('forgot');
+    else if (e.key === '2') submitRating('hard');
+    else if (e.key === '3') submitRating('good');
+    else if (e.key === '4') submitRating('easy');
+  }
+};
+
 onMounted(async () => {
+  window.addEventListener('keydown', handleKeyDown);
   const loadedLesson = contentRepo.getLesson(props.lessonId);
   if (!loadedLesson) {
     router.replace('/');
@@ -320,6 +344,10 @@ onMounted(async () => {
   }
 });
 
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeyDown);
+});
+
 const totalScenes = computed(() => {
   if (!lesson.value) return 0;
   return lesson.value.mode === 'pair' ? pairScenes.value.length : narrativeScenes.value.length;
@@ -341,10 +369,12 @@ const currentNarrativeScene = computed((): NarrativeScene | null => {
 });
 
 const revealAnswer = () => {
+  soundFx.playFlip();
   isRevealed.value = true;
 };
 
 const revealToken = (tokenIndex: number) => {
+  soundFx.playTap();
   unmaskedTokens.value.add(tokenIndex);
 };
 
@@ -370,6 +400,10 @@ const submitRating = async (rating: 'forgot' | 'hard' | 'good' | 'easy') => {
   const scene = currentPairScene.value;
   if (!scene) return;
 
+  if (rating === 'forgot') soundFx.playError();
+  else if (rating === 'easy') soundFx.playSuccess();
+  else soundFx.playTap();
+
   // Save progress
   await recordProgress(scene.id);
 
@@ -379,6 +413,8 @@ const submitRating = async (rating: 'forgot' | 'hard' | 'good' | 'easy') => {
     isRevealed.value = false;
   } else {
     isLessonCompleted.value = true;
+    soundFx.playComplete();
+    sakuraConfetti.trigger(60);
   }
 };
 
@@ -386,6 +422,7 @@ const nextNarrativeScene = async () => {
   const scene = currentNarrativeScene.value;
   if (!scene) return;
   
+  soundFx.playTap();
   // Mark all tokens of this scene as completed and save progress
   await recordProgress(scene.id);
   
@@ -394,10 +431,13 @@ const nextNarrativeScene = async () => {
     unmaskedTokens.value.clear();
   } else {
     isLessonCompleted.value = true;
+    soundFx.playComplete();
+    sakuraConfetti.trigger(60);
   }
 };
 
 const goBack = () => {
+  soundFx.playTap();
   router.push('/');
 };
 

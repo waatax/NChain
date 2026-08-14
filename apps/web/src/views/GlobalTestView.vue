@@ -15,7 +15,7 @@
       <p class="text-muted mt-4">測驗範圍為 00 到 100 所有記憶密碼，考驗您的熟練度。</p>
 
       <div class="config-section mt-24">
-        <p class="config-label">選擇測試題數：</p>
+        <p class="config-label">選擇測試{{ t('題') }}數：</p>
         <div class="options-flex mt-8">
           <button 
             v-for="num in [10, 20, 40, 60, 100]" 
@@ -24,15 +24,15 @@
             :class="{ active: selectedCount === num }"
             @click="selectedCount = num"
           >
-            {{ num }} 題
+            {{ num }} {{ t('題') }}
           </button>
         </div>
       </div>
 
       <div class="config-section mt-24">
-        <p class="config-label">選擇出題模式：</p>
+        <p class="config-label">選擇出{{ t('題') }}模式：</p>
         <select v-model="selectedMode" class="mode-select mt-8">
-          <option value="mixed">🔀 混合模式 (雙向出題)</option>
+          <option value="mixed">🔀 混合模式 (雙向出{{ t('題') }})</option>
           <option value="num-to-kw">數字 ➔ 聯想詞</option>
           <option value="kw-to-num">聯想詞 ➔ 數字</option>
         </select>
@@ -46,7 +46,7 @@
     <!-- QUIZ PLAYER SCREEN -->
     <div v-else-if="gameState === 'playing' && currentQuestion" class="quiz-container">
       <div class="question-meta text-muted text-center mb-12">
-        進度: {{ currentQuestionIndex + 1 }} / {{ questions.length }} | 當前答對: {{ score }} 題 | ⏱️ 費時: {{ elapsedTime }} 秒
+        進度: {{ currentQuestionIndex + 1 }} / {{ questions.length }} | 當前答對: {{ score }} {{ t('題') }} | ⏱️ 費時: {{ elapsedTime }} 秒
       </div>
 
       <div class="question-card card">
@@ -88,11 +88,11 @@
         <!-- Timer Statistics -->
         <div class="timer-stats mt-16 p-12" style="background-color: var(--bg-secondary); border-radius: var(--border-radius-md); display: flex; justify-content: space-around; font-size: 0.9rem;">
           <div>
-            <span class="text-muted" style="display: block;">⏱️ 總答題時間 (s)</span>
+            <span class="text-muted" style="display: block;">⏱️ 總答{{ t('題') }}時間 (s)</span>
             <span class="font-bold text-primary" style="font-size: 1.1rem; display: block; margin-top: 4px;">{{ elapsedTime }} 秒</span>
           </div>
           <div style="border-left: 1px solid var(--border-color); padding-left: 20px;">
-            <span class="text-muted" style="display: block;">⚡ 平均單題答題時間 (s)</span>
+            <span class="text-muted" style="display: block;">⚡ 平均單{{ t('題') }}答{{ t('題') }}時間 (s)</span>
             <span class="font-bold text-success" style="font-size: 1.1rem; display: block; margin-top: 4px;">{{ averageTimePerQuestion }} 秒</span>
           </div>
         </div>
@@ -100,10 +100,10 @@
 
       <!-- INCORRECT NUMBERS DETAILS -->
       <div class="card error-summary-card mb-16">
-        <h4 class="error-title">❌ 答錯數字分析 (共 {{ incorrectQuestions.length }} 題)</h4>
+        <h4 class="error-title">❌ 答錯數字分析 (共 {{ incorrectQuestions.length }} {{ t('題') }})</h4>
         
         <div v-if="incorrectQuestions.length === 0" class="text-center py-16 text-success font-bold">
-          太完美了！您答對了所有題目！💯
+          太完美了！您答對了所有{{ t('題') }}目！💯
         </div>
         
         <div v-else class="errors-list mt-12">
@@ -139,11 +139,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onUnmounted } from 'vue';
+import { useI18n } from '../utils/i18n';
+const { t } = useI18n();
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAppStore } from '../stores/app';
 import { contentRepo, progressRepo } from '../repositories';
 import { MnemonicItem, PairScene } from '../domain/types';
+import { soundFx } from '../utils/sound';
+import { sakuraConfetti } from '../utils/confetti';
 
 interface QuizOption {
   value: string;
@@ -185,6 +189,25 @@ const startTime = ref<number | null>(null);
 const elapsedTime = ref(0);
 const timerInterval = ref<any>(null);
 
+const handleKeyDown = (e: KeyboardEvent) => {
+  if (gameState.value === 'playing') {
+    const opts = currentQuestion.value?.options;
+    if (!opts) return;
+    if (e.key === '1' && opts[0]) selectOption(opts[0]);
+    else if (e.key === '2' && opts[1]) selectOption(opts[1]);
+    else if (e.key === '3' && opts[2]) selectOption(opts[2]);
+    else if (e.key === '4' && opts[3]) selectOption(opts[3]);
+  } else if (gameState.value === 'results') {
+    if (e.key === 'Enter' || e.code === 'Space') {
+      restartTest();
+    }
+  }
+};
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeyDown);
+});
+
 const scorePercent = computed(() => {
   if (questions.value.length === 0) return 0;
   return Math.round((score.value / questions.value.length) * 100);
@@ -196,6 +219,7 @@ const averageTimePerQuestion = computed(() => {
 });
 
 onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeyDown);
   if (timerInterval.value) clearInterval(timerInterval.value);
 });
 
@@ -205,6 +229,7 @@ const currentQuestion = computed((): Question | null => {
 });
 
 const startTest = () => {
+  soundFx.playTap();
   incorrectQuestions.value = [];
   score.value = 0;
   currentQuestionIndex.value = 0;
@@ -336,11 +361,13 @@ const selectOption = async (opt: QuizOption) => {
 
   if (correct) {
     score.value++;
+    soundFx.playSuccess();
     
     // Also promote the corresponding Leitner card box on-the-fly!
     const cardId = `${currentQuestion.value.item.id}_${currentQuestion.value.type}`;
     await progressRepo.submitReviewResult(cardId, 'good');
   } else {
+    soundFx.playError();
     // Record incorrect question for display
     incorrectQuestions.value.push({
       item: currentQuestion.value.item,
@@ -370,6 +397,10 @@ const nextQuestion = () => {
       timerInterval.value = null;
     }
     gameState.value = 'results';
+    soundFx.playComplete();
+    if (scorePercent.value >= 70) {
+      sakuraConfetti.trigger(80);
+    }
   }
 };
 
@@ -393,10 +424,12 @@ const getIconUrl = (itemId: string): string => {
 };
 
 const restartTest = () => {
+  soundFx.playTap();
   gameState.value = 'config';
 };
 
 const goBack = () => {
+  soundFx.playTap();
   router.push('/');
 };
 </script>

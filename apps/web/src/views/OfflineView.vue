@@ -1,18 +1,18 @@
 <template>
   <div class="container">
     <div class="offline-header mb-16">
-      <h2>離線包下載管理</h2>
-      <p class="text-muted">下載個別課程的圖片包，即可在無網路環境 (飛航模式) 瀏覽想像畫面</p>
+      <h2>{{ t('離線包下載管理') }}</h2>
+      <p class="text-muted">{{ t('下載個別課程的圖片包，即可在無網路環境 (飛航模式) 瀏覽想像畫面') }}</p>
     </div>
 
     <!-- Storage capacity estimation -->
     <div class="storage-estimate card mb-16" v-if="storageInfo">
       <div class="estimate-row">
-        <span>裝置剩餘空間可用：</span>
+        <span>{{ t('裝置剩餘空間可用：') }}</span>
         <span class="font-bold">{{ storageInfo.available }} GB</span>
       </div>
       <div class="estimate-row mt-4">
-        <span>已使用空間：</span>
+        <span>{{ t('已使用空間：') }}</span>
         <span>{{ storageInfo.used }} MB</span>
       </div>
     </div>
@@ -23,14 +23,14 @@
         <div class="pack-info">
           <span class="pack-title">{{ l.title }}</span>
           <span class="pack-meta text-muted">
-            圖片數量: {{ l.sceneIds.length }} 張 | 預估容量: {{ (l.sceneIds.length * 150 / 1024).toFixed(1) }} MB
+            {{ t('圖片數量:') }} {{ l.sceneIds.length }} {{ t('張') }} | {{ t('預估容量:') }} {{ (l.sceneIds.length * 150 / 1024).toFixed(1) }} MB
           </span>
         </div>
 
         <div class="pack-status-actions">
           <!-- Downloaded -->
           <div v-if="downloadedPacks.has(l.id)" class="status-downloaded">
-            <span class="badge-success">✓ 已下載</span>
+            <span class="badge-success">✓ {{ t('已下載') }}</span>
             <button class="icon-btn-delete" @click="deletePack(l.id)" title="刪除離線包">🗑️</button>
           </div>
           
@@ -47,7 +47,7 @@
             :disabled="downloadingPackId !== null"
             @click="downloadPack(l.id)"
           >
-            📥 下載
+            📥 {{ t('下載') }}
           </button>
         </div>
       </div>
@@ -56,6 +56,8 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from '../utils/i18n';
+const { t } = useI18n();
 import { ref, onMounted, reactive } from 'vue';
 import { contentRepo, progressRepo } from '../repositories';
 import { Lesson } from '../domain/types';

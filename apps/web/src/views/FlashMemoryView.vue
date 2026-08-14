@@ -5,7 +5,7 @@
       <button class="btn btn-secondary back-btn" @click="goBack">
         ◀ 返回主頁
       </button>
-      <h2 class="page-title mt-12">⚡ 閃卡記憶訓練 (Flash Memory)</h2>
+      <h2 class="page-title mt-12">⚡ {{ t('閃卡記憶訓練') }} (Flash Memory)</h2>
     </div>
 
     <!-- CONFIG STATE -->
@@ -81,7 +81,7 @@
         </div>
         <div class="info-right flex gap-8">
           <button class="btn btn-secondary btn-sm" @click="togglePause">
-            {{ isPaused ? '▶ 繼續' : '⏸ 暫停' }}
+            {{ isPaused ? '▶ ' + t('繼續') : '⏸ ' + t('暫停') }}
           </button>
           <button class="btn btn-danger btn-sm" @click="stopTraining">
             🛑 停止
@@ -146,6 +146,8 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from '../utils/i18n';
+const { t } = useI18n();
 import { ref, computed, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAppStore } from '../stores/app';
@@ -159,9 +161,9 @@ type State = 'config' | 'playing' | 'finished';
 const state = ref<State>('config');
 
 const ranges = [
-  { id: 'watercolor', label: '00-09 水彩提示版', desc: '0–9 的單個水彩主題' },
-  { id: 'double', label: '00-99 雙位數編碼', desc: '00–99 的雙位數編碼' },
-  { id: 'all', label: '00-100 全套卡牌', desc: '全部 101 張記憶卡牌' }
+  { id: 'watercolor', label: t('00-09 水彩提示版'), desc: t('0–9 的單個水彩主題') },
+  { id: 'double', label: t('00-99 雙位數編碼'), desc: t('00–99 的雙位數編碼') },
+  { id: 'all', label: t('00-100 全套卡牌'), desc: t('全部 101 張記憶卡牌') }
 ];
 
 const selectedRange = ref('all');
@@ -260,7 +262,11 @@ const tick = () => {
   animationFrameId = requestAnimationFrame(tick);
 };
 
+import { soundFx } from '../utils/sound';
+import { sakuraConfetti } from '../utils/confetti';
+
 const advanceFrame = () => {
+  soundFx.playFlip();
   if (currentIndex.value < activeItems.value.length - 1) {
     currentIndex.value++;
   } else {
@@ -272,6 +278,8 @@ const advanceFrame = () => {
       // Completed all cycles
       stopIntervals();
       state.value = 'finished';
+      soundFx.playComplete();
+      sakuraConfetti.trigger(70);
     }
   }
 };

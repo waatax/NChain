@@ -11,9 +11,13 @@ export const useAppStore = defineStore('app', () => {
   
   const settings = reactive<LocalSettings>({
     theme: 'light',
+    palette: 'ruri',
     blindRecall: false,
     reducedMotion: false,
-    downloadedImagesOnly: false
+    downloadedImagesOnly: false,
+    lang: 'zh-TW',
+    soundEffects: true,
+    sakuraParticles: true
   });
 
   const initialize = async () => {

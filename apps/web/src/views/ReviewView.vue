@@ -1,22 +1,22 @@
 <template>
   <div class="container">
     <div class="review-header mb-16">
-      <h2>⏳ Spaced Repetition 間隔複習 (選擇題模式)</h2>
+      <h2>⏳ {{ t('Spaced Repetition 間隔複習 (選擇題模式)') }}</h2>
       <p class="text-muted">自動筛选到期的複習卡片，以選擇題方式快速複習</p>
     </div>
 
     <!-- Empty State -->
     <div v-if="dueCards.length === 0" class="card text-center empty-card">
       <span class="confetti">🎉</span>
-      <h3>太棒了！</h3>
-      <p class="text-muted mt-8">目前沒有任何到期的複習字卡，請明天再來！</p>
-      <router-link to="/" class="btn btn-primary mt-16">返回首頁</router-link>
+      <h3>{{ t('太棒了！') }}</h3>
+      <p class="text-muted mt-8">{{ t('目前沒有任何到期的複習字卡，請明天再來！') }}</p>
+      <router-link to="/" class="btn btn-primary mt-16">{{ t('返回首頁') }}</router-link>
     </div>
 
     <!-- Review Player -->
     <div v-else-if="currentCard" class="player-container">
       <div class="review-meta text-muted text-center mb-12">
-        剩餘待複習: {{ dueCards.length }} 題 | 當前卡箱: 箱 {{ currentCard.box }}
+        {{ t('剩餘待複習:') }} {{ dueCards.length }} {{ t('題') }} | {{ t('當前卡箱:') }} {{ t('箱') }} {{ currentCard.box }}
       </div>
 
       <div class="flashcard card">
@@ -65,7 +65,7 @@
 
           <!-- Type 4: Story Cloze -->
           <div v-else-if="currentCard.promptType === 'story-cloze' && storyScene" class="story-cloze-prompt text-center">
-            <p class="cloze-title text-muted mb-8" style="font-size: 0.85rem; font-weight: 700;">請回想空缺的記憶詞：</p>
+            <p class="cloze-title text-muted mb-8" style="font-size: 0.85rem; font-weight: 700;">{{ t('請回想空缺的記憶詞：') }}</p>
             <p class="cloze-text" style="font-size: 1.1rem; line-height: 1.6; font-weight: 600;">{{ maskedStoryText }}</p>
           </div>
         </div>
@@ -90,12 +90,12 @@
       <div class="feedback-card card mt-16" v-if="selectedOption !== null">
         <div class="feedback-header" :class="isCorrect ? 'text-success' : 'text-danger'">
           <span class="fb-icon">{{ isCorrect ? '✅' : '❌' }}</span>
-          <span class="fb-title">{{ isCorrect ? '答對了！' : '答錯了！' }}</span>
+          <span class="fb-title">{{ isCorrect ? t('答案正確！') : t('答案錯誤，正確答案是：') }}</span>
         </div>
         
         <div class="feedback-body mt-8">
           <p class="ans-explain">
-            正確答案是: <span class="font-bold text-primary">{{ currentAnswer?.display }}</span>
+            {{ t('正確答案是:') }} <span class="font-bold text-primary">{{ currentAnswer?.display }}</span>
           </p>
           
           <!-- Icon Display in Feedback -->
@@ -113,18 +113,18 @@
           </div>
           
           <div class="hint-block mt-8" v-if="pairScene">
-            <span class="hint-label">💡 聯想畫面提示：</span>
+            <span class="hint-label">💡 {{ t('聯想畫面提示：') }}</span>
             <p class="hint-text">{{ pairScene.sceneText }}</p>
           </div>
 
           <div class="hint-block mt-8" v-if="currentCard.promptType === 'story-cloze' && storyScene">
-            <span class="hint-label">💡 完整故事上下文：</span>
+            <span class="hint-label">💡 {{ t('完整故事上下文：') }}</span>
             <p class="hint-text">{{ storyScene.originalText }}</p>
           </div>
         </div>
 
         <button class="btn btn-primary w-full mt-12 py-12" @click="nextCard">
-          下一題 ➡️
+          {{ t('下一題 ➡️') }}
         </button>
       </div>
     </div>
@@ -132,11 +132,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { useI18n } from '../utils/i18n';
+const { t } = useI18n();
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useAppStore } from '../stores/app';
 import { contentRepo, progressRepo } from '../repositories';
 import { ReviewCardState } from '../repositories/ProgressRepository';
 import { MnemonicItem, PairScene, NarrativeScene } from '../domain/types';
+import { soundFx } from '../utils/sound';
+import { sakuraConfetti } from '../utils/confetti';
 
 interface ReviewOption {
   value: string;
@@ -153,6 +157,33 @@ const selectedOption = ref<ReviewOption | null>(null);
 const isCorrect = ref(false);
 const currentOptions = ref<ReviewOption[]>([]);
 const currentAnswer = ref<ReviewOption | null>(null);
+
+const handleKeyDown = (e: KeyboardEvent) => {
+  if (selectedOption.value !== null) {
+    if (e.key === 'Enter' || e.code === 'Space') {
+      e.preventDefault();
+      nextCard();
+    }
+    return;
+  }
+
+  const opts = currentOptions.value;
+  if (!opts || opts.length === 0) return;
+
+  if (e.key === '1' && opts[0]) selectOption(opts[0]);
+  else if (e.key === '2' && opts[1]) selectOption(opts[1]);
+  else if (e.key === '3' && opts[2]) selectOption(opts[2]);
+  else if (e.key === '4' && opts[3]) selectOption(opts[3]);
+};
+
+onMounted(async () => {
+  window.addEventListener('keydown', handleKeyDown);
+  await loadDueCards();
+});
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeyDown);
+});
 
 const currentCard = computed((): ReviewCardState | null => {
   if (dueCards.value.length === 0) return null;
@@ -189,10 +220,6 @@ const maskedStoryText = computed((): string => {
   // Mask original text: e.g. "(61) 老人" -> "(61) [ ❓ ]"
   const regex = new RegExp(`\\(${parseInt(targetNum)}\\)\\s*[^，。！、；：()]+`);
   return scene.originalText.replace(regex, `(${targetNum}) [  ❓  ]`);
-});
-
-onMounted(async () => {
-  await loadDueCards();
 });
 
 const loadDueCards = async () => {
@@ -313,6 +340,12 @@ const selectOption = async (opt: ReviewOption) => {
   const correct = currentAnswer.value?.value === opt.value;
   isCorrect.value = correct;
 
+  if (correct) {
+    soundFx.playSuccess();
+  } else {
+    soundFx.playError();
+  }
+
   // Spaced repetition schedule update: correct -> Good box up, incorrect -> Forgot box down
   const rating = correct ? 'good' : 'forgot';
   await progressRepo.submitReviewResult(currentCard.value.cardId, rating);
@@ -326,6 +359,7 @@ const selectOption = async (opt: ReviewOption) => {
 };
 
 const nextCard = () => {
+  soundFx.playTap();
   if (autoTransitionTimeout) {
     clearTimeout(autoTransitionTimeout);
     autoTransitionTimeout = null;
@@ -338,6 +372,8 @@ const nextCard = () => {
   dueCards.value.splice(currentCardIndex.value, 1);
   
   if (dueCards.value.length === 0) {
+    soundFx.playComplete();
+    sakuraConfetti.trigger(60);
     loadDueCards();
   } else {
     loadCurrentOptions();

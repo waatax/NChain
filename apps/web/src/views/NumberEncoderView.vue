@@ -105,9 +105,14 @@
 
       <!-- Chaining Story Helper -->
       <div class="story-helper-card card p-24">
-        <h3 class="story-title flex items-center gap-8">
-          <span>🧠 記憶串聯建議 (Memory Chaining)</span>
-        </h3>
+        <div class="story-header flex justify-between items-center">
+          <h3 class="story-title flex items-center gap-8">
+            <span>🧠 記憶串聯建議 (Memory Chaining)</span>
+          </h3>
+          <button class="btn btn-secondary btn-xs" @click="copyChainStory">
+            {{ copied ? '✅ 已複製！' : '📋 複製口訣' }}
+          </button>
+        </div>
         <p class="text-secondary mt-8 leading-relaxed">
           試著將上述圖卡順序，在腦海中想像成一個荒謬、有趣的連續劇畫面。
           例如：
@@ -205,12 +210,30 @@ const sanitizeInput = () => {
   inputString.value = inputString.value.replace(/[^0-9\s,，.-]/g, '');
 };
 
+import { soundFx } from '../utils/sound';
+
+const copied = ref(false);
+
 const clearInput = () => {
+  soundFx.playTap();
   inputString.value = '';
 };
 
 const setExample = (val: string) => {
+  soundFx.playTap();
   inputString.value = val;
+};
+
+const copyChainStory = () => {
+  soundFx.playSuccess();
+  const storyText = encodedSegments.value.map(s => `【${s.keyword}】`).join(' ➔ ');
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(storyText);
+  }
+  copied.value = true;
+  setTimeout(() => {
+    copied.value = false;
+  }, 2000);
 };
 
 // Segments calculation

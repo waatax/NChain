@@ -8,21 +8,21 @@
         <!-- Header Summary Card -->
         <div class="dashboard-summary card">
           <div class="summary-header">
-            <h2>學習概覽</h2>
+            <h2>{{ t('學習概覽') }}</h2>
             <span class="version-tag" v-if="manifest">v{{ manifest.contentVersion }}</span>
           </div>
           <div class="summary-stats">
             <div class="stat-item">
               <span class="stat-num">{{ stats.completedItems }} / 101</span>
-              <span class="stat-label">已學習數字</span>
+              <span class="stat-label">{{ t('已學習數字') }}</span>
             </div>
             <div class="stat-item">
               <span class="stat-num text-primary">{{ appStore.dueCardCount }}</span>
-              <span class="stat-label">待複習卡片</span>
+              <span class="stat-label">{{ t('待複習卡片') }}</span>
             </div>
             <div class="stat-item">
               <span class="stat-num text-success">{{ stats.masteredItems }}</span>
-              <span class="stat-label">精熟數字</span>
+              <span class="stat-label">{{ t('精熟數字') }}</span>
             </div>
           </div>
           <div class="quick-actions mt-16">
@@ -31,25 +31,25 @@
               :disabled="appStore.dueCardCount === 0"
               @click="startGlobalReview"
             >
-              ⏳ 複習 ({{ appStore.dueCardCount }} 題)
+              ⏳ {{ t('複習') }} ({{ appStore.dueCardCount }} {{ t('題') }})
             </button>
             <button 
               class="btn btn-secondary" 
               @click="startGlobalTest"
             >
-              ✍️ 測驗
+              ✍️ {{ t('測驗') }}
             </button>
             <button 
               class="btn btn-secondary" 
               @click="startFlashCards"
             >
-              🃏 卡牌
+              🃏 {{ t('卡牌') }}
             </button>
             <button 
               class="btn btn-secondary" 
               @click="startFlashMemory"
             >
-              ⚡ 閃卡記憶
+              ⚡ {{ t('閃卡記憶') }}
             </button>
           </div>
         </div>
@@ -64,21 +64,21 @@
             :class="{ active: activeTab === 'overview' }" 
             @click="activeTab = 'overview'"
           >
-            📊 學習概覽
+            📊 {{ t('學習概覽') }}
           </button>
           <button 
             class="tab-btn" 
             :class="{ active: activeTab === 'encoder' }" 
             @click="activeTab = 'encoder'"
           >
-            🔗 數字編碼
+            🔗 {{ t('數字編碼') }}
           </button>
           <button 
             class="tab-btn" 
             :class="{ active: activeTab === 'constants' }" 
             @click="activeTab = 'constants'"
           >
-            📐 科學常數
+            📐 {{ t('科學常數') }}
           </button>
         </div>
 
@@ -92,7 +92,7 @@
                 :class="{ active: overviewSubTab === 'progress' }"
                 @click="overviewSubTab = 'progress'"
               >
-                📈 學習進度
+                📈 {{ t('學習進度') }}
               </button>
               <button 
                 class="segment-btn" 
@@ -109,21 +109,21 @@
             <!-- Header Summary Card -->
             <div class="dashboard-summary card mb-16">
               <div class="summary-header">
-                <h2>學習概覽</h2>
+                <h2>{{ t('學習概覽') }}</h2>
                 <span class="version-tag" v-if="manifest">v{{ manifest.contentVersion }}</span>
               </div>
               <div class="summary-stats">
                 <div class="stat-item">
                   <span class="stat-num">{{ stats.completedItems }} / 101</span>
-                  <span class="stat-label">已學習數字</span>
+                  <span class="stat-label">{{ t('已學習數字') }}</span>
                 </div>
                 <div class="stat-item">
                   <span class="stat-num text-primary">{{ appStore.dueCardCount }}</span>
-                  <span class="stat-label">待複習卡片</span>
+                  <span class="stat-label">{{ t('待複習卡片') }}</span>
                 </div>
                 <div class="stat-item">
                   <span class="stat-num text-success">{{ stats.masteredItems }}</span>
-                  <span class="stat-label">精熟數字</span>
+                  <span class="stat-label">{{ t('精熟數字') }}</span>
                 </div>
               </div>
               <div class="quick-actions mt-16">
@@ -132,25 +132,25 @@
                   :disabled="appStore.dueCardCount === 0"
                   @click="startGlobalReview"
                 >
-                  ⏳ 複習 ({{ appStore.dueCardCount }} 題)
+                  ⏳ {{ t('複習') }} ({{ appStore.dueCardCount }} {{ t('題') }})
                 </button>
                 <button 
                   class="btn btn-secondary" 
                   @click="startGlobalTest"
                 >
-                  ✍️ 測驗
+                  ✍️ {{ t('測驗') }}
                 </button>
                  <button 
                    class="btn btn-secondary" 
                    @click="startFlashCards"
                  >
-                   🃏 卡牌
+                   🃏 {{ t('卡牌') }}
                  </button>
                  <button 
                    class="btn btn-secondary" 
                    @click="startFlashMemory"
                  >
-                   ⚡ 閃卡記憶
+                   ⚡ {{ t('閃卡記憶') }}
                  </button>
                </div>
             </div>
@@ -169,7 +169,7 @@
                     <span class="lesson-name">{{ l.title }}</span>
                   </div>
                   <div class="lesson-meta text-muted">
-                    數字範圍: {{ l.rangeStart }} – {{ l.rangeEnd }}
+                    {{ t('數字') }} 範圍: {{ l.rangeStart }} – {{ l.rangeEnd }}
                     <span class="dot-separator">•</span>
                     已記: {{ getLessonProgress(l.id)?.completedSceneIds.length || 0 }} / {{ l.sceneIds.length }}
                   </div>
@@ -180,7 +180,7 @@
                     📖 學習
                   </button>
                   <button class="btn btn-primary btn-sm" @click="startQuiz(l.id)">
-                    ✍️ 測驗
+                    ✍️ {{ t('測驗') }}
                   </button>
                 </div>
               </div>
@@ -215,7 +215,7 @@
             </div>
             <div class="constant-actions" @click.stop>
               <button class="btn btn-secondary btn-xs" @click="goToEncoder(c.digits)">
-                🔗 數字編碼
+                🔗 {{ t('數字編碼') }}
               </button>
               <div class="constant-chevron" @click="toggleConstant(c.id)">
                 {{ expandedConstantId === c.id ? '▲' : '▼' }}
@@ -308,7 +308,7 @@
                   <td>連續複利與指數函數增長的極限收斂常數</td>
                 </tr>
                 <tr>
-                  <td><strong>精密數值</strong></td>
+                  <td><strong>精密{{ t('數值') }}</strong></td>
                   <td><code>1.602176634 × 10⁻¹⁹ C</code> (精確值)</td>
                   <td><code>2.718281828459...</code> (無限不循環超越數)</td>
                 </tr>
@@ -366,6 +366,8 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from '../utils/i18n';
+const { t } = useI18n();
 import { ref, reactive, onMounted, onUnmounted, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAppStore } from '../stores/app';

@@ -3,16 +3,16 @@
     <!-- Back Header -->
     <div class="header-nav mb-24">
       <button class="btn btn-secondary back-btn" @click="goBack">
-        ◀ 返回主頁
+        ◀ {{ t('返回主頁') }}
       </button>
-      <h2 class="page-title mt-12">🃏 卡牌記憶複習 (Flash Cards)</h2>
+      <h2 class="page-title mt-12">🃏 {{ t('卡牌記憶複習 (Flash Cards)') }}</h2>
     </div>
 
     <!-- CONFIG STATE -->
     <div v-if="state === 'config'" class="config-card card text-center p-32 max-w-lg mx-auto">
       <div class="config-icon">🃏</div>
-      <h3>選擇記憶卡牌範圍</h3>
-      <p class="text-muted mt-8 mb-24">透過雙面閃卡，快速測試您對每個數字對應聯想詞的直覺反應。</p>
+      <h3>{{ t('選擇記憶卡牌範圍') }}</h3>
+      <p class="text-muted mt-8 mb-24">{{ t('透過雙面閃卡，快速測試您對每個數字對應聯想詞的直覺反應。') }}</p>
 
       <div class="range-grid">
         <button 
@@ -28,7 +28,7 @@
 
       <div class="shuffle-option mt-24 flex justify-center items-center gap-8">
         <input type="checkbox" id="shuffle" v-model="shuffleOnStart" class="checkbox-input" />
-        <label for="shuffle" class="checkbox-label cursor-pointer">🍀 開始時自動打亂卡牌順序</label>
+        <label for="shuffle" class="checkbox-label cursor-pointer">{{ t('🍀 開始時自動打亂卡牌順序') }}</label>
       </div>
     </div>
 
@@ -37,11 +37,11 @@
       <!-- Progress and Mode controls -->
       <div class="progress-bar-container mb-16 flex justify-between items-center">
         <span class="progress-text font-bold">
-          卡牌：{{ currentIndex + 1 }} / {{ items.length }}
+          {{ t('卡牌：') }}{{ currentIndex + 1 }} / {{ items.length }}
         </span>
         <div class="mode-badges flex gap-8">
           <span class="badge range-badge">{{ selectedRangeLabel }}</span>
-          <span v-if="isShuffled" class="badge shuffle-badge">已打亂 🔀</span>
+          <span v-if="isShuffled" class="badge shuffle-badge">{{ t('已打亂 🔀') }}</span>
         </div>
       </div>
 
@@ -50,13 +50,13 @@
         <div class="flash-card" :class="{ flipped: isFlipped }">
           <!-- FRONT SIDE (Question) -->
           <div class="card-face front">
-            <span class="card-hint">想一想，聯想詞是？</span>
+            <span class="card-hint">{{ t('想一想，聯想詞是？') }}</span>
             <div class="card-number-wrapper">
               <span class="card-number">{{ currentItem.number }}</span>
             </div>
             <div class="card-tap-cue">
               <span class="cue-icon">🔄</span>
-              <span>點擊或按下空白鍵翻面</span>
+              <span>{{ t('點擊或按下空白鍵翻面') }}</span>
             </div>
           </div>
 
@@ -84,7 +84,7 @@
             
             <div class="card-tap-cue mt-auto">
               <span class="cue-icon">🔄</span>
-              <span>點擊翻回正面</span>
+              <span>{{ t('點擊翻回正面') }}</span>
             </div>
           </div>
         </div>
@@ -92,7 +92,7 @@
 
       <!-- Memory Hint Association (Shown outside the card when flipped) -->
       <div class="back-association mb-24" v-if="isFlipped && associationText">
-        <span class="assoc-label">💡 聯想故事：</span>
+        <span class="assoc-label">💡 {{ t('💡 聯想故事：') }}</span>
         <p class="assoc-text">{{ associationText }}</p>
       </div>
 
@@ -137,6 +137,9 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from '../utils/i18n';
+import { soundFx } from '../utils/sound';
+const { t } = useI18n();
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { contentRepo } from '../repositories';
@@ -155,22 +158,24 @@ const shuffleOnStart = ref(true);
 const selectedRangeLabel = ref('');
 
 const ranges = [
-  { label: '00 - 20', desc: '從操場到耳玲', filter: (num: number) => num >= 0 && num <= 20 },
-  { label: '21 - 40', desc: '從鱷魚到司令', filter: (num: number) => num >= 21 && num <= 40 },
-  { label: '41 - 60', desc: '從死魚到榴槤', filter: (num: number) => num >= 41 && num <= 60 },
-  { label: '61 - 80', desc: '從老人到巴黎', filter: (num: number) => num >= 61 && num <= 80 },
-  { label: '81 - 100', desc: '從白蟻到百元', filter: (num: number) => num >= 81 && num <= 100 },
-  { label: '00 - 100 全域', desc: '所有 101 個記憶點', filter: () => true }
+  { label: '00 - 20', desc: t('從操場到耳玲'), filter: (num: number) => num >= 0 && num <= 20 },
+  { label: '21 - 40', desc: t('從鱷魚到司令'), filter: (num: number) => num >= 21 && num <= 40 },
+  { label: '41 - 60', desc: t('從死魚到榴槤'), filter: (num: number) => num >= 41 && num <= 60 },
+  { label: '61 - 80', desc: t('從老人到巴黎'), filter: (num: number) => num >= 61 && num <= 80 },
+  { label: '81 - 100', desc: t('從白蟻到百元'), filter: (num: number) => num >= 81 && num <= 100 },
+  { label: t('00 - 100 全域'), desc: t('所有 101 個記憶點'), filter: () => true }
 ];
 
 const failedIcons = ref<Set<string>>(new Set());
 
 const handleIconError = (itemId: string) => {
+  if (!itemId) return;
   const num = itemId.split('-')[1];
   failedIcons.value.add(num);
 };
 
 const hasIcon = (itemId: string): boolean => {
+  if (!itemId) return false;
   const num = itemId.split('-')[1];
   return !failedIcons.value.has(num);
 };
@@ -201,6 +206,7 @@ const associationText = computed(() => {
 
 // Actions
 const selectRange = (range: typeof ranges[0]) => {
+  soundFx.playTap();
   const all = contentRepo.getItems();
   // Filter items in selected range
   const filtered = all.filter(item => range.filter(item.numericValue));
@@ -222,11 +228,13 @@ const selectRange = (range: typeof ranges[0]) => {
 };
 
 const toggleFlip = () => {
+  soundFx.playFlip();
   isFlipped.value = !isFlipped.value;
 };
 
 const prevCard = () => {
   if (currentIndex.value > 0) {
+    soundFx.playTap();
     isFlipped.value = false;
     // Wait a brief moment for transition to reset before changing content
     setTimeout(() => {
