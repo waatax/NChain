@@ -64,14 +64,7 @@
           🎨
         </button>
 
-        <!-- Language Switcher -->
-        <button 
-          class="icon-btn" 
-          @click="toggleLanguage" 
-          :title="langTitle"
-        >
-          {{ appStore.settings.lang === 'vi' ? '🇹🇼' : '🇻🇳' }}
-        </button>
+
 
         <!-- Layout Mode Switcher -->
         <button 
@@ -231,17 +224,7 @@ const cyclePalette = () => {
   appStore.updateSettings({ palette: palettes[nextIndex].key });
 };
 
-const langTitle = computed(() => 
-  appStore.settings.lang === 'vi' ? 'Chuyển sang Tiếng Trung' : '切換成越南文'
-);
 
-const toggleLanguage = () => {
-  soundFx.playTap();
-  const current = appStore.settings.lang || 'zh-TW';
-  const next = current === 'zh-TW' ? 'vi' : 'zh-TW';
-  appStore.updateSettings({ lang: next });
-  window.location.reload();
-};
 </script>
 
 <style scoped>

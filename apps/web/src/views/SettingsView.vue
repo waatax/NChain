@@ -36,14 +36,6 @@
       <h3 class="mb-12">⚙️ {{ t('介面偏好') }}</h3>
       
       <div class="setting-item">
-        <span class="label">{{ t('語系') }}</span>
-        <select v-model="localLang" @change="updateLang" class="settings-select">
-          <option value="zh-TW">🇹🇼 繁體中文</option>
-          <option value="vi">🇻🇳 Tiếng Việt</option>
-        </select>
-      </div>
-
-      <div class="setting-item mt-12">
         <span class="label">{{ t('主題顏色') }}</span>
         <select v-model="localTheme" @change="updateTheme" class="settings-select">
           <option value="light">{{ t('☀️ 淺色模式') }} (白練和紙)</option>
@@ -150,7 +142,20 @@
       </div>
     </div>
 
-    <!-- 6. 關於與隱私 -->
+    <!-- 6. 語系與地區設定 -->
+    <div class="settings-section card mb-16">
+      <h3 class="mb-12">🌐 {{ t('語系設定') }}</h3>
+      <p class="text-muted text-xs mb-12">{{ t('切換應用程式的顯示語言：') }}</p>
+      <div class="setting-item">
+        <span class="label">{{ t('越文轉換選項') }}</span>
+        <select v-model="localLang" @change="updateLang" class="settings-select">
+          <option value="zh-TW">🇹🇼 繁體中文</option>
+          <option value="vi">🇻🇳 Tiếng Việt</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 7. 關於與隱私 -->
     <div class="card text-center mb-16">
       <router-link to="/about" class="text-primary font-bold">📖 {{ t('關於本應用程式與隱私政策') }}</router-link>
     </div>
