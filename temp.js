@@ -1,0 +1,1 @@
+const fs = require('fs'); const data = fs.readFileSync('c:/Users/User/OneDrive/¤å¥ó/Antigravity/NChain/apps/web/src/data/staticContent.ts', 'utf8'); const regex = /"number":\s*"([4-6][0-9])",[\s\S]*?"canonicalKeyword":\s*"([^"]+)"/g; let match; while (match = regex.exec(data)) { console.log(match[1] + ': ' + match[2]); }
