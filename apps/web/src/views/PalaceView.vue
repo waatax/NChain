@@ -20,7 +20,9 @@ import { useI18n } from '../utils/i18n';
 import tutorialContent from '../data/palace_tutorial.html?raw';
 
 const { t } = useI18n();
-const tutorialHtml = ref(tutorialContent || '<p>Loading...</p>');
+const baseUrl = import.meta.env.BASE_URL;
+const processedContent = tutorialContent ? tutorialContent.replace(/src="\/images\//g, `src="${baseUrl}images/`) : '';
+const tutorialHtml = ref(processedContent || '<p>Loading...</p>');
 
 </script>
 
