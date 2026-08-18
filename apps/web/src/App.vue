@@ -41,6 +41,9 @@
             <span>⏳</span> {{ t('複習') }}
             <span v-if="appStore.dueCardCount > 0" class="nav-badge">{{ appStore.dueCardCount }}</span>
           </router-link>
+          <router-link to="/palace" class="desktop-nav-item" @click="handleNavTap">
+            <span>🏰</span> {{ t('記憶宮殿') }}
+          </router-link>
           <router-link to="/settings" class="desktop-nav-item" @click="handleNavTap">
             <span>⚙️</span> {{ t('設定') }}
           </router-link>
@@ -107,9 +110,9 @@
           {{ appStore.dueCardCount }}
         </span>
       </router-link>
-      <router-link to="/settings" class="nav-item" @click="handleNavTap">
-        <span class="nav-icon">⚙️</span>
-        <span>{{ t('設定') }}</span>
+      <router-link to="/palace" class="nav-item" @click="handleNavTap">
+        <span class="nav-icon">🏰</span>
+        <span>{{ t('記憶宮殿') }}</span>
       </router-link>
     </nav>
   </div>
