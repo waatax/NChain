@@ -301,7 +301,20 @@ export const translations: Record<string, string> = {
   "全部 101 張記憶卡牌": "Trọn bộ 101 thẻ ghi nhớ",
   "版面：強制直式": "Bố cục: Buộc dọc",
   "版面：強制橫式": "Bố cục: Buộc ngang",
-  "版面：自適應": "Bố cục: Tự động"
+  "版面：自適應": "Bố cục: Tự động",
+  
+  // Science & Palace additions
+  "記憶科學": "Khoa học Trí nhớ",
+  "科學": "Khoa học",
+  "宮殿": "Cung điện",
+  "記憶宮殿": "Cung điện Trí nhớ",
+  "記憶宮殿 (Method of Loci)": "Cung điện Trí nhớ (Method of Loci)",
+  "記憶宮殿大師體系": "Hệ thống Cung điện Trí nhớ",
+  "記憶科學與學習原理": "Khoa học Trí nhớ & Nguyên lý Học tập",
+  "大腦科學與學習機制": "Khoa học Não bộ & Cơ chế Học tập",
+  "探索記憶宮殿": "Khám phá Cung điện Trí nhớ",
+  "記憶定樁與關鍵字百科": "Bách khoa Chốt ghi nhớ & Từ khóa",
+  "精熟 00–100 數字鎖鏈、人體定位樁與形象樁，建立隨取隨用的超強心像索引庫": "Thành thạo chuỗi số 00-100, chốt cơ thể & chốt hình ảnh để xây dựng kho chỉ mục hình ảnh siêu mạnh."
 };
 
 export function useI18n() {

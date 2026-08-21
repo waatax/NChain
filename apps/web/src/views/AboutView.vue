@@ -25,6 +25,10 @@
       </div>
 
       <div class="about-section mt-20">
+        <MemoryScienceInfo />
+      </div>
+
+      <div class="about-section mt-20">
         <h3 class="flex items-center gap-8">
           <span>🔒</span> {{ t('隱私與資料安全性說明') }}
         </h3>
@@ -47,6 +51,8 @@
 
 <script setup lang="ts">
 import { useI18n } from '../utils/i18n';
+import MemoryScienceInfo from '../components/MemoryScienceInfo.vue';
+
 const { t } = useI18n();
 </script>
 

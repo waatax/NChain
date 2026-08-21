@@ -44,6 +44,9 @@
           <router-link to="/palace" class="desktop-nav-item" @click="handleNavTap">
             <span>🏰</span> {{ t('記憶宮殿') }}
           </router-link>
+          <router-link to="/science" class="desktop-nav-item" @click="handleNavTap">
+            <span>🧠</span> {{ t('記憶科學') }}
+          </router-link>
           <router-link to="/settings" class="desktop-nav-item" @click="handleNavTap">
             <span>⚙️</span> {{ t('設定') }}
           </router-link>
@@ -112,7 +115,11 @@
       </router-link>
       <router-link to="/palace" class="nav-item" @click="handleNavTap">
         <span class="nav-icon">🏰</span>
-        <span>{{ t('記憶宮殿') }}</span>
+        <span>{{ t('宮殿') }}</span>
+      </router-link>
+      <router-link to="/science" class="nav-item" @click="handleNavTap">
+        <span class="nav-icon">🧠</span>
+        <span>{{ t('科學') }}</span>
       </router-link>
     </nav>
   </div>

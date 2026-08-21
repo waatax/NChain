@@ -51,6 +51,18 @@
             >
               ⚡ {{ t('閃卡記憶') }}
             </button>
+            <button 
+              class="btn btn-secondary" 
+              @click="startPalace"
+            >
+              🏰 {{ t('記憶宮殿') }}
+            </button>
+            <button 
+              class="btn btn-secondary" 
+              @click="startScience"
+            >
+              🧠 {{ t('記憶科學') }}
+            </button>
           </div>
         </div>
       </aside>
@@ -151,6 +163,18 @@
                    @click="startFlashMemory"
                  >
                    ⚡ {{ t('閃卡記憶') }}
+                 </button>
+                 <button 
+                   class="btn btn-secondary" 
+                   @click="startPalace"
+                 >
+                   🏰 {{ t('記憶宮殿') }}
+                 </button>
+                 <button 
+                   class="btn btn-secondary" 
+                   @click="startScience"
+                 >
+                   🧠 {{ t('記憶科學') }}
                  </button>
                </div>
             </div>
@@ -777,6 +801,14 @@ const startFlashCards = () => {
 
 const startFlashMemory = () => {
   router.push({ name: 'flash-memory' });
+};
+
+const startScience = () => {
+  router.push({ name: 'science' });
+};
+
+const startPalace = () => {
+  router.push({ name: 'palace' });
 };
 
 const startNumberEncoder = () => {

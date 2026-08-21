@@ -45,8 +45,11 @@
 
     <!-- QUIZ PLAYER SCREEN -->
     <div v-else-if="gameState === 'playing' && currentQuestion" class="quiz-container">
-      <div class="question-meta text-muted text-center mb-12">
-        進度: {{ currentQuestionIndex + 1 }} / {{ questions.length }} | 當前答對: {{ score }} {{ t('題') }} | ⏱️ 費時: {{ elapsedTime }} 秒
+      <div class="question-meta text-muted text-center mb-12 flex justify-center items-center gap-12 flex-wrap">
+        <span>進度: {{ currentQuestionIndex + 1 }} / {{ questions.length }}</span>
+        <span>當前答對: {{ score }} {{ t('題') }}</span>
+        <span v-if="comboStreak >= 2" class="combo-badge">🔥 連擊 x{{ comboStreak }}</span>
+        <span>⏱️ 費時: {{ elapsedTime }} 秒</span>
       </div>
 
       <div class="question-card card">
@@ -85,8 +88,20 @@
         </div>
         <p class="score-text mt-8">答對率: <span class="font-bold">{{ scorePercent }}%</span></p>
 
+        <!-- Mastery Badge Rating -->
+        <div class="mastery-badge-box mt-12 mb-12 p-12" style="background: var(--bg-secondary); border-radius: var(--border-radius-md); border: 1px solid var(--border-color);">
+          <span class="mastery-badge-title text-xs text-muted">大腦神經熟練度評定</span>
+          <div class="mastery-badge-name font-bold mt-4" :style="{ color: masteryBadgeColor, fontSize: '1.15rem' }">
+            {{ masteryBadgeName }}
+          </div>
+          <div class="mt-6 flex justify-center gap-16 text-xs text-muted">
+            <span>🔥 最高連擊: <strong class="text-primary">{{ maxCombo }} 連對</strong></span>
+            <span>⚡ 反應評級: <strong class="text-success">{{ speedRating }}</strong></span>
+          </div>
+        </div>
+
         <!-- Timer Statistics -->
-        <div class="timer-stats mt-16 p-12" style="background-color: var(--bg-secondary); border-radius: var(--border-radius-md); display: flex; justify-content: space-around; font-size: 0.9rem;">
+        <div class="timer-stats mt-12 p-12" style="background-color: var(--bg-secondary); border-radius: var(--border-radius-md); display: flex; justify-content: space-around; font-size: 0.9rem;">
           <div>
             <span class="text-muted" style="display: block;">⏱️ 總答{{ t('題') }}時間 (s)</span>
             <span class="font-bold text-primary" style="font-size: 1.1rem; display: block; margin-top: 4px;">{{ elapsedTime }} 秒</span>
@@ -183,6 +198,8 @@ const isCorrect = ref(false);
 const score = ref(0);
 
 const incorrectQuestions = ref<IncorrectRecord[]>([]);
+const comboStreak = ref(0);
+const maxCombo = ref(0);
 
 // Timer states
 const startTime = ref<number | null>(null);
@@ -218,6 +235,30 @@ const averageTimePerQuestion = computed(() => {
   return (elapsedTime.value / questions.value.length).toFixed(1);
 });
 
+const masteryBadgeName = computed(() => {
+  const p = scorePercent.value;
+  if (p === 100) return '🏆 頂級記憶大師 (Grandmaster of Memory)';
+  if (p >= 90) return '🥇 鎖鏈神經超導者 (Neural Superconductor)';
+  if (p >= 75) return '🥈 海馬迴高階學者 (Hippocampus Master)';
+  if (p >= 60) return '🥉 突觸活化者 (Synaptic Spark)';
+  return '🎖️ 潛力記憶學徒 (Mnemonic Apprentice)';
+});
+
+const masteryBadgeColor = computed(() => {
+  const p = scorePercent.value;
+  if (p >= 90) return '#f59e0b';
+  if (p >= 75) return '#3b82f6';
+  if (p >= 60) return '#10b981';
+  return '#64748b';
+});
+
+const speedRating = computed(() => {
+  const avg = parseFloat(averageTimePerQuestion.value);
+  if (avg <= 1.5) return '⚡ 閃電神經元 (<1.5s)';
+  if (avg <= 3.0) return '🏎️ 極速反應 (1.5-3.0s)';
+  return '🧘 穩健思維 (>3.0s)';
+});
+
 onUnmounted(() => {
   window.removeEventListener('keydown', handleKeyDown);
   if (timerInterval.value) clearInterval(timerInterval.value);
@@ -232,6 +273,8 @@ const startTest = () => {
   soundFx.playTap();
   incorrectQuestions.value = [];
   score.value = 0;
+  comboStreak.value = 0;
+  maxCombo.value = 0;
   currentQuestionIndex.value = 0;
   selectedOption.value = null;
   isCorrect.value = false;
@@ -361,12 +404,20 @@ const selectOption = async (opt: QuizOption) => {
 
   if (correct) {
     score.value++;
+    comboStreak.value++;
+    if (comboStreak.value > maxCombo.value) {
+      maxCombo.value = comboStreak.value;
+    }
     soundFx.playSuccess();
+    if (comboStreak.value >= 5) {
+      sakuraConfetti.trigger();
+    }
     
     // Also promote the corresponding Leitner card box on-the-fly!
     const cardId = `${currentQuestion.value.item.id}_${currentQuestion.value.type}`;
     await progressRepo.submitReviewResult(cardId, 'good');
   } else {
+    comboStreak.value = 0;
     soundFx.playError();
     // Record incorrect question for display
     incorrectQuestions.value.push({
@@ -790,5 +841,24 @@ const goBack = () => {
   background-color: var(--bg-secondary);
   border: 1px solid var(--border-color);
   padding: 2px;
+}
+
+.combo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  color: white;
+  font-weight: 900;
+  font-size: 0.78rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+  animation: pulse 0.8s infinite alternate;
+}
+
+@keyframes pulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.08); }
 }
 </style>

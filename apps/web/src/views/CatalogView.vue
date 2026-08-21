@@ -3,15 +3,118 @@
     <div class="catalog-header mb-16">
       <div class="header-badge-row mb-6">
         <span class="hanko-seal">圖鑑</span>
-        <span class="catalog-subtitle text-muted">00–100 記憶關鍵字全集</span>
+        <span class="catalog-subtitle text-muted">00–100 與多重記憶樁大百科</span>
       </div>
-      <h2>{{ t('00–100 記憶關鍵字圖鑑') }}</h2>
-      <p class="text-muted mt-4">{{ t('點擊卡片查看在故事或場景中的出現位置') }}</p>
+      <h2>{{ t('記憶定樁與關鍵字百科') }}</h2>
+      <p class="text-muted mt-4">
+        {{ t('精熟 00–100 數字鎖鏈、人體定位樁與形象樁，建立隨取隨用的超強心像索引庫') }}
+      </p>
     </div>
 
-    <!-- Layout Wrapper -->
-    <div class="catalog-layout-wrapper">
-      
+    <!-- Peg System Selector Tabs -->
+    <div class="system-tabs-bar mb-16">
+      <button 
+        class="system-tab-btn" 
+        :class="{ active: currentSystem === 'canonical' }"
+        @click="switchSystem('canonical')"
+      >
+        🔢 00–100 數字鎖鏈主表 (101 樁)
+      </button>
+      <button 
+        class="system-tab-btn" 
+        :class="{ active: currentSystem === 'body' }"
+        @click="switchSystem('body')"
+      >
+        🧍 1–10 人體定位樁 (10 樁)
+      </button>
+      <button 
+        class="system-tab-btn" 
+        :class="{ active: currentSystem === 'shape' }"
+        @click="switchSystem('shape')"
+      >
+        🎨 0–9 數字形象樁 (10 樁)
+      </button>
+      <button 
+        class="system-tab-btn" 
+        :class="{ active: currentSystem === 'mastery' }"
+        @click="switchSystem('mastery')"
+      >
+        📜 大師心像聯想四大法則
+      </button>
+    </div>
+
+    <!-- 1. BODY PEG SYSTEM VIEW -->
+    <div v-if="currentSystem === 'body'" class="peg-system-panel card mb-20 p-20">
+      <div class="panel-header mb-16">
+        <h3 class="text-primary font-bold">🧍 1–10 人體定位樁 (Body Pegs)</h3>
+        <p class="text-muted text-sm mt-4">
+          從頭到腳天然自帶的 10 個永久空間樁位！隨時可用於記憶 10 項以內的事項、購物清單或演講要點。
+        </p>
+      </div>
+
+      <div class="body-pegs-grid">
+        <div 
+          v-for="b in bodyPegs" 
+          :key="b.index" 
+          class="body-peg-card"
+        >
+          <div class="body-index-seal">{{ b.index }}</div>
+          <div class="body-peg-info">
+            <span class="body-part-name">{{ b.part }}</span>
+            <span class="body-peg-sub">{{ b.action }}</span>
+            <p class="body-peg-tip mt-6">💡 <strong>應用範例：</strong>{{ b.example }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. SHAPE PEG SYSTEM VIEW -->
+    <div v-if="currentSystem === 'shape'" class="peg-system-panel card mb-20 p-20">
+      <div class="panel-header mb-16">
+        <h3 class="text-primary font-bold">🎨 0–9 數字形狀樁 (Shape Pegs)</h3>
+        <p class="text-muted text-sm mt-4">
+          利用數字本身的外觀幾何形體進行直覺聯想，不需經由語言諧音轉換，視覺提取速度極快！
+        </p>
+      </div>
+
+      <div class="shape-pegs-grid">
+        <div 
+          v-for="s in shapePegs" 
+          :key="s.digit" 
+          class="shape-peg-card text-center"
+        >
+          <span class="shape-digit">{{ s.digit }}</span>
+          <span class="shape-keyword font-bold mt-4">{{ s.keyword }}</span>
+          <span class="shape-desc text-xs text-muted mt-4">{{ s.desc }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. MASTERY RULES VIEW -->
+    <div v-if="currentSystem === 'mastery'" class="peg-system-panel card mb-20 p-20">
+      <div class="panel-header mb-16">
+        <h3 class="text-primary font-bold">📜 大師級心像連鎖四大黃金法則</h3>
+        <p class="text-muted text-sm mt-4">
+          世界記憶大師（GMM）共同遵循的腦神經編碼秘訣，確保圖像記憶直擊海馬迴與杏仁核！
+        </p>
+      </div>
+
+      <div class="rules-grid">
+        <div v-for="r in masteryRules" :key="r.num" class="rule-card">
+          <div class="rule-num-badge">Rule {{ r.num }}</div>
+          <h4 class="rule-title mt-8">{{ r.title }}</h4>
+          <p class="rule-desc mt-6">{{ r.desc }}</p>
+          <div class="rule-example mt-8">
+            <span class="example-label">正反例對比：</span>
+            <p class="example-bad text-danger">❌ 平淡：{{ r.badExample }}</p>
+            <p class="example-good text-success">✔️ 大師：{{ r.goodExample }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. CANONICAL 00-100 CATALOG -->
+    <div v-if="currentSystem === 'canonical'" class="catalog-layout-wrapper">
       <!-- Top Control Bar (Search + Range Chips + Column switch) -->
       <aside class="catalog-controls card mb-16">
         <!-- Search Input -->
@@ -135,8 +238,16 @@
             <span class="detail-label">{{ t('故事別名：') }}</span>
             <span class="detail-val">{{ selectedItem.aliases.join(', ') }}</span>
           </div>
+
+          <!-- Mnemonic Logic -->
+          <div class="mnemonic-tip-box mt-12 p-12 bg-secondary rounded-md">
+            <span class="font-bold text-primary text-xs">💡 諧音與心像塑造指南：</span>
+            <p class="text-xs text-secondary mt-4 leading-relaxed">
+              {{ getMnemonicHint(selectedItem.number, selectedItem.canonicalKeyword) }}
+            </p>
+          </div>
           
-          <div class="detail-row">
+          <div class="detail-row mt-8">
             <span class="detail-label">{{ t('課程歸屬：') }}</span>
             <span class="detail-val">{{ getLessonTitleForItem(selectedItem.id) }}</span>
           </div>
@@ -171,8 +282,79 @@ import { contentRepo } from '../repositories';
 import { MnemonicItem } from '../domain/types';
 import { soundFx } from '../utils/sound';
 
+const currentSystem = ref<'canonical' | 'body' | 'shape' | 'mastery'>('canonical');
+
+const switchSystem = (sys: 'canonical' | 'body' | 'shape' | 'mastery') => {
+  soundFx.playTap();
+  currentSystem.value = sys;
+};
+
+// 1. Body Pegs Data
+const bodyPegs = [
+  { index: 1, part: '頭頂 (Crown)', action: '放置物體、旋轉或發光', example: '記住「買牛奶」：想像頭頂頂著一桶搖搖晃晃的牛奶。' },
+  { index: 2, part: '額頭 (Forehead)', action: '貼上標籤、發熱或發射雷射', example: '記住「打電話給客戶」：想像額頭貼著一張閃閃發光的電話符號。' },
+  { index: 3, part: '眼睛 (Eyes)', action: '戴上特殊眼鏡、望向遠方', example: '記住「核對報表」：想像雙眼戴著黃金放大鏡射出強光。' },
+  { index: 4, part: '鼻子 (Nose)', action: '強烈氣味、噴水或紅鼻子', example: '記住「買香蕉」：想像鼻子插著一根彎彎發甜的香蕉。' },
+  { index: 5, part: '嘴巴 (Mouth)', action: '咬住物品、吞下或大聲咬碎', example: '記住「繳電費」：想像嘴裡咬著滋滋作響的發光電纜線。' },
+  { index: 6, part: '脖子 (Neck)', action: '圍上圍巾、掛上鈴鐺或項鍊', example: '記住「開會提綱」：想像脖子掛著巨大沉重的會議麥克風。' },
+  { index: 7, part: '肩膀 (Shoulders)', action: '扛著巨木、站著寵物', example: '記住「買洗衣精」：想像左肩扛著一整台正在旋轉的滾筒洗衣機。' },
+  { index: 8, part: '胸口 (Chest)', action: '心臟跳動、盾牌或胸章', example: '記住「簽署合約」：想像胸口嵌著一把神聖的黃金鋼筆。' },
+  { index: 9, part: '腹部 (Belly)', action: '敲擊大鼓、肚子圓滾滾', example: '記住「寄包裹」：想像肚子像袋鼠一樣裝著巨大包裹。' },
+  { index: 10, part: '雙腳 (Feet)', action: '踩著滾輪、踏入泥漿或穿溜冰鞋', example: '記住「出門運動」：想像雙腳穿著噴射火箭鞋急速狂奔。' }
+];
+
+// 2. Shape Pegs Data
+const shapePegs = [
+  { digit: '0', keyword: '雞蛋 / 圓環', desc: '圓滾滾的雞蛋、呼拉圈或甜甜圈' },
+  { digit: '1', keyword: '鉛筆 / 蠟燭', desc: '直立的筆桿、點亮的紅蠟燭' },
+  { digit: '2', keyword: '鴨子 / 天鵝', desc: '彎曲脖頸在水面優雅滑行的水鳥' },
+  { digit: '3', keyword: '叉子 / 耳朵', desc: '三齒金屬叉、人的左耳側廓' },
+  { digit: '4', keyword: '帆船 / 紅旗', desc: '迎風鼓滿風帆的三角小木船' },
+  { digit: '5', keyword: '魚鉤 / 秤鉤', desc: '彎曲鋒利的釣魚鉤或老式秤鉤' },
+  { digit: '6', keyword: '蝸牛 / 哨子', desc: '螺旋外殼的蝸牛或裁判口哨' },
+  { digit: '7', keyword: '拐杖 / 鋤頭', desc: '老人手持的彎頭拐杖、農夫鋤頭' },
+  { digit: '8', keyword: '葫蘆 / 雪人', desc: '上下雙圓疊起的八字葫蘆或戴帽雪人' },
+  { digit: '9', keyword: '酒瓶 / 氣球', desc: '圓頭帶柄的紅酒瓶或升空的繫繩氣球' }
+];
+
+// 3. Mastery Rules Data
+const masteryRules = [
+  {
+    num: 1,
+    title: '誇張巨大化 (Exaggeration)',
+    desc: '平庸的物體無法刺激大腦。將所有聯想目標放大 100 倍或縮小至微觀，讓大腦產生視覺震撼。',
+    badExample: '一隻小鴨子游過去。',
+    goodExample: '一隻如摩天大樓般巨大的金色巨鴨，一腳踩扁了整座城市！'
+  },
+  {
+    num: 2,
+    title: '動態與碰撞 (Dynamic Action)',
+    desc: '靜止的畫面容易被遺忘。必須讓兩個物體發生強烈的物理互動、撞擊、爆炸或變形。',
+    badExample: '鉛筆放在桌上，旁邊有一隻鴨子。',
+    goodExample: '巨型鉛筆像標槍一樣狠狠刺穿鴨子的翅膀，火花四濺！'
+  },
+  {
+    num: 3,
+    title: '五感通感刺激 (Multi-Sensory Synesthesia)',
+    desc: '同時調動聽覺、嗅覺、觸覺、溫度與痛覺，刺激大腦多感官皮層協同編碼。',
+    badExample: '看到一顆榴槤。',
+    goodExample: '聞到極度刺鼻濃郁的榴槤臭味，踩上去尖刺扎入腳掌的劇烈痛感！'
+  },
+  {
+    num: 4,
+    title: '荒謬幽默與情緒 (Absurdity & Humor)',
+    desc: '大腦對「合乎常理」的事物視而不見，對「荒唐離奇」的情節終身難忘。激活杏仁核情緒標記。',
+    badExample: '一位醫生在醫院看病。',
+    goodExample: '威嚴的醫生穿著粉紅芭蕾舞裙，拿著巨大聽診器在給一隻鯊魚量心跳！'
+  }
+];
+
+const getMnemonicHint = (number: string, keyword: string): string => {
+  return `【${number} ➔ ${keyword}】：利用讀音諧音（例如 ${number} 發音聯想至「${keyword}」）或形體幾何特徵。想像時請務必賦予具體顏色（如鮮紅、耀金）、動態行為（如旋轉、爆炸、飛翔），使神經突觸 LTP 最大化！`;
+};
+
 const searchQuery = ref('');
-const gridCols = ref(3); // Default to 3 columns per row
+const gridCols = ref(3);
 const selectedRangeChip = ref('all');
 const failedIcons = ref<Set<string>>(new Set());
 const selectedItem = ref<MnemonicItem | null>(null);
@@ -230,7 +412,6 @@ const resetFilters = () => {
 const filteredItems = computed(() => {
   let list = items;
 
-  // 1. Filter by Range Chip
   if (selectedRangeChip.value !== 'all') {
     if (selectedRangeChip.value === 'single') {
       list = list.filter(item => item.number.length === 1 && !isNaN(Number(item.number)));
@@ -248,7 +429,6 @@ const filteredItems = computed(() => {
     }
   }
 
-  // 2. Filter by Search Query
   const query = searchQuery.value.trim().toLowerCase();
   if (!query) return list;
   
@@ -289,7 +469,6 @@ const mentions = computed(() => {
   const itemId = selectedItem.value.id;
   const list: { id: string; sheet: string; text: string }[] = [];
   
-  // Search pair scenes
   contentRepo.getPairScenes().forEach(scene => {
     if (scene.fromItemId === itemId || scene.toItemId === itemId) {
       list.push({
@@ -300,7 +479,6 @@ const mentions = computed(() => {
     }
   });
   
-  // Search narrative scenes
   contentRepo.getNarrativeScenes().forEach(scene => {
     if (scene.itemIds.includes(itemId as any)) {
       list.push({
@@ -340,6 +518,193 @@ const closeDetail = () => {
 .catalog-subtitle {
   font-size: 0.85rem;
   font-weight: 600;
+}
+
+.system-tabs-bar {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.system-tab-btn {
+  padding: 8px 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md, 8px);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.system-tab-btn:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.system-tab-btn.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2);
+}
+
+/* Body Pegs styles */
+.body-pegs-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+@media (min-width: 640px) {
+  .body-pegs-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.body-peg-card {
+  display: flex;
+  gap: 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md, 8px);
+  padding: 12px;
+}
+
+.body-index-seal {
+  width: 36px;
+  height: 36px;
+  background: var(--primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 1rem;
+  font-family: var(--font-family-serif);
+}
+
+.body-part-name {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  display: block;
+}
+
+.body-peg-sub {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.body-peg-tip {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Shape Pegs styles */
+.shape-pegs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+@media (min-width: 480px) {
+  .shape-pegs-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .shape-pegs-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+.shape-peg-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md, 8px);
+  padding: 16px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.shape-digit {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--primary);
+  font-family: var(--font-family-serif);
+  line-height: 1;
+}
+
+.shape-keyword {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+/* Mastery Rules styles */
+.rules-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 640px) {
+  .rules-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.rule-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md, 8px);
+  padding: 16px;
+}
+
+.rule-num-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 800;
+  background: var(--accent-gold, #f59e0b);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.rule-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.rule-desc {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.rule-example {
+  background: var(--bg-card);
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.example-label {
+  font-weight: 700;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 4px;
 }
 
 .search-container {
