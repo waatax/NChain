@@ -30,6 +30,13 @@
       </button>
       <button 
         class="nav-pill" 
+        :class="{ active: activeSection === 'methods' }"
+        @click="activeSection = 'methods'"
+      >
+        🎓 學霸學習法
+      </button>
+      <button 
+        class="nav-pill" 
         :class="{ active: activeSection === 'lab' }"
         @click="activeSection = 'lab'"
       >
@@ -67,7 +74,7 @@
         </div>
         <p class="card-text">
           大腦記憶的物理基礎是神經元突觸連接強度的改變（神經可塑性）。著名的赫布定律（Hebb's Rule）指出：<strong>「同步激發的神經元，會牢固地連接在一起」(Neurons that fire together, wire together)</strong>。<br><br>
-          當我們將「2 (天鵝)」與「8 (雪人)」在腦海中進行生動互動時，代表這兩組概念的神經元群集在極短時間內同步放電。這會促使突觸前膜釋放大量麩胺酸 (Glutamate)，活化突觸後膜的 NMDA 受體，引發鈣離子 (\(\text{Ca}^{2+}\)) 大量內流，最終使突觸後膜生成更多 AMPA 受體，使突觸訊號傳導強度倍增（即 LTP 現象）。
+          當我們將「2 (天鵝)」與「8 (雪人)」在腦海中進行生動互動時，代表這兩組概念的神經元群集在極短時間內同步放電。這會促使突觸前膜釋放大量麩胺酸 (Glutamate)，活化突觸後膜的 NMDA 受體，引發鈣離子 (Ca²⁺) 大量內流，最終使突觸後膜生成更多 AMPA 受體，使突觸訊號傳導強度倍增（即 LTP 現象）。
         </p>
         <div class="img-grid-2 mt-16">
           <div class="img-wrapper">
@@ -119,12 +126,12 @@
         <div class="card-icon-title">
           <span class="topic-icon">📦</span>
           <div>
-            <h3>2.2 意元集組 (Chunking)：突破 \(7 \pm 2\) 工作記憶極限</h3>
+            <h3>2.2 意元集組 (Chunking)：突破 7 ± 2 工作記憶極限</h3>
             <span class="topic-en">Overcoming Working Memory Capacity Limits</span>
           </div>
         </div>
         <p class="card-text">
-          心理學大師 George A. Miller 著名的研究指出，人類工作記憶（Working Memory）的瞬時容量僅為 \(7 \pm 2\) 個獨立單元（Chunks）。面對長達 20 位的長數字，大腦會迅速超載崩潰。<br><br>
+          心理學大師 George A. Miller 著名的研究指出，人類工作記憶（Working Memory）的瞬時容量僅為 <strong>7 ± 2</strong> 個獨立單元（Chunks）。面對長達 20 位的長數字，大腦會迅速超載崩潰。<br><br>
           <strong>意元集組 (Chunking)</strong> 是將離散零碎的資料打包成有意義的高階單元。數字鎖鏈法將每兩個數字組合成一個具象角色（例如 45 師傅、21 鱷魚），一串 20 位的無意義數字瞬間被精簡為「一場 5 個角色的微型冒險故事」，將大腦認知負荷降低至 1/4！
         </p>
         <div class="img-wrapper mt-16">
@@ -142,7 +149,7 @@
           </div>
         </div>
         <p class="card-text">
-          根據艾賓浩斯遺忘曲線公式 \(R = e^{-t/S}\)（\(R\) 為記憶保留率，\(t\) 為時間，\(S\) 為記憶強度），初次學習後 20 分鐘記憶即流失 42%，1 天後流失高達 67%。<br><br>
+          根據艾賓浩斯遺忘曲線公式 <em>R</em> = <em>e</em><sup>−<em>t</em>/<em>S</em></sup>（<em>R</em> 為記憶保留率，<em>t</em> 為時間，<em>S</em> 為記憶強度），初次學習後 20 分鐘記憶即流失 42%，1 天後流失高達 67%。<br><br>
           NChain 內建的 <strong>Leitner 盒子間隔複習演算法</strong>，在記憶即將衰減的「臨界點」精準觸發複習，使遺忘曲線斜率每次複習後大幅平緩，最終以極少複習次數達成近乎永久的終身固化記憶。
         </p>
         <div class="img-wrapper mt-16">
@@ -245,13 +252,22 @@
         </div>
       </div>
     </div>
+
+    <!-- Section 4: Top Students' Learning & Memory Methods -->
+    <div v-show="activeSection === 'methods'" class="science-tab-content">
+      <TopStudentMethodsInfo />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import { useRoute } from 'vue-router';
+import TopStudentMethodsInfo from './TopStudentMethodsInfo.vue';
 
-const activeSection = ref<'neuro' | 'cog' | 'lab'>('neuro');
+const route = useRoute();
+const initialTab = (route.query.tab as string) === 'methods' ? 'methods' : 'neuro';
+const activeSection = ref<'neuro' | 'cog' | 'methods' | 'lab'>(initialTab);
 
 const calcDays = ref(7);
 const calcReviews = ref(2);

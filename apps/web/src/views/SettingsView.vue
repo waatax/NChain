@@ -44,6 +44,24 @@
       </div>
 
       <div class="setting-item mt-12">
+        <span class="label">👓 閱讀字級大小</span>
+        <select v-model="localFontSize" @change="updateFontSize" class="settings-select">
+          <option value="standard">標準 (100% - 16px)</option>
+          <option value="comfortable">舒適 (112% - 17.5px 推薦)</option>
+          <option value="large">大字 (125% - 19px)</option>
+          <option value="huge">特大 (140% - 21px)</option>
+        </select>
+      </div>
+
+      <div class="setting-item mt-12">
+        <span class="label">📖 閱讀視線寬度 (電腦版)</span>
+        <select v-model="localReadingWidth" @change="updateReadingWidth" class="settings-select">
+          <option value="standard">護眼專注寬度 (880px - 最舒適)</option>
+          <option value="wide">全螢幕寬幅 (1200px)</option>
+        </select>
+      </div>
+
+      <div class="setting-item mt-12">
         <span class="label">🔔 雅音音效回饋 (Web Audio)</span>
         <label class="toggle-switch">
           <input type="checkbox" v-model="localSound" @change="updateSound" />
@@ -167,7 +185,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useAppStore } from '../stores/app';
 import { settingsRepo, progressRepo } from '../repositories';
 import { useI18n } from '../utils/i18n';
-import { ThemePalette } from '../repositories/SettingsRepository';
+import { ThemePalette, FontSizeScale, ReadingWidth } from '../repositories/SettingsRepository';
 import { soundFx } from '../utils/sound';
 
 const appStore = useAppStore();
@@ -175,6 +193,8 @@ const { t } = useI18n();
 
 const localTheme = ref('light');
 const localPalette = ref<ThemePalette>('ruri');
+const localFontSize = ref<FontSizeScale>('standard');
+const localReadingWidth = ref<ReadingWidth>('standard');
 const localSound = ref(true);
 const localSakura = ref(true);
 const localReducedMotion = ref(false);
@@ -186,10 +206,11 @@ const fileInput = ref<HTMLInputElement | null>(null);
 const boxCounts = ref<number[]>([0, 0, 0, 0, 0, 0]);
 
 const palettes = [
-  { id: 'ruri' as ThemePalette, name: '瑠璃藍 (Ruri Indigo)', color: '#1E50A2', desc: '冷靜專注・深海琉璃' },
-  { id: 'sakura' as ThemePalette, name: '桜緋紅 (Sakura & Akane)', color: '#B7282E', desc: '春櫻緋紅・溫潤雅緻' },
+  { id: 'washi' as ThemePalette, name: '溫潤和紙 (Washi Paper 推薦)', color: '#9A7B4F', desc: '羊皮和紙・護眼舒心無藍光' },
   { id: 'matcha' as ThemePalette, name: '若竹翡翠 (Matcha & Bamboo)', color: '#006E54', desc: '竹林靜謐・翡翠抹茶' },
+  { id: 'ruri' as ThemePalette, name: '瑠璃藍 (Ruri Indigo)', color: '#1E50A2', desc: '冷靜專注・深海琉璃' },
   { id: 'yamabuki' as ThemePalette, name: '山吹金茶 (Yamabuki Gold)', color: '#C37829', desc: '金箔古韻・豐收書香' },
+  { id: 'sakura' as ThemePalette, name: '桜緋紅 (Sakura & Akane)', color: '#B7282E', desc: '春櫻緋紅・溫潤雅緻' },
   { id: 'shion' as ThemePalette, name: '紫苑藤色 (Shion Iris)', color: '#5A3B7E', desc: '高貴紫藤・靈感沉澱' }
 ];
 
@@ -200,6 +221,8 @@ const maxBoxCount = computed(() => {
 onMounted(async () => {
   localTheme.value = appStore.settings.theme;
   localPalette.value = appStore.settings.palette || 'ruri';
+  localFontSize.value = appStore.settings.fontSize || 'standard';
+  localReadingWidth.value = appStore.settings.readingWidth || 'standard';
   localSound.value = appStore.settings.soundEffects !== false;
   localSakura.value = appStore.settings.sakuraParticles !== false;
   localReducedMotion.value = appStore.settings.reducedMotion;
@@ -208,6 +231,16 @@ onMounted(async () => {
 
   await loadBoxCounts();
 });
+
+const updateFontSize = () => {
+  soundFx.playTap();
+  appStore.updateSettings({ fontSize: localFontSize.value });
+};
+
+const updateReadingWidth = () => {
+  soundFx.playTap();
+  appStore.updateSettings({ readingWidth: localReadingWidth.value });
+};
 
 const loadBoxCounts = async () => {
   try {

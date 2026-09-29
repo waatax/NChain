@@ -311,6 +311,8 @@ export const translations: Record<string, string> = {
   "記憶宮殿 (Method of Loci)": "Cung điện Trí nhớ (Method of Loci)",
   "記憶宮殿大師體系": "Hệ thống Cung điện Trí nhớ",
   "記憶科學與學習原理": "Khoa học Trí nhớ & Nguyên lý Học tập",
+  "記憶科學與學霸學習法": "Khoa học Trí nhớ & Phương pháp Học bá",
+  "學霸學習法": "Phương pháp Học bá",
   "大腦科學與學習機制": "Khoa học Não bộ & Cơ chế Học tập",
   "探索記憶宮殿": "Khám phá Cung điện Trí nhớ",
   "記憶定樁與關鍵字百科": "Bách khoa Chốt ghi nhớ & Từ khóa",

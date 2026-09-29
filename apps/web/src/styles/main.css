@@ -116,6 +116,28 @@ html[data-palette="shion"] {
   --primary-light: #EEE7F8;
 }
 
+/* 📜 溫潤和紙護眼 (Warm Washi Paper & Amber Tea - 舒適閱讀) */
+html[data-palette="washi"] {
+  --theme-hue: 38;
+  --theme-sat: 52%;
+  --theme-lum: 34%;
+  --bg-primary: #F8F5EE;
+  --bg-secondary: #EFE9DB;
+  --bg-card: #FCFAF6;
+  --bg-card-hover: #FFFFFF;
+  --bg-glass: rgba(248, 245, 238, 0.92);
+  --border-color: #E2D9C5;
+  --border-subtle: #ECE5D5;
+  --text-primary: #2C2620;
+  --text-secondary: #574F44;
+  --text-muted: #8C8273;
+  --primary-light: #F4EEDF;
+  --primary-glow: rgba(138, 102, 45, 0.16);
+  --primary-border: rgba(138, 102, 45, 0.28);
+  --accent-gold: #B8860B;
+  --accent-gold-glow: rgba(184, 134, 11, 0.22);
+}
+
 /* --- 3. DARK MODE SYSTEM (漆黑・藍墨・夜の和風) --- */
 html.dark {
   --bg-primary: #0D1117;
@@ -145,6 +167,68 @@ html.dark {
   --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.8);
 }
 
+/* 📜 溫潤和紙夜讀模式 (Warm Charcoal & Gentle Amber Dark) */
+html.dark[data-palette="washi"] {
+  --theme-hue: 38;
+  --theme-sat: 45%;
+  --theme-lum: 62%;
+  --bg-primary: #141311;
+  --bg-secondary: #1D1B17;
+  --bg-card: #25221C;
+  --bg-card-hover: #2C2922;
+  --bg-glass: rgba(37, 34, 28, 0.9);
+  --border-color: #3A352B;
+  --border-subtle: #2D281F;
+  --text-primary: #EDE7DC;
+  --text-secondary: #ACA495;
+  --text-muted: #797163;
+  --primary-light: hsla(38, 55%, 55%, 0.15);
+  --primary-glow: hsla(38, 55%, 55%, 0.25);
+  --primary-border: hsla(38, 55%, 55%, 0.35);
+}
+
+/* --- 3.1 FONT SCALING & COMFORTABLE READING SYSTEM (字級調節與護眼閱讀系統) --- */
+:root {
+  --font-scale: 1;
+  --reading-line-height: 1.72;
+}
+
+html[data-font-size="standard"] {
+  --font-scale: 1;
+  font-size: 16px;
+  --reading-line-height: 1.7;
+}
+
+html[data-font-size="comfortable"] {
+  --font-scale: 1.12;
+  font-size: 17.5px;
+  --reading-line-height: 1.76;
+}
+
+html[data-font-size="large"] {
+  --font-scale: 1.25;
+  font-size: 19px;
+  --reading-line-height: 1.82;
+}
+
+html[data-font-size="huge"] {
+  --font-scale: 1.4;
+  font-size: 21px;
+  --reading-line-height: 1.88;
+}
+
+/* Reading measure & line lengths */
+.reading-prose {
+  max-width: 820px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: var(--reading-line-height);
+}
+
+html[data-reading-width="wide"] .reading-prose {
+  max-width: 1200px;
+}
+
 /* Reduced Motion Preference */
 html[data-reduced-motion="true"] * {
   animation-duration: 0.001ms !important;
@@ -164,7 +248,7 @@ body {
   font-family: var(--font-family-base);
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  line-height: 1.65;
+  line-height: var(--reading-line-height, 1.7);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
@@ -172,6 +256,7 @@ body {
   letter-spacing: -0.01em;
   background-image: radial-gradient(var(--border-subtle) 1px, transparent 1px);
   background-size: 32px 32px;
+  transition: font-size var(--transition-fast), background-color var(--transition-base), color var(--transition-base);
 }
 
 #app {
@@ -712,7 +797,49 @@ a:hover {
 .text-muted { color: var(--text-muted) !important; }
 .text-secondary { color: var(--text-secondary) !important; }
 
-/* --- 13. WIDESCREEN / DESKTOP RESPONSIVENESS --- */
+/* --- 13. WIDESCREEN / DESKTOP & MOBILE PORTRAIT RESPONSIVENESS --- */
+@media (max-width: 640px) {
+  .container {
+    padding: 12px 12px 86px 12px !important;
+  }
+  .card {
+    padding: 16px 14px;
+    border-radius: var(--border-radius-sm);
+  }
+  .app-header {
+    padding: 10px 12px;
+  }
+  .brand-crest {
+    width: 30px;
+    height: 30px;
+    font-size: 1rem;
+  }
+  .app-title {
+    font-size: 1.05rem;
+  }
+  .brand-kanji-sub {
+    display: none;
+  }
+  .header-actions {
+    gap: 5px;
+  }
+  .icon-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 0.9rem;
+  }
+  .bottom-nav {
+    height: 64px;
+  }
+  .nav-item {
+    padding: 4px 0;
+    font-size: 0.68rem;
+  }
+  .nav-icon {
+    font-size: 1.25rem;
+  }
+}
+
 @media (min-width: 1024px) {
   .desktop-nav {
     display: flex;
@@ -729,5 +856,11 @@ a:hover {
   
   .layout-landscape .desktop-nav {
     display: flex !important;
+  }
+
+  /* When readingWidth is standard on landscape, center reading column to comfortable 920px */
+  html[data-reading-width="standard"] .layout-landscape .science-container,
+  html[data-reading-width="standard"] .layout-landscape .reading-container {
+    max-width: 920px !important;
   }
 }

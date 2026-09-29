@@ -1,8 +1,12 @@
-export type ThemePalette = 'ruri' | 'sakura' | 'matcha' | 'yamabuki' | 'shion';
+export type ThemePalette = 'ruri' | 'sakura' | 'matcha' | 'yamabuki' | 'shion' | 'washi';
+export type FontSizeScale = 'standard' | 'comfortable' | 'large' | 'huge';
+export type ReadingWidth = 'standard' | 'wide';
 
 export interface LocalSettings {
   theme: 'light' | 'dark';
   palette: ThemePalette;
+  fontSize: FontSizeScale;
+  readingWidth: ReadingWidth;
   blindRecall: boolean;
   reducedMotion: boolean;
   downloadedImagesOnly: boolean;
@@ -17,6 +21,8 @@ const SETTINGS_KEY = 'number-chain.settings.v1';
 const DEFAULT_SETTINGS: LocalSettings = {
   theme: 'light',
   palette: 'ruri',
+  fontSize: 'standard',
+  readingWidth: 'standard',
   blindRecall: false,
   reducedMotion: false,
   downloadedImagesOnly: false,
@@ -79,6 +85,12 @@ export class SettingsRepository {
 
     // Apply Japanese Palette
     html.setAttribute('data-palette', settings.palette || 'ruri');
+
+    // Apply Font Size Scale
+    html.setAttribute('data-font-size', settings.fontSize || 'standard');
+
+    // Apply Reading Width Preference
+    html.setAttribute('data-reading-width', settings.readingWidth || 'standard');
 
     // Apply reduced motion
     if (settings.reducedMotion) {

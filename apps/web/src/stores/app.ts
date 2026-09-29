@@ -12,6 +12,8 @@ export const useAppStore = defineStore('app', () => {
   const settings = reactive<LocalSettings>({
     theme: 'light',
     palette: 'ruri',
+    fontSize: 'standard',
+    readingWidth: 'standard',
     blindRecall: false,
     reducedMotion: false,
     downloadedImagesOnly: false,
@@ -19,6 +21,28 @@ export const useAppStore = defineStore('app', () => {
     soundEffects: true,
     sakuraParticles: true
   });
+
+  const fontSizes: { key: LocalSettings['fontSize']; label: string; scale: string }[] = [
+    { key: 'standard', label: '標準 (100%)', scale: '100%' },
+    { key: 'comfortable', label: '舒適 (112%)', scale: '112%' },
+    { key: 'large', label: '大字 (125%)', scale: '125%' },
+    { key: 'huge', label: '特大 (140%)', scale: '140%' }
+  ];
+
+  const cycleFontSize = () => {
+    const current = settings.fontSize || 'standard';
+    const idx = fontSizes.findIndex(f => f.key === current);
+    const next = fontSizes[(idx + 1) % fontSizes.length].key;
+    updateSettings({ fontSize: next });
+    return next;
+  };
+
+  const cycleReadingWidth = () => {
+    const current = settings.readingWidth || 'standard';
+    const next = current === 'standard' ? 'wide' : 'standard';
+    updateSettings({ readingWidth: next });
+    return next;
+  };
 
   const initialize = async () => {
     isLoading.value = true;
@@ -61,10 +85,13 @@ export const useAppStore = defineStore('app', () => {
     isLoading,
     error,
     settings,
+    fontSizes,
     dueCardCount,
     totalCardCount,
     initialize,
     refreshReviewCounts,
-    updateSettings
+    updateSettings,
+    cycleFontSize,
+    cycleReadingWidth
   };
 });

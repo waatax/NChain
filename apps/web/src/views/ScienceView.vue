@@ -1,14 +1,17 @@
 <template>
   <div class="container science-container">
-    <div class="science-view-header mb-16">
+    <div class="science-view-header mb-12">
       <div class="header-badge-row mb-6">
         <span class="hanko-seal">科學</span>
-        <span class="catalog-subtitle text-muted">腦神經科學與認知心理學</span>
+        <span class="catalog-subtitle text-muted">腦神經科學・認知心理學・學霸高效記憶法</span>
       </div>
-      <h2>{{ t('記憶科學與學習原理') }}</h2>
+      <h2>{{ t('記憶科學與學霸學習法') }}</h2>
     </div>
 
-    <div class="card mb-24">
+    <!-- Reading Adjuster Toolbar: Font scaling, eye-care themes, reading width -->
+    <ReaderToolbar />
+
+    <div class="science-content-wrapper mb-24">
       <MemoryScienceInfo />
     </div>
 
@@ -25,6 +28,7 @@
 
 <script setup lang="ts">
 import { useI18n } from '../utils/i18n';
+import ReaderToolbar from '../components/ReaderToolbar.vue';
 import MemoryScienceInfo from '../components/MemoryScienceInfo.vue';
 
 const { t } = useI18n();

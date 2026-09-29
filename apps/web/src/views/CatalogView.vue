@@ -11,6 +11,9 @@
       </p>
     </div>
 
+    <!-- Reading Adjuster Toolbar -->
+    <ReaderToolbar />
+
     <!-- Peg System Selector Tabs -->
     <div class="system-tabs-bar mb-16">
       <button 
@@ -281,6 +284,7 @@ import { useRoute } from 'vue-router';
 import { contentRepo } from '../repositories';
 import { MnemonicItem } from '../domain/types';
 import { soundFx } from '../utils/sound';
+import ReaderToolbar from '../components/ReaderToolbar.vue';
 
 const currentSystem = ref<'canonical' | 'body' | 'shape' | 'mastery'>('canonical');
 

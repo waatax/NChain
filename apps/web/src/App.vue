@@ -61,6 +61,15 @@
           {{ appStore.settings.soundEffects ? '🔔' : '🔕' }}
         </button>
 
+        <!-- Font Size Scale Button -->
+        <button 
+          class="icon-btn font-scale-btn" 
+          @click="cycleFontSize" 
+          :title="fontSizeTitle"
+        >
+          <span class="header-font-scale">A<sup>±</sup></span>
+        </button>
+
         <!-- Palette Cycle Button -->
         <button 
           class="icon-btn palette-btn" 
@@ -69,8 +78,6 @@
         >
           🎨
         </button>
-
-
 
         <!-- Layout Mode Switcher -->
         <button 
@@ -213,25 +220,37 @@ const toggleSound = () => {
 };
 
 const palettes: { key: ThemePalette; label: string }[] = [
-  { key: 'ruri', label: '瑠璃藍' },
-  { key: 'sakura', label: '桜緋紅' },
+  { key: 'washi', label: '溫潤和紙 (護眼推薦)' },
   { key: 'matcha', label: '若竹翡翠' },
+  { key: 'ruri', label: '瑠璃藍' },
   { key: 'yamabuki', label: '山吹金茶' },
+  { key: 'sakura', label: '桜緋紅' },
   { key: 'shion', label: '紫苑藤色' }
 ];
 
 const paletteTitle = computed(() => {
-  const current = appStore.settings.palette || 'ruri';
+  const current = appStore.settings.palette || 'washi';
   const found = palettes.find(p => p.key === current);
-  return `傳統和風配色：${found ? found.label : '瑠璃藍'} (點擊切換)`;
+  return `傳統和風配色：${found ? found.label : '溫潤和紙'} (點擊切換)`;
 });
 
 const cyclePalette = () => {
   soundFx.playTap();
-  const current = appStore.settings.palette || 'ruri';
+  const current = appStore.settings.palette || 'washi';
   const currentIndex = palettes.findIndex(p => p.key === current);
   const nextIndex = (currentIndex + 1) % palettes.length;
   appStore.updateSettings({ palette: palettes[nextIndex].key });
+};
+
+const fontSizeTitle = computed(() => {
+  const current = appStore.settings.fontSize || 'standard';
+  const found = appStore.fontSizes.find(f => f.key === current);
+  return `閱讀字級：${found ? found.label : '標準 (100%)'} (點擊切換)`;
+});
+
+const cycleFontSize = () => {
+  soundFx.playTap();
+  appStore.cycleFontSize();
 };
 
 
@@ -314,5 +333,20 @@ const cyclePalette = () => {
 .app-content {
   flex: 1;
   width: 100%;
+}
+
+.header-font-scale {
+  font-family: var(--font-family-display);
+  font-weight: 800;
+  font-size: 0.88rem;
+  letter-spacing: -0.05em;
+  display: inline-flex;
+  align-items: center;
+}
+
+.header-font-scale sup {
+  font-size: 0.65rem;
+  font-weight: 900;
+  margin-left: 1px;
 }
 </style>

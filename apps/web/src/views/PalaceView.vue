@@ -12,6 +12,9 @@
       </p>
     </div>
 
+    <!-- Reader Toolbar -->
+    <ReaderToolbar />
+
     <!-- Palace Selector Tabs -->
     <div class="palace-tabs mb-20">
       <button 
@@ -170,6 +173,7 @@
 import { ref, computed } from 'vue';
 import { useI18n } from '../utils/i18n';
 import { soundFx } from '../utils/sound';
+import ReaderToolbar from '../components/ReaderToolbar.vue';
 
 const { t } = useI18n();
 const baseUrl = import.meta.env.BASE_URL;
