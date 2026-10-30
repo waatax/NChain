@@ -121,6 +121,19 @@
             <span class="hint-label">💡 {{ t('完整故事上下文：') }}</span>
             <p class="hint-text">{{ storyScene.originalText }}</p>
           </div>
+
+          <!-- Rich Pedagogical Error Explanation (錯題深度解析) -->
+          <div class="detailed-explanation-card mt-12 p-12 card" v-if="!isCorrect && currentExplanation" style="border: 1px solid var(--border-color); border-radius: var(--border-radius-md);">
+            <div class="flex justify-between items-center mb-6">
+              <span class="text-xs font-bold text-primary">🧠 名師錯題深度解說</span>
+              <button class="btn btn-sm btn-speak" @click="speakExplanationAloud">
+                🔊 語音朗讀解析
+              </button>
+            </div>
+            <p class="text-xs text-danger mb-4 font-bold">{{ currentExplanation.confusionAnalysis }}</p>
+            <p class="text-xs text-secondary mb-4"><strong>🏷️ 密碼拆解：</strong>{{ currentExplanation.mnemonicCore }}</p>
+            <p class="text-xs text-muted mb-0"><strong>👁️ 視覺定樁：</strong>{{ currentExplanation.sensoryVisualization }}</p>
+          </div>
         </div>
 
         <button class="btn btn-primary w-full mt-12 py-12" @click="nextCard">
@@ -141,6 +154,8 @@ import { ReviewCardState } from '../repositories/ProgressRepository';
 import { MnemonicItem, PairScene, NarrativeScene } from '../domain/types';
 import { soundFx } from '../utils/sound';
 import { sakuraConfetti } from '../utils/confetti';
+import { speechService } from '../utils/speech';
+import { getDetailedMnemonicExplanation, formatExplanationForSpeech, ExplanationDetail } from '../utils/mnemonicExplanation';
 
 interface ReviewOption {
   value: string;
@@ -157,6 +172,7 @@ const selectedOption = ref<ReviewOption | null>(null);
 const isCorrect = ref(false);
 const currentOptions = ref<ReviewOption[]>([]);
 const currentAnswer = ref<ReviewOption | null>(null);
+const currentExplanation = ref<ExplanationDetail | null>(null);
 
 const handleKeyDown = (e: KeyboardEvent) => {
   if (selectedOption.value !== null) {
@@ -183,7 +199,13 @@ onMounted(async () => {
 
 onUnmounted(() => {
   window.removeEventListener('keydown', handleKeyDown);
+  speechService.stop();
 });
+
+const speakExplanationAloud = () => {
+  if (!currentExplanation.value) return;
+  speechService.speakExplanation(formatExplanationForSpeech(currentExplanation.value));
+};
 
 const currentCard = computed((): ReviewCardState | null => {
   if (dueCards.value.length === 0) return null;
@@ -342,8 +364,16 @@ const selectOption = async (opt: ReviewOption) => {
 
   if (correct) {
     soundFx.playSuccess();
+    appStore.addXP(10, 'review_correct');
   } else {
     soundFx.playError();
+    if (item.value) {
+      currentExplanation.value = getDetailedMnemonicExplanation(
+        item.value,
+        opt.value,
+        contentRepo.getItems()
+      );
+    }
   }
 
   // Spaced repetition schedule update: correct -> Good box up, incorrect -> Forgot box down
@@ -360,6 +390,8 @@ const selectOption = async (opt: ReviewOption) => {
 
 const nextCard = () => {
   soundFx.playTap();
+  speechService.stop();
+  currentExplanation.value = null;
   if (autoTransitionTimeout) {
     clearTimeout(autoTransitionTimeout);
     autoTransitionTimeout = null;

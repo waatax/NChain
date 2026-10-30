@@ -77,9 +77,12 @@
             </div>
 
             <!-- Meta info Row (Number + Keyword) -->
-            <div class="back-meta-row mt-12">
+            <div class="back-meta-row mt-12 flex items-center justify-center gap-8">
               <span class="back-number">{{ currentItem.number }}</span>
               <h2 class="back-keyword">{{ currentItem.canonicalKeyword }}</h2>
+              <button class="btn btn-sm btn-speak" @click.stop="speakCurrentItem" title="語音朗讀此字卡">
+                🔊
+              </button>
             </div>
             
             <div class="card-tap-cue mt-auto">
@@ -139,6 +142,7 @@
 <script setup lang="ts">
 import { useI18n } from '../utils/i18n';
 import { soundFx } from '../utils/sound';
+import { speechService } from '../utils/speech';
 const { t } = useI18n();
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
@@ -275,7 +279,13 @@ const resetConfig = () => {
   isShuffled.value = false;
 };
 
+const speakCurrentItem = () => {
+  if (!currentItem.value) return;
+  speechService.speak(`數字 ${currentItem.value.number}，聯想詞：${currentItem.value.canonicalKeyword}。`);
+};
+
 const goBack = () => {
+  speechService.stop();
   router.push('/');
 };
 

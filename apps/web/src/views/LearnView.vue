@@ -91,13 +91,16 @@
         <div class="revealed-content" v-else>
           <!-- Story / Illustration -->
           <div class="association-details-card card p-20 mb-20">
-            <div class="association-header mb-12">
+            <div class="association-header mb-12 flex justify-between items-center">
               <span class="association-tag">💡 聯想故事鏈</span>
-              <div class="association-flow">
-                <span>【{{ currentPairScene.fromItemId.split('-')[1] }} {{ currentPairScene.displayFromKeyword }}】</span>
-                <span class="flow-arrow">➔</span>
-                <span class="highlight">【{{ currentPairScene.toItemId.split('-')[1] }} {{ currentPairScene.displayToKeyword }}】</span>
-              </div>
+              <button class="btn btn-sm btn-speak" @click="speakText(currentPairScene.sceneText)">
+                🔊 語音朗讀故事
+              </button>
+            </div>
+            <div class="association-flow mb-12">
+              <span>【{{ currentPairScene.fromItemId.split('-')[1] }} {{ currentPairScene.displayFromKeyword }}】</span>
+              <span class="flow-arrow">➔</span>
+              <span class="highlight">【{{ currentPairScene.toItemId.split('-')[1] }} {{ currentPairScene.displayToKeyword }}】</span>
             </div>
             
             <p class="scene-story-text">{{ currentPairScene.sceneText }}</p>
@@ -210,6 +213,53 @@
             <h5>💡 記憶小秘訣：</h5>
             <p class="recap-text whitespace-pre">{{ storyRecap.memoryTip }}</p>
           </div>
+
+          <!-- 🌟 10% Useful Contents Section (生活速記 × 名師心法) -->
+          <div class="useful-contents-panel card p-20 mt-16" v-if="lesson.usefulContent">
+            <div class="useful-header flex justify-between items-center mb-12">
+              <h4 class="font-bold text-primary">🌟 本單元 10% 實戰增強秘笈 (生活速記 × 名師心法)</h4>
+              <button class="btn btn-sm btn-secondary" @click="speakUsefulScenarios">
+                🔊 語音朗讀秘笈
+              </button>
+            </div>
+
+            <!-- Practical Scenarios -->
+            <div class="scenarios-list">
+              <div 
+                v-for="(sc, sIdx) in lesson.usefulContent.scenarios" 
+                :key="sIdx" 
+                class="scenario-box mb-12 p-12"
+              >
+                <div class="flex justify-between items-center">
+                  <strong class="text-primary">{{ sc.title }}</strong>
+                  <button class="icon-speaker-small" @click="speakText(`${sc.title}。${sc.scenario}。口訣：${sc.hook}。實戰演練：${sc.realLifeDrill}`)">🔊</button>
+                </div>
+                <p class="sc-desc mt-4 text-sm text-secondary">{{ sc.scenario }}</p>
+                <div class="sc-hook mt-4 p-8">
+                  <span class="font-bold">🎯 記憶口訣：</span> {{ sc.hook }}
+                </div>
+                <p class="sc-drill mt-6 text-sm text-muted"><strong>實戰演練：</strong>{{ sc.realLifeDrill }}</p>
+              </div>
+            </div>
+
+            <!-- Mnemonic Secrets -->
+            <div class="secrets-box mt-12 p-12">
+              <span class="font-bold text-sm block mb-6">💡 頂尖學霸記憶大師心法：</span>
+              <ul class="secrets-list text-sm">
+                <li v-for="(sec, secIdx) in lesson.usefulContent.mnemonicSecrets" :key="secIdx" class="mb-4">
+                  {{ sec }}
+                </li>
+              </ul>
+            </div>
+
+            <!-- Mastery Checklist -->
+            <div class="checklist-box mt-12 p-12">
+              <span class="font-bold text-sm block mb-6">✅ 熟練度挑戰清單：</span>
+              <div v-for="(chk, cIdx) in lesson.usefulContent.masteryChecklist" :key="cIdx" class="check-item text-sm mb-4">
+                <span>☑️ {{ chk }}</span>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="recap-actions mt-16 flex gap-16">
@@ -232,6 +282,7 @@ import { Lesson, PairScene, NarrativeScene, NarrativeStory } from '../domain/typ
 import { ProgressState, zQuizType } from '../repositories/ProgressRepository';
 import { soundFx } from '../utils/sound';
 import { sakuraConfetti } from '../utils/confetti';
+import { speechService } from '../utils/speech';
 
 const props = defineProps<{
   lessonId: string;
@@ -346,7 +397,19 @@ onMounted(async () => {
 
 onUnmounted(() => {
   window.removeEventListener('keydown', handleKeyDown);
+  speechService.stop();
 });
+
+const speakText = (text: string) => {
+  speechService.speak(text);
+};
+
+const speakUsefulScenarios = () => {
+  if (!lesson.value?.usefulContent) return;
+  const content = lesson.value.usefulContent;
+  const texts = content.scenarios.map(s => `${s.title}。${s.scenario}。口訣：${s.hook}。實戰演練：${s.realLifeDrill}`).join('。接下來，');
+  speechService.speak(`本單元實戰增強秘笈：${texts}`);
+};
 
 const totalScenes = computed(() => {
   if (!lesson.value) return 0;

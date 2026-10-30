@@ -78,6 +78,30 @@
       </div>
 
       <div class="setting-item mt-12">
+        <span class="label">🔊 語音念題與解答朗讀 (Web Speech TTS)</span>
+        <label class="toggle-switch">
+          <input type="checkbox" v-model="localSpeechAutoRead" @change="updateSpeechAutoRead" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="setting-item mt-12">
+        <span class="label">🗣️ 語音念題語速調節</span>
+        <select v-model="localSpeechRate" @change="updateSpeechRate" class="settings-select">
+          <option :value="0.8">0.8x 慢速穩健 (初學者推薦)</option>
+          <option :value="1.0">1.0x 標準自然速度</option>
+          <option :value="1.2">1.2x 快速衝刺 (高階速記)</option>
+        </select>
+      </div>
+
+      <div class="setting-item mt-12">
+        <span class="label">❤️ Duolingo 愛心生命值 (目前 {{ appStore.hearts }} 顆)</span>
+        <button class="btn btn-sm btn-secondary" @click="handleRefillHearts">
+          💖 立即補滿 5 顆心
+        </button>
+      </div>
+
+      <div class="setting-item mt-12">
         <span class="label">{{ t('降低動態效果') }}</span>
         <label class="toggle-switch">
           <input type="checkbox" v-model="localReducedMotion" @change="updateReducedMotion" />
@@ -197,6 +221,8 @@ const localFontSize = ref<FontSizeScale>('standard');
 const localReadingWidth = ref<ReadingWidth>('standard');
 const localSound = ref(true);
 const localSakura = ref(true);
+const localSpeechAutoRead = ref(true);
+const localSpeechRate = ref(1.0);
 const localReducedMotion = ref(false);
 const localBlindRecall = ref(false);
 const localLang = ref('zh-TW');
@@ -225,12 +251,28 @@ onMounted(async () => {
   localReadingWidth.value = appStore.settings.readingWidth || 'standard';
   localSound.value = appStore.settings.soundEffects !== false;
   localSakura.value = appStore.settings.sakuraParticles !== false;
+  localSpeechAutoRead.value = appStore.settings.speechAutoRead !== false;
+  localSpeechRate.value = appStore.settings.speechRate || 1.0;
   localReducedMotion.value = appStore.settings.reducedMotion;
   localBlindRecall.value = appStore.settings.blindRecall;
   localLang.value = appStore.settings.lang || 'zh-TW';
 
   await loadBoxCounts();
 });
+
+const updateSpeechAutoRead = () => {
+  soundFx.playTap();
+  appStore.updateSettings({ speechAutoRead: localSpeechAutoRead.value });
+};
+
+const updateSpeechRate = () => {
+  soundFx.playTap();
+  appStore.updateSettings({ speechRate: localSpeechRate.value });
+};
+
+const handleRefillHearts = () => {
+  appStore.refillHearts();
+};
 
 const updateFontSize = () => {
   soundFx.playTap();

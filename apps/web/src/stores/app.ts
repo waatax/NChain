@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
-import { ref, reactive } from 'vue';
-import { contentRepo, progressRepo, settingsRepo } from '../repositories';
+import { ref, reactive, computed } from 'vue';
+import { contentRepo, progressRepo, settingsRepo, gamificationRepo } from '../repositories';
 import { LocalSettings } from '../repositories/SettingsRepository';
 
 export const useAppStore = defineStore('app', () => {
@@ -8,6 +8,36 @@ export const useAppStore = defineStore('app', () => {
   const error = ref<string | null>(null);
   const dueCardCount = ref(0);
   const totalCardCount = ref(0);
+
+  // Duolingo Gamification State
+  const gamificationState = ref(gamificationRepo.getState());
+  const hearts = computed(() => gamificationState.value.hearts);
+  const maxHearts = computed(() => gamificationState.value.maxHearts);
+  const xp = computed(() => gamificationState.value.xp);
+  const currentStreak = computed(() => gamificationState.value.currentStreak);
+  const levelInfo = computed(() => gamificationRepo.getLevelInfo());
+
+  const refreshGamification = () => {
+    gamificationState.value = gamificationRepo.getState();
+  };
+
+  const loseHeart = () => {
+    const result = gamificationRepo.loseHeart();
+    refreshGamification();
+    return result;
+  };
+
+  const refillHearts = () => {
+    const newHearts = gamificationRepo.refillHearts();
+    refreshGamification();
+    return newHearts;
+  };
+
+  const addXP = (amount: number, reason?: string) => {
+    const result = gamificationRepo.addXP(amount, reason);
+    refreshGamification();
+    return result;
+  };
   
   const settings = reactive<LocalSettings>({
     theme: 'light',
@@ -19,7 +49,9 @@ export const useAppStore = defineStore('app', () => {
     downloadedImagesOnly: false,
     lang: 'zh-TW',
     soundEffects: true,
-    sakuraParticles: true
+    sakuraParticles: true,
+    speechAutoRead: true,
+    speechRate: 1.0
   });
 
   const fontSizes: { key: LocalSettings['fontSize']; label: string; scale: string }[] = [
@@ -88,6 +120,15 @@ export const useAppStore = defineStore('app', () => {
     fontSizes,
     dueCardCount,
     totalCardCount,
+    hearts,
+    maxHearts,
+    xp,
+    currentStreak,
+    levelInfo,
+    refreshGamification,
+    loseHeart,
+    refillHearts,
+    addXP,
     initialize,
     refreshReviewCounts,
     updateSettings,

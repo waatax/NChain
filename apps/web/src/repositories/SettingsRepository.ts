@@ -14,6 +14,8 @@ export interface LocalSettings {
   lang?: 'zh-TW' | 'vi';
   soundEffects: boolean;
   sakuraParticles: boolean;
+  speechAutoRead: boolean;
+  speechRate: number;
 }
 
 const SETTINGS_KEY = 'number-chain.settings.v1';
@@ -29,7 +31,9 @@ const DEFAULT_SETTINGS: LocalSettings = {
   forceLayout: 'auto',
   lang: 'zh-TW',
   soundEffects: true,
-  sakuraParticles: true
+  sakuraParticles: true,
+  speechAutoRead: true,
+  speechRate: 1.0
 };
 
 export class SettingsRepository {
@@ -46,9 +50,11 @@ export class SettingsRepository {
 
   public getSettings(): LocalSettings {
     try {
-      const stored = localStorage.getItem(SETTINGS_KEY);
-      if (stored) {
-        return { ...DEFAULT_SETTINGS, ...JSON.parse(stored) };
+      if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+        const stored = localStorage.getItem(SETTINGS_KEY);
+        if (stored) {
+          return { ...DEFAULT_SETTINGS, ...JSON.parse(stored) };
+        }
       }
     } catch (e) {
       console.error('Failed to parse settings from localStorage:', e);
@@ -60,8 +66,10 @@ export class SettingsRepository {
     const current = this.getSettings();
     const updated = { ...current, ...settings };
     try {
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify(updated));
-      this.applyDomAttributes(updated);
+      if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify(updated));
+        this.applyDomAttributes(updated);
+      }
     } catch (e) {
       console.error('Failed to write settings to localStorage:', e);
     }

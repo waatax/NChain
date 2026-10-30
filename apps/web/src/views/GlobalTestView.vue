@@ -49,14 +49,21 @@
         <span>進度: {{ currentQuestionIndex + 1 }} / {{ questions.length }}</span>
         <span>當前答對: {{ score }} {{ t('題') }}</span>
         <span v-if="comboStreak >= 2" class="combo-badge">🔥 連擊 x{{ comboStreak }}</span>
+        <span>❤️ {{ appStore.hearts }} 心</span>
+        <span>⭐ {{ appStore.xp }} XP</span>
         <span>⏱️ 費時: {{ elapsedTime }} 秒</span>
       </div>
 
       <div class="question-card card">
-        <span class="question-type-tag">{{ getQuestionTypeLabel(currentQuestion.type) }}</span>
+        <div class="question-top-bar flex justify-between items-center mb-8">
+          <span class="question-type-tag">{{ getQuestionTypeLabel(currentQuestion.type) }}</span>
+          <button class="btn btn-sm btn-speak" @click="speakCurrentQuestion">
+            🔊 語音念題
+          </button>
+        </div>
         
-        <div class="question-text mt-16 text-center">
-          <p class="prompt">{{ currentQuestion.prompt }}</p>
+        <div class="question-text mt-12 text-center">
+          <h3 class="prompt">{{ currentQuestion.prompt }}</h3>
         </div>
       </div>
 
@@ -65,13 +72,16 @@
         <button 
           v-for="(opt, idx) in currentQuestion.options" 
           :key="idx" 
-          class="option-btn btn"
+          class="option-btn btn flex justify-between items-center"
           :class="getOptionClass(opt)"
           :disabled="selectedOption !== null"
           @click="selectOption(opt)"
         >
-          <span class="opt-label">{{ String.fromCharCode(65 + idx) }}.</span>
-          <span class="opt-text">{{ opt.display }}</span>
+          <div class="opt-left flex items-center gap-8">
+            <span class="opt-label">{{ String.fromCharCode(65 + idx) }}.</span>
+            <span class="opt-text">{{ opt.display }}</span>
+          </div>
+          <span class="opt-speaker-icon text-muted" @click.stop="speakText(opt.display)">🔊</span>
         </button>
       </div>
 
@@ -138,8 +148,15 @@
               </span>
             </div>
             
-            <div class="error-row-body mt-4 text-muted" v-if="err.association">
-              💡 聯想提示: {{ err.association }}
+            <div class="error-detail-box mt-8 p-10 card" style="border: 1px solid var(--border-color); border-radius: var(--border-radius-md);">
+              <div class="flex justify-between items-center mb-6">
+                <span class="text-xs font-bold text-primary">🧠 名師解密：{{ getExplanation(err.item, err.userAnswer).mnemonicCore }}</span>
+                <button class="btn btn-sm btn-speak" @click="speakExplanationAloud(getExplanation(err.item, err.userAnswer))">
+                  🔊 朗讀解析
+                </button>
+              </div>
+              <p class="text-xs text-danger mb-4">{{ getExplanation(err.item, err.userAnswer).confusionAnalysis }}</p>
+              <p class="text-xs text-muted mb-0"><strong>👁️ 視覺定樁：</strong>{{ getExplanation(err.item, err.userAnswer).sensoryVisualization }}</p>
             </div>
           </div>
         </div>
@@ -163,6 +180,8 @@ import { contentRepo, progressRepo } from '../repositories';
 import { MnemonicItem, PairScene } from '../domain/types';
 import { soundFx } from '../utils/sound';
 import { sakuraConfetti } from '../utils/confetti';
+import { speechService } from '../utils/speech';
+import { getDetailedMnemonicExplanation, formatExplanationForSpeech, ExplanationDetail } from '../utils/mnemonicExplanation';
 
 interface QuizOption {
   value: string;
@@ -262,7 +281,25 @@ const speedRating = computed(() => {
 onUnmounted(() => {
   window.removeEventListener('keydown', handleKeyDown);
   if (timerInterval.value) clearInterval(timerInterval.value);
+  speechService.stop();
 });
+
+const speakText = (text: string) => {
+  speechService.speak(text);
+};
+
+const speakCurrentQuestion = () => {
+  if (!currentQuestion.value) return;
+  speechService.speakQuestion(currentQuestion.value.prompt, currentQuestion.value.options, false);
+};
+
+const getExplanation = (item: MnemonicItem, userAnswer: string): ExplanationDetail => {
+  return getDetailedMnemonicExplanation(item, userAnswer, contentRepo.getItems());
+};
+
+const speakExplanationAloud = (detail: ExplanationDetail) => {
+  speechService.speakExplanation(formatExplanationForSpeech(detail));
+};
 
 const currentQuestion = computed((): Question | null => {
   if (questions.value.length === 0) return null;
@@ -408,7 +445,14 @@ const selectOption = async (opt: QuizOption) => {
     if (comboStreak.value > maxCombo.value) {
       maxCombo.value = comboStreak.value;
     }
-    soundFx.playSuccess();
+    const points = comboStreak.value >= 3 ? 15 : 10;
+    appStore.addXP(points, 'global_test_answer');
+
+    if (comboStreak.value >= 3) {
+      soundFx.playComboStreak(comboStreak.value);
+    } else {
+      soundFx.playSuccess();
+    }
     if (comboStreak.value >= 5) {
       sakuraConfetti.trigger();
     }
@@ -419,6 +463,8 @@ const selectOption = async (opt: QuizOption) => {
   } else {
     comboStreak.value = 0;
     soundFx.playError();
+    appStore.loseHeart();
+
     // Record incorrect question for display
     incorrectQuestions.value.push({
       item: currentQuestion.value.item,

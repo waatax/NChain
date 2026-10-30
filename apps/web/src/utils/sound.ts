@@ -1,5 +1,7 @@
 // Web Audio API Zen Sound Synthesizer (Pure JS, no external audio files required)
-import { settingsRepo } from '../repositories';
+import { SettingsRepository } from '../repositories/SettingsRepository';
+
+const getSettingsRepo = () => SettingsRepository.getInstance();
 
 class SoundManager {
   private ctx: AudioContext | null = null;
@@ -19,7 +21,7 @@ class SoundManager {
   }
 
   private isEnabled(): boolean {
-    const settings = settingsRepo.getSettings();
+    const settings = getSettingsRepo().getSettings();
     return settings.soundEffects !== false;
   }
 
@@ -160,6 +162,144 @@ class SoundManager {
 
     osc.start(now);
     osc.stop(now + 0.04);
+  }
+
+  /**
+   * Duolingo-style Heart Lost Sound (扣愛心・低沉惋惜音)
+   */
+  public playHeartLost() {
+    if (!this.isEnabled()) return;
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(180, now);
+    osc.frequency.exponentialRampToValueAtTime(90, now + 0.35);
+
+    gain.gain.setValueAtTime(0.12, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.36);
+  }
+
+  /**
+   * Heart Refill Sound (愛心補滿・治癒金光)
+   */
+  public playHeartRefill() {
+    if (!this.isEnabled()) return;
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+    const freqs = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+    freqs.forEach((f, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(f, now + i * 0.07);
+
+      gain.gain.setValueAtTime(0, now + i * 0.07);
+      gain.gain.linearRampToValueAtTime(0.12, now + i * 0.07 + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.07 + 0.4);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now + i * 0.07);
+      osc.stop(now + i * 0.07 + 0.45);
+    });
+  }
+
+  /**
+   * XP Gain / Star Chime (獲得經驗值・輕脆星鳴)
+   */
+  public playXpGain() {
+    if (!this.isEnabled()) return;
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(987.77, now); // B5
+    osc.frequency.exponentialRampToValueAtTime(1318.51, now + 0.08); // E6
+
+    gain.gain.setValueAtTime(0.08, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.22);
+  }
+
+  /**
+   * Level Up / Grand Triumph (升級・榮耀和弦)
+   */
+  public playLevelUp() {
+    if (!this.isEnabled()) return;
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+    // C Major Arpeggio Fanfare: C4, G4, C5, E5, G5, C6
+    const notes = [261.63, 392.00, 523.25, 659.25, 783.99, 1046.50];
+    notes.forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = idx === notes.length - 1 ? 'sine' : 'triangle';
+      osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+
+      gain.gain.setValueAtTime(0, now + idx * 0.08);
+      gain.gain.linearRampToValueAtTime(0.15, now + idx * 0.08 + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + (idx === notes.length - 1 ? 1.4 : 0.5));
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now + idx * 0.08);
+      osc.stop(now + idx * 0.08 + 1.5);
+    });
+  }
+
+  /**
+   * Combo Fire Streak Sound (連續答對・烈焰加速)
+   */
+  public playComboStreak(streakCount: number) {
+    if (!this.isEnabled()) return;
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+    const baseFreq = 500 + Math.min(streakCount * 50, 600);
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(baseFreq, now);
+    osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.5, now + 0.12);
+
+    gain.gain.setValueAtTime(0.1, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.26);
   }
 }
 

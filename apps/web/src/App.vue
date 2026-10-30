@@ -29,6 +29,22 @@
       </router-link>
 
       <div class="header-actions">
+        <!-- Duolingo Header Stats -->
+        <div class="duo-header-stats">
+          <div class="duo-stat-chip streak" title="連續學習天數">
+            <span>🔥</span>
+            <strong>{{ appStore.currentStreak }}</strong>
+          </div>
+          <div class="duo-stat-chip hearts" title="愛心生命值">
+            <span>❤️</span>
+            <strong>{{ appStore.hearts }}</strong>
+          </div>
+          <div class="duo-stat-chip xp" title="總經驗值">
+            <span>⭐</span>
+            <strong>{{ appStore.xp }}</strong>
+          </div>
+        </div>
+
         <!-- Desktop Nav -->
         <nav class="desktop-nav">
           <router-link to="/" class="desktop-nav-item" @click="handleNavTap">
@@ -333,6 +349,54 @@ const cycleFontSize = () => {
 .app-content {
   flex: 1;
   width: 100%;
+}
+
+.duo-header-stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 8px;
+}
+
+.duo-stat-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+}
+
+.duo-stat-chip.streak {
+  color: #f59e0b;
+  border-color: rgba(245, 158, 11, 0.3);
+  background: rgba(245, 158, 11, 0.08);
+}
+
+.duo-stat-chip.hearts {
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.duo-stat-chip.xp {
+  color: var(--primary);
+  border-color: rgba(59, 130, 246, 0.3);
+  background: rgba(59, 130, 246, 0.08);
+}
+
+@media (max-width: 600px) {
+  .duo-header-stats {
+    gap: 4px;
+    margin-right: 4px;
+  }
+  .duo-stat-chip {
+    padding: 3px 6px;
+    font-size: 0.72rem;
+  }
 }
 
 .header-font-scale {

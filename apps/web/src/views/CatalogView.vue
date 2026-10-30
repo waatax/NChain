@@ -232,9 +232,14 @@
             </div>
           </div>
 
-          <div class="detail-row">
-            <span class="detail-label">{{ t('主關鍵字：') }}</span>
-            <span class="detail-val highlight font-bold text-primary">{{ selectedItem.canonicalKeyword }}</span>
+          <div class="detail-row flex items-center justify-between">
+            <div>
+              <span class="detail-label">{{ t('主關鍵字：') }}</span>
+              <span class="detail-val highlight font-bold text-primary">{{ selectedItem.canonicalKeyword }}</span>
+            </div>
+            <button class="btn btn-sm" @click="speakItem(selectedItem)" title="語音朗讀此關鍵字">
+              🔊 語音朗讀
+            </button>
           </div>
           
           <div class="detail-row" v-if="selectedItem.aliases.length > 0">
@@ -284,6 +289,7 @@ import { useRoute } from 'vue-router';
 import { contentRepo } from '../repositories';
 import { MnemonicItem } from '../domain/types';
 import { soundFx } from '../utils/sound';
+import { speechService } from '../utils/speech';
 import ReaderToolbar from '../components/ReaderToolbar.vue';
 
 const currentSystem = ref<'canonical' | 'body' | 'shape' | 'mastery'>('canonical');
@@ -503,7 +509,12 @@ const showDetail = (item: MnemonicItem) => {
 
 const closeDetail = () => {
   soundFx.playTap();
+  speechService.stop();
   selectedItem.value = null;
+};
+
+const speakItem = (item: MnemonicItem) => {
+  speechService.speak(`數字 ${item.number}，記憶聯想詞：${item.canonicalKeyword}。`);
 };
 </script>
 

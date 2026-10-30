@@ -15,6 +15,7 @@ import {
   staticStories,
   staticNarrativeScenes
 } from '../data/staticContent';
+import { lessonUsefulContents } from '../data/lessonUsefulContents';
 import {
   viItems,
   viLessons,
@@ -69,14 +70,26 @@ export class ContentRepository {
     if (this.isLoaded) return;
     
     staticItems.forEach(item => this.items.set(item.id, item));
-    staticLessons.forEach(l => this.lessons.set(l.id, l));
+    staticLessons.forEach(l => {
+      const enriched: Lesson = {
+        ...l,
+        usefulContent: lessonUsefulContents[l.id] || null
+      };
+      this.lessons.set(l.id, enriched);
+    });
     staticModules.forEach(m => this.modules.set(m.id, m));
     staticPairScenes.forEach(s => this.pairScenes.set(s.id, s));
     staticStories.forEach(s => this.stories.set(s.id, s));
     staticNarrativeScenes.forEach(s => this.narrativeScenes.set(s.id, s));
 
     viItems.forEach(item => this.viItems.set(item.id, item));
-    viLessons.forEach(l => this.viLessons.set(l.id, l));
+    viLessons.forEach(l => {
+      const enriched: Lesson = {
+        ...l,
+        usefulContent: lessonUsefulContents[l.id] || null
+      };
+      this.viLessons.set(l.id, enriched);
+    });
     viModules.forEach(m => this.viModules.set(m.id, m));
     viPairScenes.forEach(s => this.viPairScenes.set(s.id, s));
     viStories.forEach(s => this.viStories.set(s.id, s));

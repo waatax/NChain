@@ -60,7 +60,12 @@
 
         <div v-if="currentQuestion" class="quiz-question-card text-center p-20">
           <span class="q-label text-muted text-xs">請問此空間樁位對應的記憶內容：</span>
-          <h4 class="q-title mt-8 mb-16">{{ currentQuestion.prompt }}</h4>
+          <div class="flex items-center justify-center gap-8 mt-8 mb-16">
+            <h4 class="q-title mb-0">{{ currentQuestion.prompt }}</h4>
+            <button class="btn btn-sm" @click="speakText(currentQuestion.prompt)" title="語音朗讀題目">
+              🔊
+            </button>
+          </div>
 
           <div class="quiz-options-grid mt-16">
             <button 
@@ -79,7 +84,10 @@
             <p :class="isCurrentCorrect ? 'text-success font-bold' : 'text-danger font-bold'">
               {{ isCurrentCorrect ? '🎉 答對了！空間神經連接增強！' : '❌ 答錯了！正確答案是：' + currentQuestion.correctAnswer }}
             </p>
-            <p class="text-muted text-xs mt-4">💡 聯想秘訣：{{ currentQuestion.tip }}</p>
+            <div class="flex justify-between items-center mt-6">
+              <p class="text-muted text-xs mb-0">💡 聯想秘訣：{{ currentQuestion.tip }}</p>
+              <button class="btn btn-sm" @click="speakText(currentQuestion.tip)">🔊 朗讀秘訣</button>
+            </div>
             <button class="btn btn-primary btn-sm mt-12" @click="nextQuizQuestion">
               下一題 👉
             </button>
@@ -173,6 +181,7 @@
 import { ref, computed } from 'vue';
 import { useI18n } from '../utils/i18n';
 import { soundFx } from '../utils/sound';
+import { speechService } from '../utils/speech';
 import ReaderToolbar from '../components/ReaderToolbar.vue';
 
 const { t } = useI18n();
@@ -489,6 +498,14 @@ const getOptionClass = (opt: string) => {
   }
   return 'btn-secondary opacity-50';
 };
+const speakText = (text: string) => {
+  speechService.speak(text);
+};
+
+import { onUnmounted } from 'vue';
+onUnmounted(() => {
+  speechService.stop();
+});
 </script>
 
 <style scoped>

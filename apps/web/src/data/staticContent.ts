@@ -1515,7 +1515,17 @@ export const staticLessons: Lesson[] = [
       "item-79",
       "item-80"
     ],
-    "sceneIds": [],
+    "sceneIds": [
+      "story-unknown-scene-01",
+      "story-unknown-scene-02",
+      "story-unknown-scene-03",
+      "story-unknown-scene-04",
+      "story-unknown-scene-05",
+      "story-unknown-scene-06",
+      "story-unknown-scene-07",
+      "story-unknown-scene-08",
+      "story-unknown-scene-09"
+    ],
     "summary": null,
     "order": 8
   },
@@ -2812,7 +2822,7 @@ export const staticStories: NarrativeStory[] = [
   },
   {
     "id": "story-unknown",
-    "lessonId": "lesson-unknown",
+    "lessonId": "lesson-71-80",
     "title": "極地與巴黎的奇幻漂流",
     "sceneIds": [
       "story-unknown-scene-01",

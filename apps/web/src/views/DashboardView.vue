@@ -5,6 +5,49 @@
       
       <!-- Left Sidebar (Desktop Only) -->
       <aside class="dashboard-sidebar desktop-only-sidebar" v-if="isDesktop">
+        <!-- Duolingo Learner Status Card -->
+        <div class="duo-learner-card card mb-16 p-16">
+          <div class="duo-learner-header flex items-center justify-between mb-8">
+            <div class="duo-badge-group flex items-center gap-8">
+              <span class="learner-badge-icon" style="font-size: 1.8rem;">{{ appStore.levelInfo.current.badge }}</span>
+              <div>
+                <h4 class="learner-level-title font-bold">{{ appStore.levelInfo.current.title }}</h4>
+                <span class="text-xs text-muted">Lv.{{ appStore.levelInfo.current.level }} 心智等級</span>
+              </div>
+            </div>
+            <div class="streak-pill flex items-center gap-4 p-4 px-8" style="background: rgba(245, 158, 11, 0.12); border-radius: 999px; color: #f59e0b; font-size: 0.85rem; font-weight: 800;">
+              <span>🔥</span>
+              <strong>{{ appStore.currentStreak }} 天</strong>
+            </div>
+          </div>
+
+          <!-- Level XP Progress Bar -->
+          <div class="xp-progress-bar-container mt-6" style="height: 8px; background: var(--bg-secondary); border-radius: 999px; overflow: hidden;">
+            <div class="xp-progress-bar" :style="{ width: `${appStore.levelInfo.progressPercent}%`, height: '100%', background: 'linear-gradient(90deg, var(--primary), #38bdf8)' }"></div>
+          </div>
+          <div class="xp-progress-meta flex justify-between text-xs text-muted mt-4">
+            <span>{{ appStore.xp }} XP</span>
+            <span v-if="appStore.levelInfo.next">升級還需 {{ appStore.levelInfo.next.minXP - appStore.xp }} XP</span>
+            <span v-else>殿堂滿級！</span>
+          </div>
+
+          <!-- Hearts status -->
+          <div class="hearts-row flex items-center justify-between mt-10 pt-8" style="border-top: 1px solid var(--border-color);">
+            <span class="text-xs text-muted">生命值愛心：</span>
+            <div class="flex items-center gap-8">
+              <span class="text-xs font-bold text-danger">❤️ {{ appStore.hearts }} / {{ appStore.maxHearts }}</span>
+              <button 
+                v-if="appStore.hearts < appStore.maxHearts" 
+                class="btn btn-sm" 
+                style="padding: 2px 8px; font-size: 0.72rem;"
+                @click="appStore.refillHearts"
+              >
+                💖 補滿
+              </button>
+            </div>
+          </div>
+        </div>
+
         <!-- Header Summary Card -->
         <div class="dashboard-summary card">
           <div class="summary-header">
@@ -118,6 +161,49 @@
 
           <!-- Sub-tab 1: Progress Summary (Mobile Only) -->
           <div v-if="overviewSubTab === 'progress' && !isDesktop" class="overview-sub-panel mobile-only-block">
+            <!-- Duolingo Learner Status Card (Mobile) -->
+            <div class="duo-learner-card card mb-16 p-16">
+              <div class="duo-learner-header flex items-center justify-between mb-8">
+                <div class="duo-badge-group flex items-center gap-8">
+                  <span class="learner-badge-icon" style="font-size: 1.8rem;">{{ appStore.levelInfo.current.badge }}</span>
+                  <div>
+                    <h4 class="learner-level-title font-bold">{{ appStore.levelInfo.current.title }}</h4>
+                    <span class="text-xs text-muted">Lv.{{ appStore.levelInfo.current.level }} 心智等級</span>
+                  </div>
+                </div>
+                <div class="streak-pill flex items-center gap-4 p-4 px-8" style="background: rgba(245, 158, 11, 0.12); border-radius: 999px; color: #f59e0b; font-size: 0.85rem; font-weight: 800;">
+                  <span>🔥</span>
+                  <strong>{{ appStore.currentStreak }} 天</strong>
+                </div>
+              </div>
+
+              <!-- Level XP Progress Bar -->
+              <div class="xp-progress-bar-container mt-6" style="height: 8px; background: var(--bg-secondary); border-radius: 999px; overflow: hidden;">
+                <div class="xp-progress-bar" :style="{ width: `${appStore.levelInfo.progressPercent}%`, height: '100%', background: 'linear-gradient(90deg, var(--primary), #38bdf8)' }"></div>
+              </div>
+              <div class="xp-progress-meta flex justify-between text-xs text-muted mt-4">
+                <span>{{ appStore.xp }} XP</span>
+                <span v-if="appStore.levelInfo.next">升級還需 {{ appStore.levelInfo.next.minXP - appStore.xp }} XP</span>
+                <span v-else>殿堂滿級！</span>
+              </div>
+
+              <!-- Hearts status -->
+              <div class="hearts-row flex items-center justify-between mt-10 pt-8" style="border-top: 1px solid var(--border-color);">
+                <span class="text-xs text-muted">生命值愛心：</span>
+                <div class="flex items-center gap-8">
+                  <span class="text-xs font-bold text-danger">❤️ {{ appStore.hearts }} / {{ appStore.maxHearts }}</span>
+                  <button 
+                    v-if="appStore.hearts < appStore.maxHearts" 
+                    class="btn btn-sm" 
+                    style="padding: 2px 8px; font-size: 0.72rem;"
+                    @click="appStore.refillHearts"
+                  >
+                    💖 補滿
+                  </button>
+                </div>
+              </div>
+            </div>
+
             <!-- Header Summary Card -->
             <div class="dashboard-summary card mb-16">
               <div class="summary-header">

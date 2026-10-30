@@ -1,5 +1,5 @@
 // Lightweight Japanese Cherry Blossom (桜吹雪) and Golden Stardust Particle Engine
-import { settingsRepo } from '../repositories';
+import { SettingsRepository } from '../repositories/SettingsRepository';
 
 interface Particle {
   x: number;
@@ -21,7 +21,7 @@ class SakuraConfetti {
   private animationId: number | null = null;
 
   private isEnabled(): boolean {
-    const settings = settingsRepo.getSettings();
+    const settings = SettingsRepository.getInstance().getSettings();
     return settings.sakuraParticles !== false;
   }
 

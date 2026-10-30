@@ -34,5 +34,18 @@ describe('ContentRepository and Domain Logic', () => {
     const lastLesson = contentRepo.getLesson('lesson-91-100');
     expect(lastLesson).toBeDefined();
     expect(lastLesson?.rangeEnd).toBe('100');
+
+    // Verify lesson-71-80 fix
+    const lesson71 = contentRepo.getLesson('lesson-71-80');
+    expect(lesson71).toBeDefined();
+    expect(lesson71?.sceneIds.length).toBe(9);
+
+    // Verify 10% useful content addition across all units
+    lessons.forEach(l => {
+      expect(l.usefulContent).toBeDefined();
+      expect(l.usefulContent?.scenarios.length).toBeGreaterThanOrEqual(2);
+      expect(l.usefulContent?.mnemonicSecrets.length).toBeGreaterThanOrEqual(2);
+      expect(l.usefulContent?.masteryChecklist.length).toBeGreaterThanOrEqual(3);
+    });
   });
 });

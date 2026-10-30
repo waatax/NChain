@@ -2506,7 +2506,7 @@ export const viStories: NarrativeStory[] = [
   },
   {
     "id": "story-unknown",
-    "lessonId": "lesson-unknown",
+    "lessonId": "lesson-71-80",
     "title": "Cực và sự trôi dạt tưởng tượng ở Paris",
     "sceneIds": [
       "story-unknown-scene-01",

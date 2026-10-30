@@ -77,6 +77,21 @@ export const NarrativeStorySchema = z.object({
 });
 export type NarrativeStory = z.infer<typeof NarrativeStorySchema>;
 
+export const PracticalScenarioSchema = z.object({
+  title: z.string(),
+  scenario: z.string(),
+  hook: z.string(),
+  realLifeDrill: z.string(),
+});
+export type PracticalScenario = z.infer<typeof PracticalScenarioSchema>;
+
+export const LessonUsefulContentSchema = z.object({
+  scenarios: z.array(PracticalScenarioSchema),
+  mnemonicSecrets: z.array(z.string()),
+  masteryChecklist: z.array(z.string()),
+});
+export type LessonUsefulContent = z.infer<typeof LessonUsefulContentSchema>;
+
 export const LessonSchema = z.object({
   id: z.string(), // lesson-00-10
   moduleId: z.string(),
@@ -88,6 +103,7 @@ export const LessonSchema = z.object({
   sceneIds: z.array(z.string()),
   summary: z.string().nullish(),
   order: z.number(),
+  usefulContent: LessonUsefulContentSchema.nullish(),
 });
 export type Lesson = z.infer<typeof LessonSchema>;
 
